@@ -24,3 +24,6 @@ docker-compose.yml
 public/clients/*
 workerman.webman.php.pid
 workerman.log
+
+# admin-i18n tooling dependency (installed with: cd admin-i18n && npm install)
+/admin-i18n/node_modules/

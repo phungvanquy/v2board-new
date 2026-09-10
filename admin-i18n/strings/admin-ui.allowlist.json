@@ -1,0 +1,39 @@
+{
+  "_comment": "Webpack modules in the admin bundles whose CJK string literals are NOT display text. translate.mjs leaves them byte-for-byte alone and guard.mjs permits them. Matching is by file + module id so control characters and regex metacharacters never have to be quoted as values.",
+  "modules": [
+    {
+      "file": "umi.js",
+      "module": "sRdV",
+      "why": "regjsparser: fragments used to compose fuzzy URL/email matcher regexes (e.g. `(^|(?![.:/\\-_@])(?:[$+<=>^`|｜]|`). The fullwidth vertical bar is a regex delimiter, never rendered."
+    },
+    {
+      "file": "umi.js",
+      "module": "GsrZ",
+      "why": "Core-js: the ECMAScript whitespace / line-terminator character list used by String.prototype.trim polyfills. Contains U+3000 IDEOGRAPHIC SPACE as a code point in a lookup table."
+    },
+    {
+      "file": "umi.js",
+      "module": "xWCP",
+      "why": "he: HTML entity name table. Its CJK entries are Unicode range identifiers inside one large JSON.parse() blob, not UI text."
+    },
+    {
+      "file": "umi.js",
+      "module": "1AkM",
+      "why": "zrender: text-measurement probe. Measures the rendered width of a CJK glyph against an ASCII glyph to derive a font metric; the character is an input to measurement and is never displayed."
+    },
+    {
+      "file": "umi.js",
+      "module": "6GrX",
+      "why": "zrender: second copy of the same CJK glyph-width measurement probe."
+    },
+    {
+      "file": "umi.js",
+      "module": "+80P",
+      "why": "regjsparser: second bundled copy of the fuzzy URL/email matcher regex source fragments."
+    }
+  ],
+  "notes": {
+    "moment": "The moment zh-cn locale (vendors.async.js module XDpg) IS translated rather than allowlisted: umi.js calls moment.locale(\"zh-cn\"), so its month, weekday, relative-time and calendar strings are what the dashboard actually renders. Its regex members (meridiemParse, dayOfMonthOrdinalParse) are regex literals, which the tokenizer never matches, so they are structurally protected from rewrite.",
+    "echarts": "The ECharts locale in vendors.async.js (module 71kh, 92 strings) is also translated: an English locale is bundled in the same chunk but nothing calls registerLocale, so the Chinese one is the default and the only one charts currently draw from."
+  }
+}
