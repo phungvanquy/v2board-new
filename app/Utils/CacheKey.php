@@ -4,7 +4,7 @@ namespace App\Utils;
 
 class CacheKey
 {
-    CONST KEYS = [
+    public const KEYS = [
         'EMAIL_VERIFY_CODE' => '邮箱验证码',
         'LAST_SEND_EMAIL_VERIFY_TIMESTAMP' => '最后一次发送邮箱验证码时间',
         'SERVER_VMESS_ONLINE_USER' => '节点在线用户',
@@ -38,7 +38,7 @@ class CacheKey
         'LAST_SEND_LOGIN_WITH_MAIL_LINK_TIMESTAMP' => '最后一次发送登入链接时间',
         'PASSWORD_ERROR_LIMIT' => '密码错误次数限制',
         'USER_SESSIONS' => '用户session',
-        'FORGET_REQUEST_LIMIT' => '找回密码次数限制'
+        'FORGET_REQUEST_LIMIT' => '找回密码次数限制',
     ];
 
     public static function get(string $key, $uniqueValue)
@@ -46,6 +46,7 @@ class CacheKey
         if (!in_array($key, array_keys(self::KEYS))) {
             abort(500, 'key is not in cache key list');
         }
+
         return $key . '_' . $uniqueValue;
     }
 }

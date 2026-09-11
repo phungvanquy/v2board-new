@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Jobs\OrderHandleJob;
-use Illuminate\Console\Command;
 use App\Models\Order;
+use Illuminate\Console\Command;
 
 class CheckOrder extends Command
 {

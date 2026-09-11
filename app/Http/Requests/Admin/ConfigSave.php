@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ConfigSave extends FormRequest
 {
-    const RULES = [
+    public const RULES = [
         // deposit
         'deposit_bounus' => [
             'nullable',
@@ -59,8 +59,8 @@ class ConfigSave extends FormRequest
         'server_pull_interval' => 'integer',
         'server_push_interval' => 'integer',
         'device_limit_mode' => 'in:0,1',
-        'server_node_report_min_traffic' => 'integer', 
-        'server_device_online_min_traffic' => 'integer', 
+        'server_node_report_min_traffic' => 'integer',
+        'server_device_online_min_traffic' => 'integer',
         // frontend
         'frontend_theme' => '',
         'frontend_theme_sidebar' => 'nullable|in:dark,light',
@@ -117,13 +117,14 @@ class ConfigSave extends FormRequest
         $rules['deposit_bounus'][] = function ($attribute, $value, $fail) {
             foreach ($value as $tier) {
                 if (!preg_match('/^\d+(\.\d+)?:\d+(\.\d+)?$/', $tier)) {
-                    if($tier == '') {
+                    if ($tier == '') {
                         continue;
                     }
                     $fail(__('The top-up reward is invalid, it must be in the format top-up amount:reward amount'));
                 }
             }
         };
+
         return $rules;
     }
 

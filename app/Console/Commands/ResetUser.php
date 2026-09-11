@@ -2,11 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Plan;
+use App\Models\User;
 use App\Utils\Helper;
 use Illuminate\Console\Command;
-use App\Models\User;
-use Illuminate\Support\Facades\DB;
 
 class ResetUser extends Command
 {
@@ -42,13 +40,12 @@ class ResetUser extends Command
      */
     public function handle()
     {
-        if (!$this->confirm("确定要重置所有用户安全信息吗？")) {
+        if (!$this->confirm('确定要重置所有用户安全信息吗？')) {
             return;
         }
         ini_set('memory_limit', -1);
         $users = User::all();
-        foreach ($users as $user)
-        {
+        foreach ($users as $user) {
             $user->token = Helper::guid();
             $user->uuid = Helper::guid(true);
             $user->save();

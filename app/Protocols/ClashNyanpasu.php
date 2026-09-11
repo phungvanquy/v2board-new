@@ -2,10 +2,11 @@
 
 namespace App\Protocols;
 
+use App\Protocols\Contracts\ProtocolFormatter;
 use App\Utils\Helper;
 use Symfony\Component\Yaml\Yaml;
 
-class ClashNyanpasu
+class ClashNyanpasu implements ProtocolFormatter
 {
     public $flag = 'nyanpasu';
     private $servers;
@@ -24,7 +25,7 @@ class ClashNyanpasu
         $appName = config('v2board.app_name', 'V2Board');
         header("subscription-userinfo: upload={$user['u']}; download={$user['d']}; total={$user['transfer_enable']}; expire={$user['expired_at']}");
         header('profile-update-interval: 24');
-        header("content-disposition:attachment;filename*=UTF-8''".rawurlencode($appName));
+        header("content-disposition:attachment;filename*=UTF-8''" . rawurlencode($appName));
         $defaultConfig = base_path() . '/resources/rules/default.clash.yaml';
         $customConfig = base_path() . '/resources/rules/custom.clash.yaml';
         if (\File::exists($customConfig)) {
@@ -78,23 +79,31 @@ class ClashNyanpasu
 
         $config['proxies'] = array_merge($config['proxies'] ? $config['proxies'] : [], $proxy);
         foreach ($config['proxy-groups'] as $k => $v) {
-            if (!is_array($config['proxy-groups'][$k]['proxies'])) $config['proxy-groups'][$k]['proxies'] = [];
+            if (!is_array($config['proxy-groups'][$k]['proxies'])) {
+                $config['proxy-groups'][$k]['proxies'] = [];
+            }
             $isFilter = false;
             foreach ($config['proxy-groups'][$k]['proxies'] as $src) {
                 foreach ($proxies as $dst) {
-                    if (!$this->isRegex($src)) continue;
+                    if (!$this->isRegex($src)) {
+                        continue;
+                    }
                     $isFilter = true;
                     $config['proxy-groups'][$k]['proxies'] = array_values(array_diff($config['proxy-groups'][$k]['proxies'], [$src]));
                     if ($this->isMatch($src, $dst)) {
                         array_push($config['proxy-groups'][$k]['proxies'], $dst);
                     }
                 }
-                if ($isFilter) continue;
+                if ($isFilter) {
+                    continue;
+                }
             }
-            if ($isFilter) continue;
+            if ($isFilter) {
+                continue;
+            }
             $config['proxy-groups'][$k]['proxies'] = array_merge($config['proxy-groups'][$k]['proxies'], $proxies);
         }
-        $config['proxy-groups'] = array_filter($config['proxy-groups'], function($group) {
+        $config['proxy-groups'] = array_filter($config['proxy-groups'], function ($group) {
             return $group['proxies'];
         });
         $config['proxy-groups'] = array_values($config['proxy-groups']);
@@ -106,6 +115,7 @@ class ClashNyanpasu
 
         $yaml = Yaml::dump($config, 2, 4, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE);
         $yaml = str_replace('$app_name', config('v2board.app_name', 'V2Board'), $yaml);
+
         return $yaml;
     }
 
@@ -132,7 +142,7 @@ class ClashNyanpasu
         if (isset($server['obfs']) && $server['obfs'] === 'http') {
             $array['plugin'] = 'obfs';
             $plugin_opts = [
-                'mode' => 'http'
+                'mode' => 'http',
             ];
             if (isset($server['obfs-host'])) {
                 $plugin_opts['host'] = $server['obfs-host'];
@@ -143,7 +153,7 @@ class ClashNyanpasu
                 $plugin_opts['path'] = $server['obfs-path'];
             }
             $array['plugin-opts'] = $plugin_opts;
-        } else if ((($server['network'] ?? null) === 'http') && isset(($server['network_settings'] ?? [])['Host'])) {
+        } elseif ((($server['network'] ?? null) === 'http') && isset(($server['network_settings'] ?? [])['Host'])) {
             // Fallback like Singbox: treat http obfs specified via network_settings
             $array['plugin'] = 'obfs';
             $networkSettings = $server['network_settings'];
@@ -156,6 +166,7 @@ class ClashNyanpasu
             }
             $array['plugin-opts'] = $plugin_opts;
         }
+
         return $array;
     }
 
@@ -175,20 +186,22 @@ class ClashNyanpasu
             $array['tls'] = true;
             $tlsSettings = $server['tlsSettings'] ?? ($server['tls_settings'] ?? null);
             if ($tlsSettings) {
-                if (isset($tlsSettings['allowInsecure']) && !empty($tlsSettings['allowInsecure']))
+                if (isset($tlsSettings['allowInsecure']) && !empty($tlsSettings['allowInsecure'])) {
                     $array['skip-cert-verify'] = ($tlsSettings['allowInsecure'] ? true : false);
-                if (isset($tlsSettings['serverName']) && !empty($tlsSettings['serverName']))
+                }
+                if (isset($tlsSettings['serverName']) && !empty($tlsSettings['serverName'])) {
                     $array['servername'] = $tlsSettings['serverName'];
+                }
                 if (!empty($tlsSettings['ech'])) {
                     if ($tlsSettings['ech'] === 'cloudflare') {
                         $array['ech-opts'] = [
                             'enable' => true,
-                            'query-server-name' => 'cloudflare-ech.com'
+                            'query-server-name' => 'cloudflare-ech.com',
                         ];
                     } elseif ($tlsSettings['ech'] === 'custom' && !empty($tlsSettings['ech_config'])) {
                         $array['ech-opts'] = [
                             'enable' => true,
-                            'config' => is_array($tlsSettings['ech_config']) ? $tlsSettings['ech_config'] : [$tlsSettings['ech_config']]
+                            'config' => is_array($tlsSettings['ech_config']) ? $tlsSettings['ech_config'] : [$tlsSettings['ech_config']],
                         ];
                     }
                 }
@@ -199,8 +212,12 @@ class ClashNyanpasu
             $tcpSettings = $server['networkSettings'] ?? ($server['network_settings'] ?? []);
             if (isset($tcpSettings['header']['type']) && $tcpSettings['header']['type'] == 'http') {
                 $array['network'] = $tcpSettings['header']['type'];
-                if (isset($tcpSettings['header']['request']['headers']['Host'])) $array['http-opts']['headers']['Host'] = $tcpSettings['header']['request']['headers']['Host'];
-                if (isset($tcpSettings['header']['request']['path'])) $array['http-opts']['path'] = $tcpSettings['header']['request']['path'];
+                if (isset($tcpSettings['header']['request']['headers']['Host'])) {
+                    $array['http-opts']['headers']['Host'] = $tcpSettings['header']['request']['headers']['Host'];
+                }
+                if (isset($tcpSettings['header']['request']['path'])) {
+                    $array['http-opts']['path'] = $tcpSettings['header']['request']['path'];
+                }
             }
         }
         if ($network === 'ws') {
@@ -208,12 +225,15 @@ class ClashNyanpasu
             $wsSettings = $server['networkSettings'] ?? ($server['network_settings'] ?? null);
             if ($wsSettings) {
                 $array['ws-opts'] = [];
-                if (isset($wsSettings['path']) && !empty($wsSettings['path']))
+                if (isset($wsSettings['path']) && !empty($wsSettings['path'])) {
                     $array['ws-opts']['path'] = $wsSettings['path'];
-                if (isset($wsSettings['headers']['Host']) && !empty($wsSettings['headers']['Host']))
+                }
+                if (isset($wsSettings['headers']['Host']) && !empty($wsSettings['headers']['Host'])) {
                     $array['ws-opts']['headers'] = ['Host' => $wsSettings['headers']['Host']];
-                if (isset($wsSettings['security'])) 
+                }
+                if (isset($wsSettings['security'])) {
                     $array['cipher'] = $wsSettings['security'];
+                }
             }
         }
         if ($network === 'grpc') {
@@ -221,7 +241,9 @@ class ClashNyanpasu
             $grpcSettings = $server['networkSettings'] ?? ($server['network_settings'] ?? null);
             if ($grpcSettings) {
                 $array['grpc-opts'] = [];
-                if (isset($grpcSettings['serviceName'])) $array['grpc-opts']['grpc-service-name'] = $grpcSettings['serviceName'];
+                if (isset($grpcSettings['serviceName'])) {
+                    $array['grpc-opts']['grpc-service-name'] = $grpcSettings['serviceName'];
+                }
             }
         }
 
@@ -253,26 +275,27 @@ class ClashNyanpasu
             $array['tls'] = true;
             $tlsSettings = $server['tls_settings'] ?? [];
             $array['skip-cert-verify'] = ($tlsSettings['allow_insecure'] ?? 0) == 1 ? true : false;
-            $array['flow'] = !empty($server['flow']) ? $server['flow']: "";
+            $array['flow'] = !empty($server['flow']) ? $server['flow'] : '';
             $array['client-fingerprint'] = !empty($tlsSettings['fingerprint']) ? $tlsSettings['fingerprint'] : 'chrome';
             if ($tlsSettings) {
-                if (isset($tlsSettings['server_name']) && !empty($tlsSettings['server_name']))
-                   $array['servername'] = $tlsSettings['server_name'];
+                if (isset($tlsSettings['server_name']) && !empty($tlsSettings['server_name'])) {
+                    $array['servername'] = $tlsSettings['server_name'];
+                }
                 if ($server['tls'] == 2) {
-                   $array['reality-opts'] = [];
-                   $array['reality-opts']['public-key'] = $tlsSettings['public_key'];
-                   $array['reality-opts']['short-id'] = $tlsSettings['short_id'];
+                    $array['reality-opts'] = [];
+                    $array['reality-opts']['public-key'] = $tlsSettings['public_key'];
+                    $array['reality-opts']['short-id'] = $tlsSettings['short_id'];
                 }
                 if (!empty($tlsSettings['ech'])) {
                     if ($tlsSettings['ech'] === 'cloudflare') {
                         $array['ech-opts'] = [
                             'enable' => true,
-                            'query-server-name' => 'cloudflare-ech.com'
+                            'query-server-name' => 'cloudflare-ech.com',
                         ];
                     } elseif ($tlsSettings['ech'] === 'custom' && !empty($tlsSettings['ech_config'])) {
                         $array['ech-opts'] = [
                             'enable' => true,
-                            'config' => is_array($tlsSettings['ech_config']) ? $tlsSettings['ech_config'] : [$tlsSettings['ech_config']]
+                            'config' => is_array($tlsSettings['ech_config']) ? $tlsSettings['ech_config'] : [$tlsSettings['ech_config']],
                         ];
                     }
                 }
@@ -283,8 +306,12 @@ class ClashNyanpasu
             $tcpSettings = $server['network_settings'];
             if (isset($tcpSettings['header']['type']) && $tcpSettings['header']['type'] == 'http') {
                 $array['network'] = $tcpSettings['header']['type'];
-                if (isset($tcpSettings['header']['request']['headers']['Host'])) $array['http-opts']['headers']['Host'] = $tcpSettings['header']['request']['headers']['Host'];
-                if (isset($tcpSettings['header']['request']['path'])) $array['http-opts']['path'] = $tcpSettings['header']['request']['path'];
+                if (isset($tcpSettings['header']['request']['headers']['Host'])) {
+                    $array['http-opts']['headers']['Host'] = $tcpSettings['header']['request']['headers']['Host'];
+                }
+                if (isset($tcpSettings['header']['request']['path'])) {
+                    $array['http-opts']['path'] = $tcpSettings['header']['request']['path'];
+                }
             }
         }
 
@@ -293,10 +320,12 @@ class ClashNyanpasu
             if ($server['network_settings']) {
                 $wsSettings = $server['network_settings'];
                 $array['ws-opts'] = [];
-                if (isset($wsSettings['path']) && !empty($wsSettings['path']))
+                if (isset($wsSettings['path']) && !empty($wsSettings['path'])) {
                     $array['ws-opts']['path'] = $wsSettings['path'];
-                if (isset($wsSettings['headers']['Host']) && !empty($wsSettings['headers']['Host']))
+                }
+                if (isset($wsSettings['headers']['Host']) && !empty($wsSettings['headers']['Host'])) {
                     $array['ws-opts']['headers'] = ['Host' => $wsSettings['headers']['Host']];
+                }
             }
         }
         if ($server['network'] === 'grpc') {
@@ -304,7 +333,9 @@ class ClashNyanpasu
             if ($server['network_settings']) {
                 $grpcSettings = $server['network_settings'];
                 $array['grpc-opts'] = [];
-                if (isset($grpcSettings['serviceName'])) $array['grpc-opts']['grpc-service-name'] = $grpcSettings['serviceName'];
+                if (isset($grpcSettings['serviceName'])) {
+                    $array['grpc-opts']['grpc-service-name'] = $grpcSettings['serviceName'];
+                }
             }
         }
         if ($server['network'] === 'xhttp') {
@@ -312,15 +343,21 @@ class ClashNyanpasu
             if ($server['network_settings']) {
                 $xhttpSettings = $server['network_settings'];
                 $array['xhttp-opts'] = [];
-                if (isset($xhttpSettings['path'])) $array['xhttp-opts']['path'] = $xhttpSettings['path'];
-                if (isset($xhttpSettings['host'])) $array['xhttp-opts']['host'] = $xhttpSettings['host'];
-                if (isset($xhttpSettings['mode'])) $array['xhttp-opts']['mode'] = $xhttpSettings['mode'];
+                if (isset($xhttpSettings['path'])) {
+                    $array['xhttp-opts']['path'] = $xhttpSettings['path'];
+                }
+                if (isset($xhttpSettings['host'])) {
+                    $array['xhttp-opts']['host'] = $xhttpSettings['host'];
+                }
+                if (isset($xhttpSettings['mode'])) {
+                    $array['xhttp-opts']['mode'] = $xhttpSettings['mode'];
+                }
                 // 暂不支持extra
                 //if (isset($xhttpSettings['extra'])) {
-                    //$array['xhttp-opts']['headers'] = $xhttpSettings['extra']['headers'] ?? [];
-                    //if (isset($xhttpSettings['extra']['xmux'])) {
-                    //    $array['xhttp-opts']['sc-max-concurrent-posts'] = $xhttpSettings['extra']['xmux']['maxConcurrency'] ?? [];
-                    //}
+                //$array['xhttp-opts']['headers'] = $xhttpSettings['extra']['headers'] ?? [];
+                //if (isset($xhttpSettings['extra']['xmux'])) {
+                //    $array['xhttp-opts']['sc-max-concurrent-posts'] = $xhttpSettings['extra']['xmux']['maxConcurrency'] ?? [];
+                //}
 
                 //}
             }
@@ -348,22 +385,22 @@ class ClashNyanpasu
         $array['port'] = $server['port'];
         $array['password'] = $password;
         $array['udp'] = true;
-        if(isset($server['network']) && in_array($server['network'], ["grpc", "ws"])){
+        if (isset($server['network']) && in_array($server['network'], ['grpc', 'ws'])) {
             $array['network'] = $server['network'];
             // grpc配置
-            if($server['network'] === "grpc" && isset($server['network_settings']['serviceName'])) {
+            if ($server['network'] === 'grpc' && isset($server['network_settings']['serviceName'])) {
                 $array['grpc-opts']['grpc-service-name'] = $server['network_settings']['serviceName'];
             }
             // ws配置
-            if($server['network'] === "ws") {
-                if(isset($server['network_settings']['path'])) {
+            if ($server['network'] === 'ws') {
+                if (isset($server['network_settings']['path'])) {
                     $array['ws-opts']['path'] = $server['network_settings']['path'];
                 }
-                if(isset($server['network_settings']['headers']['Host'])){
+                if (isset($server['network_settings']['headers']['Host'])) {
                     $array['ws-opts']['headers']['Host'] = $server['network_settings']['headers']['Host'];
                 }
             }
-        };
+        }
         $tlsSettings = $server['tls_settings'] ?? [];
         $array['sni'] = $server['server_name'] ?? ($tlsSettings['server_name'] ?? '');
         $array['skip-cert-verify'] = ($server['allow_insecure'] ?? ($tlsSettings['allow_insecure'] ?? 0)) == 1 ? true : false;
@@ -371,15 +408,16 @@ class ClashNyanpasu
             if ($tlsSettings['ech'] === 'cloudflare') {
                 $array['ech-opts'] = [
                     'enable' => true,
-                    'query-server-name' => 'cloudflare-ech.com'
+                    'query-server-name' => 'cloudflare-ech.com',
                 ];
             } elseif ($tlsSettings['ech'] === 'custom' && !empty($tlsSettings['ech_config'])) {
                 $array['ech-opts'] = [
                     'enable' => true,
-                    'config' => is_array($tlsSettings['ech_config']) ? $tlsSettings['ech_config'] : [$tlsSettings['ech_config']]
+                    'config' => is_array($tlsSettings['ech_config']) ? $tlsSettings['ech_config'] : [$tlsSettings['ech_config']],
                 ];
             }
         }
+
         return $array;
     }
 
@@ -423,6 +461,7 @@ class ClashNyanpasu
         $tlsSettings = $server['tls_settings'] ?? [];
         $array['sni'] = $server['server_name'] ?? ($tlsSettings['server_name'] ?? '');
         $array['skip-cert-verify'] = ($server['insecure'] ?? ($tlsSettings['allow_insecure'] ?? 0)) == 1 ? true : false;
+
         return $array;
     }
 
@@ -432,7 +471,7 @@ class ClashNyanpasu
         $array['name'] = $server['name'];
         $array['server'] = $server['host'];
 
-        $parts = explode(",", $server['port']);
+        $parts = explode(',', $server['port']);
         $firstPart = $parts[0];
         if (strpos($firstPart, '-') !== false) {
             $range = explode('-', $firstPart);
@@ -440,7 +479,7 @@ class ClashNyanpasu
         } else {
             $firstPort = $firstPart;
         }
-        $array['port'] = (int)$firstPort;
+        $array['port'] = (int) $firstPort;
         if (count($parts) !== 1 || strpos($parts[0], '-') !== false) {
             $array['ports'] = $server['port'];
             $array['mport'] = $server['port'];
@@ -448,22 +487,24 @@ class ClashNyanpasu
         $array['udp'] = true;
         $array['skip-cert-verify'] = $server['insecure'] == 1 ? true : false;
 
-        if (isset($server['server_name'])) $array['sni'] = $server['server_name'];
+        if (isset($server['server_name'])) {
+            $array['sni'] = $server['server_name'];
+        }
 
         if ($server['version'] === 2) {
             $array['type'] = 'hysteria2';
             $array['password'] = $password;
-            if (isset($server['obfs'])){
+            if (isset($server['obfs'])) {
                 $array['obfs'] = $server['obfs'];
                 $array['obfs-password'] = $server['obfs_password'];
             }
         } else {
             $array['type'] = 'hysteria';
             $array['auth_str'] = $password;
-            if (isset($server['obfs']) && isset($server['obfs_password'])){
+            if (isset($server['obfs']) && isset($server['obfs_password'])) {
                 $array['obfs'] = $server['obfs_password'];
             }
-            //Todo:完善客户端上下行
+            // client up/down intentionally swapped to match Meta's expectation
             $array['up'] = $server['down_mbps'];
             $array['down'] = $server['up_mbps'];
             $array['protocol'] = 'udp';
@@ -484,7 +525,7 @@ class ClashNyanpasu
             'sni' => $tlsSettings['server_name'] ?? '',
             'udp' => true,
         ];
-        $parts = explode(",", $server['port']);
+        $parts = explode(',', $server['port']);
         $firstPart = $parts[0];
         if (strpos($firstPart, '-') !== false) {
             $range = explode('-', $firstPart);
@@ -492,15 +533,16 @@ class ClashNyanpasu
         } else {
             $firstPort = $firstPart;
         }
-        $array['port'] = (int)$firstPort;
+        $array['port'] = (int) $firstPort;
         if (count($parts) !== 1 || strpos($parts[0], '-') !== false) {
             $array['ports'] = $server['port'];
             $array['mport'] = $server['port'];
         }
-        if (isset($server['obfs'])){
+        if (isset($server['obfs'])) {
             $array['obfs'] = $server['obfs'];
             $array['obfs-password'] = $server['obfs_password'];
         }
+
         return $array;
     }
 

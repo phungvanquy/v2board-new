@@ -17,6 +17,6 @@ class ServerVless extends Model
         'tls_settings' => 'array',
         'network_settings' => 'array',
         'encryption_settings' => 'array',
-        'tags' => 'array'
+        'tags' => 'array',
     ];
 }

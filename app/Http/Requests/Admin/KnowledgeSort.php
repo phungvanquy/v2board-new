@@ -14,7 +14,7 @@ class KnowledgeSort extends FormRequest
     public function rules()
     {
         return [
-            'knowledge_ids' => 'required|array'
+            'knowledge_ids' => 'required|array',
         ];
     }
 
@@ -22,7 +22,7 @@ class KnowledgeSort extends FormRequest
     {
         return [
             'knowledge_ids.required' => __('The article ID cannot be empty'),
-            'knowledge_ids.array' => __('The article ID is invalid')
+            'knowledge_ids.array' => __('The article ID is invalid'),
         ];
     }
 }

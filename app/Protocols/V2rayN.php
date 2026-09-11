@@ -2,10 +2,10 @@
 
 namespace App\Protocols;
 
-
+use App\Protocols\Contracts\ProtocolFormatter;
 use App\Utils\Helper;
 
-class V2rayN
+class V2rayN implements ProtocolFormatter
 {
     public $flag = 'v2rayn';
     private $servers;
@@ -24,6 +24,7 @@ class V2rayN
         foreach ($this->servers as $server) {
             $uri .= Helper::buildUri($this->user['uuid'], $server);
         }
+
         return base64_encode($uri);
     }
 }

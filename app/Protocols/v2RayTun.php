@@ -2,9 +2,10 @@
 
 namespace App\Protocols;
 
+use App\Protocols\Contracts\ProtocolFormatter;
 use App\Utils\Helper;
 
-class v2RayTun
+class v2RayTun implements ProtocolFormatter
 {
     public $flag = 'v2raytun';
     private $servers;
@@ -62,6 +63,7 @@ class v2RayTun
         foreach ($headers as $k => $v) {
             $response->header($k, $v);
         }
+
         return $response;
     }
 
@@ -71,6 +73,7 @@ class v2RayTun
         if (!empty($this->options['profile_title_base64'])) {
             return 'base64:' . base64_encode($appName);
         }
+
         return $appName;
     }
 
@@ -78,10 +81,19 @@ class v2RayTun
     protected function getUserInfoHeader($user)
     {
         $parts = [];
-        if (isset($user['u'])) $parts[] = "upload={$user['u']}";
-        if (isset($user['d'])) $parts[] = "download={$user['d']}";
-        if (isset($user['transfer_enable'])) $parts[] = "total={$user['transfer_enable']}";
-        if (isset($user['expired_at'])) $parts[] = "expire={$user['expired_at']}";
+        if (isset($user['u'])) {
+            $parts[] = "upload={$user['u']}";
+        }
+        if (isset($user['d'])) {
+            $parts[] = "download={$user['d']}";
+        }
+        if (isset($user['transfer_enable'])) {
+            $parts[] = "total={$user['transfer_enable']}";
+        }
+        if (isset($user['expired_at'])) {
+            $parts[] = "expire={$user['expired_at']}";
+        }
+
         return implode('; ', $parts);
     }
 
@@ -91,6 +103,7 @@ class v2RayTun
         if (isset($this->options['announce_base64']) && $this->options['announce_base64']) {
             return 'base64:' . base64_encode($announce);
         }
+
         return $announce;
     }
 }

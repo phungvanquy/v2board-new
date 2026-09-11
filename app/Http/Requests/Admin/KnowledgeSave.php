@@ -17,7 +17,7 @@ class KnowledgeSave extends FormRequest
             'category' => 'required',
             'language' => 'required',
             'title' => 'required',
-            'body' => 'required'
+            'body' => 'required',
         ];
     }
 
@@ -27,7 +27,7 @@ class KnowledgeSave extends FormRequest
             'title.required' => __('The title cannot be empty'),
             'category.required' => __('The category cannot be empty'),
             'body.required' => __('Content cannot be empty'),
-            'language.required' => __('The language cannot be empty')
+            'language.required' => __('The language cannot be empty'),
         ];
     }
 }

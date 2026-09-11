@@ -26,7 +26,7 @@ class ServerShadowsocksSave extends FormRequest
             'obfs' => 'nullable|in:http',
             'obfs_settings' => 'nullable|array',
             'tags' => 'nullable|array',
-            'rate' => 'required|numeric'
+            'rate' => 'required|numeric',
         ];
     }
 
@@ -46,7 +46,7 @@ class ServerShadowsocksSave extends FormRequest
             'rate.required' => __('The rate cannot be empty'),
             'rate.numeric' => __('The rate is invalid'),
             'obfs.in' => __('The obfuscation is invalid'),
-            'obfs_settings.array' => __('The obfuscation settings are invalid')
+            'obfs_settings.array' => __('The obfuscation settings are invalid'),
         ];
     }
 }

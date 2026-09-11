@@ -3,12 +3,13 @@
 /**
  * 自己写别抄，抄NMB抄
  */
+
 namespace App\Payments;
 
-use Stripe\Source;
 use Stripe\Stripe;
 
-class StripeCredit {
+class StripeCredit
+{
     public function __construct($config)
     {
         $this->config = $config;
@@ -36,7 +37,7 @@ class StripeCredit {
                 'label' => __('WebHook secret signature'),
                 'description' => '',
                 'type' => 'input',
-            ]
+            ],
         ];
     }
 
@@ -57,8 +58,8 @@ class StripeCredit {
                 'metadata' => [
                     'user_id' => $order['user_id'],
                     'out_trade_no' => $order['trade_no'],
-                    'identifier' => ''
-                ]
+                    'identifier' => '',
+                ],
             ]);
         } catch (\Exception $e) {
             info($e);
@@ -67,9 +68,10 @@ class StripeCredit {
         if (!$charge->paid) {
             abort(500, __('Payment failed. Please check your credit card information'));
         }
+
         return [
             'type' => 2,
-            'data' => $charge->paid
+            'data' => $charge->paid,
         ];
     }
 
@@ -92,7 +94,7 @@ class StripeCredit {
                     'amount' => $object->amount,
                     'currency' => $object->currency,
                     'source' => $object->id,
-                    'metadata' => json_decode($object->metadata, true)
+                    'metadata' => json_decode($object->metadata, true),
                 ]);
                 break;
             case 'charge.succeeded':
@@ -103,15 +105,17 @@ class StripeCredit {
                     }
                     $metaData = isset($object->metadata->out_trade_no) ? $object->metadata : $object->source->metadata;
                     $tradeNo = $metaData->out_trade_no;
+
                     return [
                         'trade_no' => $tradeNo,
-                        'callback_no' => $object->id
+                        'callback_no' => $object->id,
                     ];
                 }
                 break;
             default:
                 abort(500, 'event is not support');
         }
+
         return('success');
     }
 
@@ -119,6 +123,7 @@ class StripeCredit {
     {
         $result = file_get_contents("https://api.exchangerate-api.com/v4/latest/{$from}");
         $result = json_decode($result, true);
+
         return $result['rates'][$to];
     }
 }

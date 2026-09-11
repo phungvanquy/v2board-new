@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\User;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
@@ -77,6 +77,7 @@ class TrafficUpdate extends Command
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('流量更新失败: ' . $e->getMessage());
+
             return;
         }
     }

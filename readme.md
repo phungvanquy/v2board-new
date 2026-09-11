@@ -101,6 +101,45 @@ php artisan horizon:terminate
 
 ---
 
+## Contributing (quality gates)
+
+Before opening a pull request, run the checks locally. CI enforces the same set on every PR to `master`/`main`.
+
+```bash
+# One-time setup
+composer install                 # installs php-cs-fixer, phpstan, phpunit
+npm install                      # installs eslint, prettier (for the small JS surface under resources/js)
+
+# Check
+composer lint:check              # php-cs-fixer (PSR-12 + Laravel-ish rules)
+composer analyse                 # phpstan level 5 with checked-in baseline
+npm run lint                     # eslint resources/js
+bash tools/abort-ratchet.sh check # no new abort( ) calls — use App\Exceptions\ApiException
+
+# Fix (auto-correctable)
+composer cs:fix
+npm run lint:fix
+
+# Tests
+composer test                  # full suite (Unit + Feature)
+composer test:unit             # unit suite only (no DB, fast)
+composer test:feature          # feature suite only
+composer test:coverage         # text + HTML/clover report into storage/coverage
+
+# CI also runs phpunit directly; if you have no local PHP use the image:
+docker run --rm -v "$PWD":/app -w /app php:8.2-cli vendor/bin/phpunit
+```
+
+**Notes**
+
+- PHP 8.2 is the pinned platform (`composer.json → config.platform.php`). Do not use newer PHP to generate `composer.lock`; 8.3+ breaks the runtime image.
+- Adding a new PHP file: run `composer cs:fix` before commit. The fixer will format the file.
+- Adding a new `abort(...)` call in `app/` will fail CI. Throw `ApiException::fail(...)` / `::badRequest(...)` / `::forbidden(...)` instead. When you migrate a legacy file off `abort()`, run `bash tools/abort-ratchet.sh ratchet` to lower the ceiling for everyone.
+- PHPStan uses a checked-in baseline (`phpstan-baseline.neon`) to grandfather legacy errors. Do not regenerate the baseline casually — new errors should be fixed, not baselined.
+- Tests: put pure/stateless coverage under `tests/Unit` (no DB/network) and HTTP or DB-backed flows under `tests/Feature`. Use the builders in `tests/Support/ModelBuilder.php` to create deterministic `User`/`Plan`/`Order` fixtures. A coverage driver (Xdebug or PCOV) must be enabled in your PHP for `composer test:coverage`; without it PHPUnit prints a "no code coverage driver" warning but still runs the suite.
+
+---
+
 ## Common operations (Docker)
 
 ```bash

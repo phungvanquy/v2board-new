@@ -21,9 +21,12 @@ class UserController extends Controller
             ->where('id', $request->input('id'))
             ->where('is_staff', 0)
             ->first();
-        if (!$user) abort(500, '用户不存在');
+        if (!$user) {
+            abort(500, '用户不存在');
+        }
+
         return response([
-            'data' => $user
+            'data' => $user,
         ]);
     }
 
@@ -39,7 +42,7 @@ class UserController extends Controller
         }
         if (isset($params['password'])) {
             $params['password'] = password_hash($params['password'], PASSWORD_DEFAULT);
-            $params['password_algo'] = NULL;
+            $params['password_algo'] = null;
         } else {
             unset($params['password']);
         }
@@ -56,8 +59,9 @@ class UserController extends Controller
         } catch (\Exception $e) {
             abort(500, '保存失败');
         }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -76,13 +80,13 @@ class UserController extends Controller
                 'template_value' => [
                     'name' => config('v2board.app_name', 'V2Board'),
                     'url' => config('v2board.app_url'),
-                    'content' => $request->input('content')
-                ]
+                    'content' => $request->input('content'),
+                ],
             ]);
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -94,14 +98,14 @@ class UserController extends Controller
         $this->filter($request, $builder);
         try {
             $builder->update([
-                'banned' => 1
+                'banned' => 1,
             ]);
         } catch (\Exception $e) {
             abort(500, '处理失败');
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

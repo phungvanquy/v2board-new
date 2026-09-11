@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\CommissionLog;
-use Illuminate\Console\Command;
 use App\Models\Order;
 use App\Models\User;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
 class CheckCommission extends Command
@@ -47,13 +47,13 @@ class CheckCommission extends Command
 
     public function autoCheck()
     {
-        if ((int)config('v2board.commission_auto_check_enable', 1)) {
+        if ((int) config('v2board.commission_auto_check_enable', 1)) {
             Order::where('commission_status', 0)
-                ->where('invite_user_id', '!=', NULL)
+                ->where('invite_user_id', '!=', null)
                 ->whereIn('status', [3, 4])
                 ->where('updated_at', '<=', strtotime('-3 day', time()))
                 ->update([
-                    'commission_status' => 1
+                    'commission_status' => 1,
                 ]);
         }
     }
@@ -61,7 +61,7 @@ class CheckCommission extends Command
     public function autoPayCommission()
     {
         $orders = Order::where('commission_status', 1)
-            ->where('invite_user_id', '!=', NULL)
+            ->where('invite_user_id', '!=', null)
             ->get();
         foreach ($orders as $order) {
             DB::beginTransaction();
@@ -81,30 +81,37 @@ class CheckCommission extends Command
     public function payHandle($inviteUserId, Order $order)
     {
         $level = 3;
-        if ((int)config('v2board.commission_distribution_enable', 0)) {
+        if ((int) config('v2board.commission_distribution_enable', 0)) {
             $commissionShareLevels = [
-                0 => (int)config('v2board.commission_distribution_l1'),
-                1 => (int)config('v2board.commission_distribution_l2'),
-                2 => (int)config('v2board.commission_distribution_l3')
+                0 => (int) config('v2board.commission_distribution_l1'),
+                1 => (int) config('v2board.commission_distribution_l2'),
+                2 => (int) config('v2board.commission_distribution_l3'),
             ];
         } else {
             $commissionShareLevels = [
-                0 => 100
+                0 => 100,
             ];
         }
         for ($l = 0; $l < $level; $l++) {
             $inviter = User::find($inviteUserId);
-            if (!$inviter) continue;
-            if (!isset($commissionShareLevels[$l])) continue;
+            if (!$inviter) {
+                continue;
+            }
+            if (!isset($commissionShareLevels[$l])) {
+                continue;
+            }
             $commissionBalance = $order->commission_balance * ($commissionShareLevels[$l] / 100);
-            if (!$commissionBalance) continue;
-            if ((int)config('v2board.withdraw_close_enable', 0)) {
+            if (!$commissionBalance) {
+                continue;
+            }
+            if ((int) config('v2board.withdraw_close_enable', 0)) {
                 $inviter->balance = $inviter->balance + $commissionBalance;
             } else {
                 $inviter->commission_balance = $inviter->commission_balance + $commissionBalance;
             }
             if (!$inviter->save()) {
                 DB::rollBack();
+
                 return false;
             }
             if (!CommissionLog::create([
@@ -112,16 +119,17 @@ class CheckCommission extends Command
                 'user_id' => $order->user_id,
                 'trade_no' => $order->trade_no,
                 'order_amount' => $order->total_amount,
-                'get_amount' => $commissionBalance
+                'get_amount' => $commissionBalance,
             ])) {
                 DB::rollBack();
+
                 return false;
             }
             $inviteUserId = $inviter->invite_user_id;
             // update order actual commission balance
             $order->actual_commission_balance = $order->actual_commission_balance + $commissionBalance;
         }
+
         return true;
     }
-
 }

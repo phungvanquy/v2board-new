@@ -19,9 +19,13 @@ class ThemeService
     public function init()
     {
         $themeConfigFile = $this->path . "{$this->theme}/config.json";
-        if (!File::exists($themeConfigFile)) abort(500, "{$this->theme}主题不存在");
+        if (!File::exists($themeConfigFile)) {
+            abort(500, "{$this->theme}主题不存在");
+        }
         $themeConfig = json_decode(File::get($themeConfigFile), true);
-        if (!isset($themeConfig['configs']) || !is_array($themeConfig)) abort(500, "{$this->theme}主题配置文件有误");
+        if (!isset($themeConfig['configs']) || !is_array($themeConfig)) {
+            abort(500, "{$this->theme}主题配置文件有误");
+        }
         $configs = $themeConfig['configs'];
         $data = [];
         foreach ($configs as $config) {
@@ -40,7 +44,9 @@ class ThemeService
         try {
             Artisan::call('config:cache');
             while (true) {
-                if (config("theme.{$this->theme}")) break;
+                if (config("theme.{$this->theme}")) {
+                    break;
+                }
             }
         } catch (\Exception $e) {
             abort(500, "{$this->theme}初始化失败");

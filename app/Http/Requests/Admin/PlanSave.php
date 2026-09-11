@@ -29,7 +29,7 @@ class PlanSave extends FormRequest
             'reset_price' => 'nullable|integer',
             'reset_traffic_method' => 'nullable|integer|in:0,1,2,3,4',
             'capacity_limit' => 'nullable|integer',
-            'speed_limit' => 'nullable|integer'
+            'speed_limit' => 'nullable|integer',
         ];
     }
 
@@ -53,7 +53,7 @@ class PlanSave extends FormRequest
             'reset_traffic_method.integer' => __('The traffic reset method is invalid'),
             'reset_traffic_method.in' => __('The traffic reset method is invalid'),
             'capacity_limit.integer' => __('The user capacity limit is invalid'),
-            'speed_limit.integer' => __('The speed limit format is invalid')
+            'speed_limit.integer' => __('The speed limit format is invalid'),
         ];
     }
 }

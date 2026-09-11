@@ -24,7 +24,9 @@ class OrderController extends Controller
             foreach ($request->input('filter') as $filter) {
                 if ($filter['key'] === 'email') {
                     $user = User::where('email', "%{$filter['value']}%")->first();
-                    if (!$user) continue;
+                    if (!$user) {
+                        continue;
+                    }
                     $builder->where('user_id', $user->id);
                     continue;
                 }
@@ -40,13 +42,16 @@ class OrderController extends Controller
     public function detail(Request $request)
     {
         $order = Order::find($request->input('id'));
-        if (!$order) abort(500, __('Order does not exist'));
+        if (!$order) {
+            abort(500, __('Order does not exist'));
+        }
         $order['commission_log'] = CommissionLog::where('trade_no', $order->trade_no)->get();
         if ($order->surplus_order_ids) {
             $order['surplus_orders'] = Order::whereIn('id', $order->surplus_order_ids)->get();
         }
+
         return response([
-            'data' => $order
+            'data' => $order,
         ]);
     }
 
@@ -56,7 +61,7 @@ class OrderController extends Controller
         $pageSize = $request->input('pageSize') >= 10 ? $request->input('pageSize') : 10;
         $orderModel = Order::orderBy('created_at', 'DESC');
         if ($request->input('is_commission')) {
-            $orderModel->where('invite_user_id', '!=', NULL);
+            $orderModel->where('invite_user_id', '!=', null);
             $orderModel->whereNotIn('status', [0, 2]);
             $orderModel->where('commission_balance', '>', 0);
         }
@@ -72,9 +77,10 @@ class OrderController extends Controller
                 }
             }
         }
+
         return response([
             'data' => $res,
-            'total' => $total
+            'total' => $total,
         ]);
     }
 
@@ -85,14 +91,17 @@ class OrderController extends Controller
         if (!$order) {
             abort(500, __('Order does not exist'));
         }
-        if ($order->status !== 0) abort(500, __('Only pending orders can be operated on'));
+        if ($order->status !== 0) {
+            abort(500, __('Only pending orders can be operated on'));
+        }
 
         $orderService = new OrderService($order);
         if (!$orderService->paid('manual_operation')) {
             abort(500, __('Update failed'));
         }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -103,21 +112,24 @@ class OrderController extends Controller
         if (!$order) {
             abort(500, __('Order does not exist'));
         }
-        if ($order->status !== 0) abort(500, __('Only pending orders can be operated on'));
+        if ($order->status !== 0) {
+            abort(500, __('Only pending orders can be operated on'));
+        }
 
         $orderService = new OrderService($order);
         if (!$orderService->cancel()) {
             abort(500, __('Update failed'));
         }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
     public function update(OrderUpdate $request)
     {
         $params = $request->only([
-            'commission_status'
+            'commission_status',
         ]);
 
         $order = Order::where('trade_no', $request->input('trade_no'))
@@ -133,7 +145,7 @@ class OrderController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -166,9 +178,9 @@ class OrderController extends Controller
 
         if ($order->period === 'reset_price') {
             $order->type = 4;
-        } else if ($user->plan_id !== NULL && $order->plan_id !== $user->plan_id) {
+        } elseif ($user->plan_id !== null && $order->plan_id !== $user->plan_id) {
             $order->type = 3;
-        } else if ($user->expired_at > time() && $order->plan_id == $user->plan_id) {
+        } elseif ($user->expired_at > time() && $order->plan_id == $user->plan_id) {
             $order->type = 2;
         } else {
             $order->type = 1;
@@ -184,7 +196,7 @@ class OrderController extends Controller
         DB::commit();
 
         return response([
-            'data' => $order->trade_no
+            'data' => $order->trade_no,
         ]);
     }
 }

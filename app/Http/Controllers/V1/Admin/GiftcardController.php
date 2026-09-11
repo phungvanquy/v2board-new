@@ -17,14 +17,14 @@ class GiftcardController extends Controller
         $pageSize = max($request->input('pageSize', 10), 10);
         $sortType = in_array($request->input('sort_type'), ['ASC', 'DESC']) ? $request->input('sort_type') : 'DESC';
         $sort = $request->input('sort', 'id');
-        
+
         $builder = Giftcard::orderBy($sort, $sortType);
         $total = $builder->count();
         $giftcards = $builder->forPage($current, $pageSize)->get();
 
         return response([
             'data' => $giftcards,
-            'total' => $total
+            'total' => $total,
         ]);
     }
 
@@ -32,6 +32,7 @@ class GiftcardController extends Controller
     {
         if ($request->input('generate_count')) {
             $this->multiGenerate($request);
+
             return;
         }
 
@@ -56,7 +57,7 @@ class GiftcardController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -66,7 +67,7 @@ class GiftcardController extends Controller
         $giftcard = $request->validated();
         $giftcard['created_at'] = $giftcard['updated_at'] = time();
         unset($giftcard['generate_count']);
-        
+
         for ($i = 0; $i < $request->input('generate_count'); $i++) {
             do {
                 $giftcard['code'] = Helper::randomChar(16);
@@ -87,7 +88,7 @@ class GiftcardController extends Controller
         $data = "名称,类型,数值,开始时间,结束时间,可用次数,礼品卡卡密,生成时间\r\n";
         foreach ($giftcards as $giftcard) {
             $type = ['', '金额', '时长', '流量', '重置', '套餐'][$giftcard['type']];
-            $value = ['', round($giftcardvalue/100, 2), $giftcardvalue . '天', $giftcardvalue . 'GB', '-', $giftcardvalue . '天'][$giftcard['type']];
+            $value = ['', round($giftcardvalue / 100, 2), $giftcardvalue . '天', $giftcardvalue . 'GB', '-', $giftcardvalue . '天'][$giftcard['type']];
             $startTime = date('Y-m-d H:i:s', $giftcard['started_at']);
             $endTime = date('Y-m-d H:i:s', $giftcard['ended_at']);
             $limitUse = $giftcard['limit_use'] ?? '不限制';
@@ -96,7 +97,7 @@ class GiftcardController extends Controller
         }
 
         // Return the CSV data as a response
-       echo($data);
+        echo($data);
     }
 
     public function drop(Request $request)
@@ -116,7 +117,7 @@ class GiftcardController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

@@ -15,6 +15,6 @@ class ServerTrojan extends Model
         'group_id' => 'array',
         'route_id' => 'array',
         'network_settings' => 'array',
-        'tags' => 'array'
+        'tags' => 'array',
     ];
 }

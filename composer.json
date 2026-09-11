@@ -29,14 +29,20 @@
     "require-dev": {
         "facade/ignition": "^2.3.6",
         "fakerphp/faker": "^1.9.1",
+        "friendsofphp/php-cs-fixer": "^3.0",
         "mockery/mockery": "^1.3.1",
         "nunomaduro/collision": "^4.3",
+        "nunomaduro/larastan": "^1.0",
+        "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^9.0"
     },
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
+        "platform": {
+            "php": "8.2.33"
+        },
         "audit": {
             "ignore": [
                 "PKSA-y2cr-5h3j-g3ys"
@@ -75,7 +81,18 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
-        ]
+        ],
+        "lint": "php-cs-fixer fix --dry-run --diff",
+        "lint:check": "php-cs-fixer fix --dry-run --diff",
+        "cs:fix": "php-cs-fixer fix",
+        "cs:check": "php-cs-fixer fix --dry-run --diff",
+        "analyse": "phpstan analyse --memory-limit=512M",
+        "analyze": "phpstan analyse --memory-limit=512M",
+        "test": "phpunit",
+        "test:unit": "phpunit --testsuite Unit",
+        "test:feature": "phpunit --testsuite Feature",
+        "test:coverage": "phpunit --coverage-text --coverage-html storage/coverage --coverage-clover storage/coverage/clover.xml",
+        "test:coverage:text": "phpunit --coverage-text"
     },
     "repositories": {
         "packagist": {

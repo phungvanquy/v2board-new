@@ -22,11 +22,14 @@ class PlanController extends Controller
         foreach ($plans as $k => $v) {
             $plans[$k]->count = 0;
             foreach ($counts as $kk => $vv) {
-                if ($plans[$k]->id === $counts[$kk]->plan_id) $plans[$k]->count = $counts[$kk]->count;
+                if ($plans[$k]->id === $counts[$kk]->plan_id) {
+                    $plans[$k]->count = $counts[$kk]->count;
+                }
             }
         }
+
         return response([
-            'data' => $plans
+            'data' => $plans,
         ]);
     }
 
@@ -46,7 +49,7 @@ class PlanController extends Controller
                         'group_id' => $params['group_id'],
                         'transfer_enable' => $params['transfer_enable'] * 1073741824,
                         'device_limit' => $params['device_limit'],
-                        'speed_limit' => $params['speed_limit']
+                        'speed_limit' => $params['speed_limit'],
                     ]);
                 }
                 $plan->update($params);
@@ -55,15 +58,17 @@ class PlanController extends Controller
                 abort(500, __('Save failed'));
             }
             DB::commit();
+
             return response([
-                'data' => true
+                'data' => true,
             ]);
         }
         if (!Plan::create($params)) {
             abort(500, __('Failed to create'));
         }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -81,8 +86,9 @@ class PlanController extends Controller
                 abort(500, __('This subscription ID does not exist'));
             }
         }
+
         return response([
-            'data' => $plan->delete()
+            'data' => $plan->delete(),
         ]);
     }
 
@@ -90,7 +96,7 @@ class PlanController extends Controller
     {
         $updateData = $request->only([
             'show',
-            'renew'
+            'renew',
         ]);
 
         $plan = Plan::find($request->input('id'));
@@ -105,7 +111,7 @@ class PlanController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -119,8 +125,9 @@ class PlanController extends Controller
             }
         }
         DB::commit();
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

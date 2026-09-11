@@ -26,22 +26,24 @@ class TicketController extends Controller
                     $ticket['message'][$i]['is_me'] = false;
                 }
             }
+
             return response([
-                'data' => $ticket
+                'data' => $ticket,
             ]);
         }
         $current = $request->input('current') ? $request->input('current') : 1;
         $pageSize = $request->input('pageSize') >= 10 ? $request->input('pageSize') : 10;
         $model = Ticket::orderBy('created_at', 'DESC');
-        if ($request->input('status') !== NULL) {
+        if ($request->input('status') !== null) {
             $model->where('status', $request->input('status'));
         }
         $total = $model->count();
         $res = $model->forPage($current, $pageSize)
             ->get();
+
         return response([
             'data' => $res,
-            'total' => $total
+            'total' => $total,
         ]);
     }
 
@@ -59,8 +61,9 @@ class TicketController extends Controller
             $request->input('message'),
             $request->user['id']
         );
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -78,8 +81,9 @@ class TicketController extends Controller
         if (!$ticket->save()) {
             abort(500, '关闭失败');
         }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

@@ -14,7 +14,7 @@ class KnowledgeCategorySort extends FormRequest
     public function rules()
     {
         return [
-            'knowledge_category_ids' => 'required|array'
+            'knowledge_category_ids' => 'required|array',
         ];
     }
 
@@ -22,7 +22,7 @@ class KnowledgeCategorySort extends FormRequest
     {
         return [
             'knowledge_category_ids.required' => __('The category cannot be empty'),
-            'knowledge_category_ids.array' => __('The category is invalid')
+            'knowledge_category_ids.array' => __('The category is invalid'),
         ];
     }
 }

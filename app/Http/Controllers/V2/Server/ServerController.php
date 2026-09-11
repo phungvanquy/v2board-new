@@ -4,8 +4,8 @@ namespace App\Http\Controllers\V2\Server;
 
 use App\Http\Controllers\Controller;
 use App\Services\ServerService;
-use Illuminate\Http\Request;
 use App\Utils\Helper;
+use Illuminate\Http\Request;
 
 class ServerController extends Controller
 {
@@ -21,7 +21,7 @@ class ServerController extends Controller
         if (empty($token)) {
             response()->json([
                 'status' => 'fail',
-                'message' => 'token is null'
+                'message' => 'token is null',
             ], 200)->send();
             exit;
         }
@@ -30,20 +30,20 @@ class ServerController extends Controller
         if ($token !== config('v2board.server_token')) {
             response()->json([
                 'status' => 'fail',
-                'message' => 'token is error'
+                'message' => 'token is error',
             ], 200)->send();
             exit;
         }
 
         $this->nodeId = $request->input('node_id');
         $this->serverService = new ServerService();
-        $this->nodeInfo = $this->serverService->getServer($this->nodeId, "v2node");
+        $this->nodeInfo = $this->serverService->getServer($this->nodeId, 'v2node');
 
         // 节点不存在
         if (!$this->nodeInfo) {
             response()->json([
                 'status' => 'fail',
-                'message' => 'server is not exist'
+                'message' => 'server is not exist',
             ], 200)->send();
             exit;
         }
@@ -57,7 +57,7 @@ class ServerController extends Controller
             'server_port' => $this->nodeInfo->server_port,
             'network' => $this->nodeInfo->network,
             'network_settings' => $this->nodeInfo->network_settings,
-            'trusted_x_forwarded_for'=> $this->nodeInfo->trusted_x_forwarded_for,
+            'trusted_x_forwarded_for' => $this->nodeInfo->trusted_x_forwarded_for,
             'protocol' => $this->nodeInfo->protocol,
             'tls' => $this->nodeInfo->tls,
             'tls_settings' => $this->nodeInfo->tls_settings,
@@ -71,7 +71,7 @@ class ServerController extends Controller
             'down_mbps' => $this->nodeInfo->down_mbps,
             'obfs' => $this->nodeInfo->obfs,
             'obfs_password' => $this->nodeInfo->obfs_password,
-            'padding_scheme' => $this->nodeInfo->padding_scheme
+            'padding_scheme' => $this->nodeInfo->padding_scheme,
         ];
 
         if ($this->nodeInfo->cipher === '2022-blake3-aes-128-gcm') {
@@ -89,10 +89,10 @@ class ServerController extends Controller
         }
 
         $response['base_config'] = [
-            'push_interval' => (int)config('v2board.server_push_interval', 60),
-            'pull_interval' => (int)config('v2board.server_pull_interval', 60),
-            'node_report_min_traffic' => (int)config('v2board.server_node_report_min_traffic', 0),
-            'device_online_min_traffic' => (int)config('v2board.server_device_online_min_traffic', 0)
+            'push_interval' => (int) config('v2board.server_push_interval', 60),
+            'pull_interval' => (int) config('v2board.server_pull_interval', 60),
+            'node_report_min_traffic' => (int) config('v2board.server_node_report_min_traffic', 0),
+            'device_online_min_traffic' => (int) config('v2board.server_device_online_min_traffic', 0),
         ];
 
         if ($this->nodeInfo['route_id']) {

@@ -3,12 +3,14 @@
 /**
  * 自己写别抄，抄NMB抄
  */
+
 namespace App\Payments;
 
 use Stripe\Source;
 use Stripe\Stripe;
 
-class StripeWepay {
+class StripeWepay
+{
     public function __construct($config)
     {
         $this->config = $config;
@@ -31,7 +33,7 @@ class StripeWepay {
                 'label' => __('WebHook secret signature'),
                 'description' => '',
                 'type' => 'input',
-            ]
+            ],
         ];
     }
 
@@ -51,18 +53,19 @@ class StripeWepay {
             'metadata' => [
                 'user_id' => $order['user_id'],
                 'out_trade_no' => $order['trade_no'],
-                'identifier' => ''
+                'identifier' => '',
             ],
             'redirect' => [
-                'return_url' => $order['return_url']
-            ]
+                'return_url' => $order['return_url'],
+            ],
         ]);
         if (!$source['wechat']['qr_code_url']) {
             abort(500, __('Payment gateway request failed'));
         }
+
         return [
             'type' => 0,
-            'data' => $source['wechat']['qr_code_url']
+            'data' => $source['wechat']['qr_code_url'],
         ];
     }
 
@@ -85,7 +88,7 @@ class StripeWepay {
                     'amount' => $object->amount,
                     'currency' => $object->currency,
                     'source' => $object->id,
-                    'metadata' => json_decode($object->metadata, true)
+                    'metadata' => json_decode($object->metadata, true),
                 ]);
                 break;
             case 'charge.succeeded':
@@ -96,15 +99,17 @@ class StripeWepay {
                     }
                     $metaData = isset($object->metadata->out_trade_no) ? $object->metadata : $object->source->metadata;
                     $tradeNo = $metaData->out_trade_no;
+
                     return [
                         'trade_no' => $tradeNo,
-                        'callback_no' => $object->id
+                        'callback_no' => $object->id,
                     ];
                 }
                 break;
             default:
                 abort(500, 'event is not support');
         }
+
         return('success');
     }
 
@@ -112,6 +117,7 @@ class StripeWepay {
     {
         $result = file_get_contents('https://api.exchangerate.host/latest?symbols=' . $to . '&base=' . $from);
         $result = json_decode($result, true);
+
         return $result['rates'][$to];
     }
 }

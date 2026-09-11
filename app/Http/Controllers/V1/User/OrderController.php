@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1\User;
 
+use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\OrderSave;
 use App\Models\Order;
@@ -35,8 +36,9 @@ class OrderController extends Controller
                 }
             }
         }
+
         return response([
-            'data' => $order->makeHidden(['id', 'user_id'])
+            'data' => $order->makeHidden(['id', 'user_id']),
         ]);
     }
 
@@ -46,30 +48,31 @@ class OrderController extends Controller
             ->where('trade_no', $request->input('trade_no'))
             ->first();
         if (!$order) {
-            abort(500, __('Order does not exist or has been paid'));
+            throw ApiException::fail(__('Order does not exist or has been paid'));
         }
         if ($order->plan_id == 0) {
             $order['plan'] = [
                 'id' => 0,
-                'name' => 'deposit'
+                'name' => 'deposit',
             ];
             $order->bounus = $this->getbounus($order->total_amount);
             $order->get_amount = $order->total_amount + $order->bounus;
 
             return response([
-                'data' => $order
+                'data' => $order,
             ]);
         }
         $order['plan'] = Plan::find($order->plan_id);
-        $order['try_out_plan_id'] = (int)config('v2board.try_out_plan_id');
+        $order['try_out_plan_id'] = (int) config('v2board.try_out_plan_id');
         if (!$order['plan']) {
-            abort(500, __('Subscription plan does not exist'));
+            throw ApiException::fail(__('Subscription plan does not exist'));
         }
         if ($order->surplus_order_ids) {
             $order['surplus_orders'] = Order::whereIn('id', $order->surplus_order_ids)->get();
         }
+
         return response([
-            'data' => $order
+            'data' => $order,
         ]);
     }
 
@@ -77,15 +80,15 @@ class OrderController extends Controller
     {
         $userService = new UserService();
         if ($userService->isNotCompleteOrderByUserId($request->user['id'])) {
-            abort(500, __('You have an unpaid or pending order, please try again later or cancel it'));
+            throw ApiException::fail(__('You have an unpaid or pending order, please try again later or cancel it'));
         }
         if ($request->input('plan_id') == 0) {
             $amount = $request->input('deposit_amount');
             if ($amount <= 0) {
-                abort(500, __('Failed to create order, deposit amount must be greater than 0'));
+                throw ApiException::fail(__('Failed to create order, deposit amount must be greater than 0'));
             }
-            if ($amount >= 9999999 ) {
-                abort(500, __('Deposit amount too large, please contact the administrator'));
+            if ($amount >= 9999999) {
+                throw ApiException::fail(__('Deposit amount too large, please contact the administrator'));
             }
             $user = User::find($request->user['id']);
             DB::beginTransaction();
@@ -96,19 +99,19 @@ class OrderController extends Controller
             $order->period = 'deposit';
             $order->trade_no = Helper::generateOrderNo();
             $order->total_amount = $amount;
-            
+
             $orderService->setOrderType($user);
             $orderService->setInvite($user);
 
             if (!$order->save()) {
                 DB::rollback();
-                abort(500, __('Failed to create order'));
+                throw ApiException::fail(__('Failed to create order'));
             }
-    
+
             DB::commit();
-    
+
             return response([
-                'data' => $order->trade_no
+                'data' => $order->trade_no,
             ]);
         }
         $planService = new PlanService($request->input('plan_id'));
@@ -117,36 +120,35 @@ class OrderController extends Controller
         $user = User::find($request->user['id']);
 
         if (!$plan) {
-            abort(500, __('Subscription plan does not exist'));
+            throw ApiException::fail(__('Subscription plan does not exist'));
         }
 
         if ($user->plan_id !== $plan->id && !$planService->haveCapacity() && $request->input('period') !== 'reset_price') {
-            abort(500, __('Current product is sold out'));
+            throw ApiException::fail(__('Current product is sold out'));
         }
 
-        if ($plan[$request->input('period')] === NULL) {
-            abort(500, __('This payment period cannot be purchased, please choose another period'));
+        if ($plan[$request->input('period')] === null) {
+            throw ApiException::fail(__('This payment period cannot be purchased, please choose another period'));
         }
 
         if ($request->input('period') === 'reset_price') {
             if (!$userService->isAvailable($user) || $plan->id !== $user->plan_id) {
-                abort(500, __('Subscription has expired or no active subscription, unable to purchase Data Reset Package'));
+                throw ApiException::fail(__('Subscription has expired or no active subscription, unable to purchase Data Reset Package'));
             }
         }
 
         if ((!$plan->show && !$plan->renew) || (!$plan->show && $user->plan_id !== $plan->id)) {
             if ($request->input('period') !== 'reset_price') {
-                abort(500, __('This subscription has been sold out, please choose another subscription'));
+                throw ApiException::fail(__('This subscription has been sold out, please choose another subscription'));
             }
         }
 
         if (!$plan->renew && $user->plan_id == $plan->id && $request->input('period') !== 'reset_price') {
-            abort(500, __('This subscription cannot be renewed, please change to another subscription'));
+            throw ApiException::fail(__('This subscription cannot be renewed, please change to another subscription'));
         }
 
-
         if (!$plan->show && $plan->renew && !$userService->isAvailable($user)) {
-            abort(500, __('This subscription has expired, please change to another subscription'));
+            throw ApiException::fail(__('This subscription has expired, please change to another subscription'));
         }
 
         DB::beginTransaction();
@@ -162,7 +164,7 @@ class OrderController extends Controller
             $couponService = new CouponService($request->input('coupon_code'));
             if (!$couponService->use($order)) {
                 DB::rollBack();
-                abort(500, __('Coupon failed'));
+                throw ApiException::fail(__('Coupon failed'));
             }
             $order->coupon_id = $couponService->getId();
         }
@@ -176,14 +178,14 @@ class OrderController extends Controller
             if ($remainingBalance > 0) {
                 if (!$userService->addBalance($order->user_id, - $order->total_amount)) {
                     DB::rollBack();
-                    abort(500, __('Insufficient balance'));
+                    throw ApiException::fail(__('Insufficient balance'));
                 }
                 $order->balance_amount = $order->total_amount;
                 $order->total_amount = 0;
             } else {
                 if (!$userService->addBalance($order->user_id, - $user->balance)) {
                     DB::rollBack();
-                    abort(500, __('Insufficient balance'));
+                    throw ApiException::fail(__('Insufficient balance'));
                 }
                 $order->balance_amount = $user->balance;
                 $order->total_amount -= $user->balance;
@@ -194,13 +196,13 @@ class OrderController extends Controller
 
         if (!$order->save()) {
             DB::rollback();
-            abort(500, __('Failed to create order'));
+            throw ApiException::fail(__('Failed to create order'));
         }
 
         DB::commit();
 
         return response([
-            'data' => $order->trade_no
+            'data' => $order->trade_no,
         ]);
     }
 
@@ -213,35 +215,43 @@ class OrderController extends Controller
             ->where('status', 0)
             ->first();
         if (!$order) {
-            abort(500, __('Order does not exist or has been paid'));
+            throw ApiException::fail(__('Order does not exist or has been paid'));
         }
         // free process
         if ($order->total_amount <= 0) {
             $orderService = new OrderService($order);
-            if (!$orderService->paid($order->trade_no)) abort(500, '');
+            if (!$orderService->paid($order->trade_no)) {
+                throw ApiException::fail('');
+            }
+
             return response([
                 'type' => -1,
-                'data' => true
+                'data' => true,
             ]);
         }
         $payment = Payment::find($method);
-        if (!$payment || $payment->enable !== 1) abort(500, __('Payment method is not available'));
+        if (!$payment || $payment->enable !== 1) {
+            throw ApiException::fail(__('Payment method is not available'));
+        }
         $paymentService = new PaymentService($payment->payment, $payment->id);
-        $order->handling_amount = NULL;
+        $order->handling_amount = null;
         if ($payment->handling_fee_fixed || $payment->handling_fee_percent) {
             $order->handling_amount = round(($order->total_amount * ($payment->handling_fee_percent / 100)) + $payment->handling_fee_fixed);
         }
         $order->payment_id = $method;
-        if (!$order->save()) abort(500, __('Request failed, please try again later'));
+        if (!$order->save()) {
+            throw ApiException::fail(__('Request failed, please try again later'));
+        }
         $result = $paymentService->pay([
             'trade_no' => $tradeNo,
             'total_amount' => isset($order->handling_amount) ? ($order->total_amount + $order->handling_amount) : $order->total_amount,
             'user_id' => $order->user_id,
-            'stripe_token' => $request->input('token')
+            'stripe_token' => $request->input('token'),
         ]);
+
         return response([
             'type' => $result['type'],
-            'data' => $result['data']
+            'data' => $result['data'],
         ]);
     }
 
@@ -252,10 +262,11 @@ class OrderController extends Controller
             ->where('user_id', $request->user['id'])
             ->first();
         if (!$order) {
-            abort(500, __('Order does not exist'));
+            throw ApiException::fail(__('Order does not exist'));
         }
+
         return response([
-            'data' => $order->status
+            'data' => $order->status,
         ]);
     }
 
@@ -267,41 +278,43 @@ class OrderController extends Controller
             'payment',
             'icon',
             'handling_fee_fixed',
-            'handling_fee_percent'
+            'handling_fee_percent',
         ])
             ->where('enable', 1)
             ->orderBy('sort', 'ASC')
             ->get();
 
         return response([
-            'data' => $methods
+            'data' => $methods,
         ]);
     }
 
     public function cancel(Request $request)
     {
         if (empty($request->input('trade_no'))) {
-            abort(500, __('Invalid parameter'));
+            throw ApiException::fail(__('Invalid parameter'));
         }
         $order = Order::where('trade_no', $request->input('trade_no'))
             ->where('user_id', $request->user['id'])
             ->first();
         if (!$order) {
-            abort(500, __('Order does not exist'));
+            throw ApiException::fail(__('Order does not exist'));
         }
         if ($order->status !== 0) {
-            abort(500, __('You can only cancel pending orders'));
+            throw ApiException::fail(__('You can only cancel pending orders'));
         }
         $orderService = new OrderService($order);
         if (!$orderService->cancel()) {
-            abort(500, __('Cancel failed'));
+            throw ApiException::fail(__('Cancel failed'));
         }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
-    private function getbounus($total_amount) {
+    private function getbounus($total_amount)
+    {
         $deposit_bounus = config('v2board.deposit_bounus', []);
         if (empty($deposit_bounus) || $deposit_bounus[0] === null) {
             return 0;
@@ -309,14 +322,15 @@ class OrderController extends Controller
         $add = 0;
         foreach ($deposit_bounus as $tier) {
             list($amount, $bounus) = explode(':', $tier);
-            $amount = (float)$amount * 100;
-            $bounus = (float)$bounus * 100;
-            $amount = (int)$amount;
-            $bounus = (int)$bounus;
+            $amount = (float) $amount * 100;
+            $bounus = (float) $bounus * 100;
+            $amount = (int) $amount;
+            $bounus = (int) $bounus;
             if ($total_amount >= $amount) {
                 $add = max($add, $bounus);
             }
         }
+
         return $add;
     }
 }

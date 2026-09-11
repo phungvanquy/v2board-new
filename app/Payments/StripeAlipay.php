@@ -3,12 +3,14 @@
 /**
  * 自己写别抄，抄NMB抄
  */
+
 namespace App\Payments;
 
 use Stripe\Source;
 use Stripe\Stripe;
 
-class StripeAlipay {
+class StripeAlipay
+{
     public function __construct($config)
     {
         $this->config = $config;
@@ -31,7 +33,7 @@ class StripeAlipay {
                 'label' => __('WebHook secret signature'),
                 'description' => '',
                 'type' => 'input',
-            ]
+            ],
         ];
     }
 
@@ -51,18 +53,19 @@ class StripeAlipay {
             'metadata' => [
                 'user_id' => $order['user_id'],
                 'out_trade_no' => $order['trade_no'],
-                'identifier' => ''
+                'identifier' => '',
             ],
             'redirect' => [
-                'return_url' => $order['return_url']
-            ]
+                'return_url' => $order['return_url'],
+            ],
         ]);
         if (!$source['redirect']['url']) {
             abort(500, __('Payment gateway request failed'));
         }
+
         return [
             'type' => 1,
-            'data' => $source['redirect']['url']
+            'data' => $source['redirect']['url'],
         ];
     }
 
@@ -85,7 +88,7 @@ class StripeAlipay {
                     'amount' => $object->amount,
                     'currency' => $object->currency,
                     'source' => $object->id,
-                    'metadata' => json_decode($object->metadata, true)
+                    'metadata' => json_decode($object->metadata, true),
                 ]);
                 break;
             case 'charge.succeeded':
@@ -96,15 +99,17 @@ class StripeAlipay {
                     }
                     $metaData = isset($object->metadata->out_trade_no) ? $object->metadata : $object->source->metadata;
                     $tradeNo = $metaData->out_trade_no;
+
                     return [
                         'trade_no' => $tradeNo,
-                        'callback_no' => $object->id
+                        'callback_no' => $object->id,
                     ];
                 }
                 break;
             default:
                 abort(500, 'event is not support');
         }
+
         return('success');
     }
 
@@ -112,6 +117,7 @@ class StripeAlipay {
     {
         $result = file_get_contents('https://api.exchangerate.host/latest?symbols=' . $to . '&base=' . $from);
         $result = json_decode($result, true);
+
         return $result['rates'][$to];
     }
 }

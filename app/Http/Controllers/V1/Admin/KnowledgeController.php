@@ -15,22 +15,26 @@ class KnowledgeController extends Controller
     {
         if ($request->input('id')) {
             $knowledge = Knowledge::find($request->input('id'))->toArray();
-            if (!$knowledge) abort(500, __('Article does not exist'));
+            if (!$knowledge) {
+                abort(500, __('Article does not exist'));
+            }
+
             return response([
-                'data' => $knowledge
+                'data' => $knowledge,
             ]);
         }
+
         return response([
             'data' => Knowledge::select(['title', 'id', 'updated_at', 'category', 'show'])
                 ->orderBy('sort', 'ASC')
-                ->get()
+                ->get(),
         ]);
     }
 
     public function getCategory(Request $request)
     {
         return response([
-            'data' => array_keys(Knowledge::get()->groupBy('category')->toArray())
+            'data' => array_keys(Knowledge::get()->groupBy('category')->toArray()),
         ]);
     }
 
@@ -51,7 +55,7 @@ class KnowledgeController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -70,7 +74,7 @@ class KnowledgeController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -88,8 +92,9 @@ class KnowledgeController extends Controller
             abort(500, __('Save failed'));
         }
         DB::commit();
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -107,7 +112,7 @@ class KnowledgeController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

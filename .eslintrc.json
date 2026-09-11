@@ -1,0 +1,11 @@
+{
+    "root": true,
+    "env": { "browser": true, "es2021": true, "node": true },
+    "extends": ["eslint:recommended", "prettier"],
+    "parserOptions": { "ecmaVersion": 2021, "sourceType": "module" },
+    "rules": {
+        "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+        "no-console": "off"
+    },
+    "ignorePatterns": ["vendor/", "public/assets/", "public/theme/", "storage/", "node_modules/"]
+}

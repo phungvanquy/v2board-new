@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\CommissionLog;
@@ -10,7 +11,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-class StatisticalService {
+class StatisticalService
+{
     protected $userStats;
     protected $startAt;
     protected $endAt;
@@ -21,15 +23,18 @@ class StatisticalService {
         ini_set('memory_limit', -1);
     }
 
-    public function setStartAt($timestamp) {
+    public function setStartAt($timestamp)
+    {
         $this->startAt = $timestamp;
     }
 
-    public function setEndAt($timestamp) {
+    public function setEndAt($timestamp)
+    {
         $this->endAt = $timestamp;
     }
 
-    public function setServerStats() {
+    public function setServerStats()
+    {
         $this->serverStats = Cache::get("stat_server_{$this->startAt}");
         $this->serverStats = json_decode($this->serverStats, true) ?? [];
         if (!is_array($this->serverStats)) {
@@ -37,7 +42,8 @@ class StatisticalService {
         }
     }
 
-    public function setUserStats() {
+    public function setUserStats()
+    {
         $this->userStats = Cache::get("stat_user_{$this->startAt}");
         $this->userStats = json_decode($this->userStats, true) ?? [];
         if (!is_array($this->userStats)) {
@@ -83,6 +89,7 @@ class StatisticalService {
                 ->where('created_at', '<', $endAt)
                 ->select(DB::raw('SUM(u) + SUM(d) as total'))
                 ->value('total') ?? 0;
+
         return $data;
     }
 
@@ -114,15 +121,18 @@ class StatisticalService {
     {
         $stats = [];
         foreach (array_keys($this->userStats) as $rate) {
-            if (!isset($this->userStats[$rate][$userId])) continue;
+            if (!isset($this->userStats[$rate][$userId])) {
+                continue;
+            }
             $stats[] = [
                 'record_at' => $this->startAt,
                 'server_rate' => $rate,
                 'u' => $this->userStats[$rate][$userId][0],
                 'd' => $this->userStats[$rate][$userId][1],
-                'user_id' => $userId
+                'user_id' => $userId,
             ];
         }
+
         return $stats;
     }
 
@@ -136,14 +146,14 @@ class StatisticalService {
                         'server_rate' => $k,
                         'u' => $v[$userId][0],
                         'd' => $v[$userId][1],
-                        'user_id' => $userId
+                        'user_id' => $userId,
                     ];
                 }
             }
         }
+
         return $stats;
     }
-
 
     public function getStatServer()
     {
@@ -160,6 +170,7 @@ class StatisticalService {
                 }
             }
         }
+
         return $stats;
     }
 
@@ -176,27 +187,27 @@ class StatisticalService {
     public function getStatRecord($type)
     {
         switch ($type) {
-            case "paid_total": {
+            case 'paid_total': {
                 return Stat::select([
                     '*',
-                    DB::raw('paid_total / 100 as paid_total')
+                    DB::raw('paid_total / 100 as paid_total'),
                 ])
                     ->where('record_at', '>=', $this->startAt)
                     ->where('record_at', '<', $this->endAt)
                     ->orderBy('record_at', 'ASC')
                     ->get();
             }
-            case "commission_total": {
+            case 'commission_total': {
                 return Stat::select([
                     '*',
-                    DB::raw('commission_total / 100 as commission_total')
+                    DB::raw('commission_total / 100 as commission_total'),
                 ])
                     ->where('record_at', '>=', $this->startAt)
                     ->where('record_at', '<', $this->endAt)
                     ->orderBy('record_at', 'ASC')
                     ->get();
             }
-            case "register_count": {
+            case 'register_count': {
                 return Stat::where('record_at', '>=', $this->startAt)
                     ->where('record_at', '<', $this->endAt)
                     ->orderBy('record_at', 'ASC')
@@ -224,7 +235,7 @@ class StatisticalService {
     {
         $stats = User::select([
             'invite_user_id',
-            DB::raw('count(*) as count')
+            DB::raw('count(*) as count'),
         ])
             ->where('created_at', '>=', $this->startAt)
             ->where('created_at', '<', $this->endAt)
@@ -236,9 +247,12 @@ class StatisticalService {
 
         $users = User::whereIn('id', $stats->pluck('invite_user_id')->toArray())->get()->keyBy('id');
         foreach ($stats as $k => $v) {
-            if (!isset($users[$v['invite_user_id']])) continue;
+            if (!isset($users[$v['invite_user_id']])) {
+                continue;
+            }
             $stats[$k]['email'] = $users[$v['invite_user_id']]['email'];
         }
+
         return $stats;
     }
 
@@ -248,7 +262,7 @@ class StatisticalService {
             'user_id',
             DB::raw('sum(u) as u'),
             DB::raw('sum(d) as d'),
-            DB::raw('sum(u) + sum(d) as total')
+            DB::raw('sum(u) + sum(d) as total'),
         ])
             ->where('record_at', '>=', $this->startAt)
             ->where('record_at', '<', $this->endAt)
@@ -258,9 +272,12 @@ class StatisticalService {
             ->get();
         $users = User::whereIn('id', $stats->pluck('user_id')->toArray())->get()->keyBy('id');
         foreach ($stats as $k => $v) {
-            if (!isset($users[$v['user_id']])) continue;
+            if (!isset($users[$v['user_id']])) {
+                continue;
+            }
             $stats[$k]['email'] = $users[$v['user_id']]['email'];
         }
+
         return $stats;
     }
 
@@ -271,7 +288,7 @@ class StatisticalService {
             'server_type',
             DB::raw('sum(u) as u'),
             DB::raw('sum(d) as d'),
-            DB::raw('sum(u) + sum(d) as total')
+            DB::raw('sum(u) + sum(d) as total'),
         ])
             ->where('record_at', '>=', $this->startAt)
             ->where('record_at', '<', $this->endAt)

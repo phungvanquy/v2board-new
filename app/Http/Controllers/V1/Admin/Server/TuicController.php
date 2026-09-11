@@ -26,7 +26,7 @@ class TuicController extends Controller
             'disable_sni' => 'required|in:0,1',
             'udp_relay_mode' => 'nullable',
             'zero_rtt_handshake' => 'required|in:0,1',
-            'congestion_control' => 'nullable'
+            'congestion_control' => 'nullable',
         ]);
 
         if ($request->input('id')) {
@@ -39,8 +39,9 @@ class TuicController extends Controller
             } catch (\Exception $e) {
                 abort(500, __('Save failed'));
             }
+
             return response([
-                'data' => true
+                'data' => true,
             ]);
         }
 
@@ -49,7 +50,7 @@ class TuicController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -61,17 +62,18 @@ class TuicController extends Controller
                 abort(500, __('Node ID does not exist'));
             }
         }
+
         return response([
-            'data' => $server->delete()
+            'data' => $server->delete(),
         ]);
     }
 
     public function update(Request $request)
     {
         $request->validate([
-            'show' => 'in:0,1'
+            'show' => 'in:0,1',
         ], [
-            'show.in' => __('The display status is invalid')
+            'show.in' => __('The display status is invalid'),
         ]);
         $params = $request->only([
             'show',
@@ -89,7 +91,7 @@ class TuicController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -105,7 +107,7 @@ class TuicController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

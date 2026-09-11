@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use App\Models\User;
 use App\Utils\Helper;
+use Closure;
 use Illuminate\Support\Facades\Cache;
 
 class Client
@@ -22,7 +22,7 @@ class Client
         if (empty($token)) {
             abort(403, 'token is null');
         }
-        $submethod = (int)config('v2board.show_subscribe_method', 0);
+        $submethod = (int) config('v2board.show_subscribe_method', 0);
         switch ($submethod) {
             case 0:
                 break;
@@ -37,7 +37,7 @@ class Client
             case 2:
                 $usertoken = Cache::get("totp_{$token}");
                 if (!$usertoken) {
-                    $timestep = (int)config('v2board.show_subscribe_expire', 5) * 60;
+                    $timestep = (int) config('v2board.show_subscribe_expire', 5) * 60;
                     $counter = floor(time() / $timestep);
                     $counterBytes = pack('N*', 0) . pack('N*', $counter);
                     $idhash = Helper::base64DecodeUrlSafe($token);
@@ -70,8 +70,9 @@ class Client
             abort(403, 'token is error');
         }
         $request->merge([
-            'user' => $user
+            'user' => $user,
         ]);
+
         return $next($request);
     }
 }

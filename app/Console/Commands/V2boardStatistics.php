@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Stat;
 use App\Models\StatServer;
 use App\Models\StatUser;
 use App\Services\StatisticalService;
 use Illuminate\Console\Command;
-use App\Models\Stat;
 use Illuminate\Support\Facades\DB;
 
 class V2boardStatistics extends Command
@@ -69,7 +69,7 @@ class V2boardStatistics extends Command
                     'created_at' => $createdAt,
                     'updated_at' => $createdAt,
                     'record_type' => 'd',
-                    'record_at' => $recordAt
+                    'record_at' => $recordAt,
                 ])) {
                     throw new \Exception('stat server fail');
                 }
@@ -101,7 +101,7 @@ class V2boardStatistics extends Command
                     'created_at' => $createdAt,
                     'updated_at' => $createdAt,
                     'record_type' => 'd',
-                    'record_at' => $recordAt
+                    'record_at' => $recordAt,
                 ])) {
                     throw new \Exception('stat user fail');
                 }
@@ -130,6 +130,7 @@ class V2boardStatistics extends Command
                 ->first();
             if ($statistic) {
                 $statistic->update($data);
+
                 return;
             }
             Stat::create($data);

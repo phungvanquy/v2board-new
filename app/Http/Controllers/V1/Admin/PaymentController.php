@@ -3,14 +3,11 @@
 namespace App\Http\Controllers\V1\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\PaymentSave;
 use App\Models\Payment;
 use App\Services\PaymentService;
 use App\Utils\Helper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
-use function PHPUnit\Framework\stringContains;
 
 class PaymentController extends Controller
 {
@@ -25,8 +22,9 @@ class PaymentController extends Controller
                 array_push($methods, pathinfo($file)['filename']);
             }
         }
+
         return response([
-            'data' => $methods
+            'data' => $methods,
         ]);
     }
 
@@ -41,27 +39,34 @@ class PaymentController extends Controller
             }
             $payments[$k]['notify_url'] = $notifyUrl;
         }
+
         return response([
-            'data' => $payments
+            'data' => $payments,
         ]);
     }
 
     public function getPaymentForm(Request $request)
     {
         $paymentService = new PaymentService($request->input('payment'), $request->input('id'));
+
         return response([
-            'data' => $paymentService->form()
+            'data' => $paymentService->form(),
         ]);
     }
 
     public function show(Request $request)
     {
         $payment = Payment::find($request->input('id'));
-        if (!$payment) abort(500, __('Payment method does not exist'));
+        if (!$payment) {
+            abort(500, __('Payment method does not exist'));
+        }
         $payment->enable = !$payment->enable;
-        if (!$payment->save()) abort(500, __('Save failed'));
+        if (!$payment->save()) {
+            abort(500, __('Save failed'));
+        }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -77,53 +82,59 @@ class PaymentController extends Controller
             'config' => 'required',
             'notify_domain' => 'nullable|url',
             'handling_fee_fixed' => 'nullable|integer',
-            'handling_fee_percent' => 'nullable|numeric|between:0.1,100'
+            'handling_fee_percent' => 'nullable|numeric|between:0.1,100',
         ], [
             'name.required' => __('Display name cannot be empty'),
             'payment.required' => __('Gateway parameters cannot be empty'),
             'config.required' => __('Configuration parameters cannot be empty'),
             'notify_domain.url' => __('The custom notification domain is not a valid URL'),
             'handling_fee_fixed.integer' => __('The fixed handling fee must be an integer'),
-            'handling_fee_percent.between' => __('The percentage handling fee must be between 0.1 and 100')
+            'handling_fee_percent.between' => __('The percentage handling fee must be between 0.1 and 100'),
         ]);
         if ($request->input('id')) {
             $payment = Payment::find($request->input('id'));
-            if (!$payment) abort(500, __('Payment method does not exist'));
+            if (!$payment) {
+                abort(500, __('Payment method does not exist'));
+            }
             try {
                 $payment->update($params);
             } catch (\Exception $e) {
                 abort(500, $e->getMessage());
             }
+
             return response([
-                'data' => true
+                'data' => true,
             ]);
         }
         $params['uuid'] = Helper::randomChar(8);
         if (!Payment::create($params)) {
             abort(500, __('Save failed'));
         }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
     public function drop(Request $request)
     {
         $payment = Payment::find($request->input('id'));
-        if (!$payment) abort(500, __('Payment method does not exist'));
+        if (!$payment) {
+            abort(500, __('Payment method does not exist'));
+        }
+
         return response([
-            'data' => $payment->delete()
+            'data' => $payment->delete(),
         ]);
     }
-
 
     public function sort(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array'
+            'ids' => 'required|array',
         ], [
             'ids.required' => __('Invalid parameter'),
-            'ids.array' => __('Invalid parameter')
+            'ids.array' => __('Invalid parameter'),
         ]);
         DB::beginTransaction();
         foreach ($request->input('ids') as $k => $v) {
@@ -133,8 +144,9 @@ class PaymentController extends Controller
             }
         }
         DB::commit();
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

@@ -11,7 +11,10 @@ use Illuminate\Support\Facades\Redis;
 
 class TrafficFetchJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
     protected $data;
     protected $server;
     protected $protocol;
@@ -27,7 +30,7 @@ class TrafficFetchJob implements ShouldQueue
     public function __construct(array $data, array $server, $protocol)
     {
         $this->onQueue('traffic_fetch');
-        $this->data =$data;
+        $this->data = $data;
         $this->server = $server;
         $this->protocol = $protocol;
     }
@@ -39,7 +42,7 @@ class TrafficFetchJob implements ShouldQueue
      */
     public function handle()
     {
-        foreach(array_keys($this->data) as $userId){
+        foreach (array_keys($this->data) as $userId) {
             Redis::hincrby('v2board_upload_traffic', $userId, $this->data[$userId][0] * $this->server['rate']);
             Redis::hincrby('v2board_download_traffic', $userId, $this->data[$userId][1] * $this->server['rate']);
         }

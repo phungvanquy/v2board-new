@@ -14,14 +14,14 @@ class UserRedeemGiftCard extends FormRequest
     public function rules()
     {
         return [
-            'giftcard' => 'required'
+            'giftcard' => 'required',
         ];
     }
 
     public function messages()
     {
         return [
-            'giftcard.required' => __('Giftcard cannot be empty')
+            'giftcard.required' => __('Giftcard cannot be empty'),
         ];
     }
 }

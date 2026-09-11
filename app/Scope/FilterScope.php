@@ -2,19 +2,19 @@
 
 namespace App\Scope;
 
-use Illuminate\Database\Eloquent\Builder;
-
 trait FilterScope
 {
     public function scopeSetFilterAllowKeys($builder, ...$allowKeys)
     {
         $allowKeys = implode(',', $allowKeys);
-        if (!$allowKeys) return $builder;
+        if (!$allowKeys) {
+            return $builder;
+        }
         $request = request();
         $request->validate([
             'filter.*.key' => "required|in:{$allowKeys}",
             'filter.*.condition' => 'required|in:in,is,not,like,lt,gt',
-            'filter.*.value' => 'required'
+            'filter.*.value' => 'required',
         ]);
         $filters = $request->input('filter');
         if ($filters) {
@@ -45,6 +45,7 @@ trait FilterScope
                 }
             }
         }
+
         return $builder;
     }
 }

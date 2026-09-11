@@ -44,7 +44,9 @@ class CheckTicket extends Command
             ->where('reply_status', 1)
             ->get();
         foreach ($tickets as $ticket) {
-            if ($ticket->user_id === $ticket->last_reply_user_id) continue;
+            if ($ticket->user_id === $ticket->last_reply_user_id) {
+                continue;
+            }
             $ticket->status = 1;
             $ticket->save();
         }

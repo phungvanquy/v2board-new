@@ -15,6 +15,6 @@ class ServerAnytls extends Model
         'group_id' => 'array',
         'route_id' => 'array',
         'padding_scheme' => 'array',
-        'tags' => 'array'
+        'tags' => 'array',
     ];
 }

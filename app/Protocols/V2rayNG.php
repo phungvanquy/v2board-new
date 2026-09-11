@@ -2,9 +2,10 @@
 
 namespace App\Protocols;
 
+use App\Protocols\Contracts\ProtocolFormatter;
 use App\Utils\Helper;
 
-class V2rayNG
+class V2rayNG implements ProtocolFormatter
 {
     public $flag = 'v2rayng';
     private $servers;
@@ -23,6 +24,7 @@ class V2rayNG
         foreach ($this->servers as $server) {
             $uri .= Helper::buildUri($this->user['uuid'], $server);
         }
+
         return base64_encode($uri);
     }
 }

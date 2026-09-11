@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Routes\V1;
 
 use Illuminate\Contracts\Routing\Registrar;
@@ -9,7 +10,7 @@ class ClientRoute
     {
         $router->group([
             'prefix' => 'client',
-            'middleware' => 'client'
+            'middleware' => 'client',
         ], function ($router) {
             // Client
             if (empty(config('v2board.subscribe_path'))) {

@@ -24,8 +24,9 @@ class VmessController extends Controller
             } catch (\Exception $e) {
                 abort(500, __('Save failed'));
             }
+
             return response([
-                'data' => true
+                'data' => true,
             ]);
         }
 
@@ -34,7 +35,7 @@ class VmessController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -46,8 +47,9 @@ class VmessController extends Controller
                 abort(500, __('Node ID does not exist'));
             }
         }
+
         return response([
-            'data' => $server->delete()
+            'data' => $server->delete(),
         ]);
     }
 
@@ -69,7 +71,7 @@ class VmessController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -85,7 +87,7 @@ class VmessController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

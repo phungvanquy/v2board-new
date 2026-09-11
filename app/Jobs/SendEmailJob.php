@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\MailLog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -9,11 +10,13 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
-use App\Models\MailLog;
 
 class SendEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
     protected $params;
 
     public $tries = 3;
@@ -50,7 +53,7 @@ class SendEmailJob implements ShouldQueue
         $subject = $params['subject'];
         $params['template_name'] = 'mail.' . config('v2board.email_template', 'default') . '.' . $params['template_name'];
         try {
-            sleep(2); 
+            sleep(2);
             Mail::send(
                 $params['template_name'],
                 $params['template_value'],
@@ -66,11 +69,12 @@ class SendEmailJob implements ShouldQueue
             'email' => $params['email'],
             'subject' => $params['subject'],
             'template_name' => $params['template_name'],
-            'error' => isset($error) ? $error : NULL
+            'error' => isset($error) ? $error : null,
         ];
 
         MailLog::create($log);
         $log['config'] = config('mail');
+
         return $log;
     }
 }

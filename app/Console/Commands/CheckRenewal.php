@@ -2,16 +2,16 @@
 
 namespace App\Console\Commands;
 
-use App\Services\MailService;
-use App\Services\PlanService;
-use App\Services\OrderService;
-use Illuminate\Console\Command;
-use App\Models\User;
 use App\Models\Order;
+use App\Models\User;
+use App\Services\MailService;
+use App\Services\OrderService;
+use App\Services\PlanService;
 use App\Utils\Helper;
-use Illuminate\Support\Facades\DB;
-
 use Exception;
+use Illuminate\Console\Command;
+
+use Illuminate\Support\Facades\DB;
 
 class CheckRenewal extends Command
 {
@@ -51,7 +51,7 @@ class CheckRenewal extends Command
 
         //$mailService = new MailService();
         foreach ($users as $user) {
-            if ($user->auto_renewal && $user->plan_id !== NULL && $user->expired_at !== NULL && $user->expired_at > time() && $user->expired_at - time() < 86400 * 2) {
+            if ($user->auto_renewal && $user->plan_id !== null && $user->expired_at !== null && $user->expired_at > time() && $user->expired_at - time() < 86400 * 2) {
                 try {
                     $latestOrder = Order::where('user_id', $user->id)
                         ->where('period', '!=', 'reset_price')
@@ -61,19 +61,19 @@ class CheckRenewal extends Command
                         ->orderBy('created_at', 'desc')
                         ->first();
                     if (!$latestOrder) {
-                        throw new Exception("No valid order");
+                        throw new Exception('No valid order');
                     }
                     $latestPeriod = $latestOrder->period;
 
                     $planService = new PlanService($user->plan_id);
                     $plan = $planService->plan;
                     if (!$plan) {
-                        throw new Exception("No such plan");
+                        throw new Exception('No such plan');
                     }
                     if (!$plan->renew) {
                         throw new Exception('This subscription cannot be renewed');
                     }
-                    if($user->balance < $plan[$latestPeriod]) {
+                    if ($user->balance < $plan[$latestPeriod]) {
                         throw new Exception('No enough balance');
                     }
 
@@ -88,7 +88,7 @@ class CheckRenewal extends Command
                     $order->total_amount = 0;
                     $orderService->setVipDiscount($user);
                     $order->type = 2;
-                    
+
                     $user->balance = $user->balance - $plan[$latestPeriod];
                     $user->expired_at = $this->getTime($latestPeriod, $user->expired_at);
                     if (!$user->save()) {
@@ -104,9 +104,9 @@ class CheckRenewal extends Command
                     //$mailService->remindAutorenewal($user);
                 } catch (\Exception $e) {
                     $user->auto_renewal = 0;
-                    if(!$user->save()){
+                    if (!$user->save()) {
                         info('用户自动续费失败,调整设置失败', [$e->getMessage() , $user]);
-                    };
+                    }
                 }
             }
         }

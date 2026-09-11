@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\StatServer;
 use App\Models\StatUser;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,7 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 class StatUserJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
     protected $data;
     protected $server;
     protected $protocol;
@@ -30,7 +32,7 @@ class StatUserJob implements ShouldQueue
     public function __construct(array $data, array $server, $protocol, $recordType = 'd')
     {
         $this->onQueue('stat');
-        $this->data =$data;
+        $this->data = $data;
         $this->server = $server;
         $this->protocol = $protocol;
         $this->recordType = $recordType;
@@ -60,12 +62,12 @@ class StatUserJob implements ShouldQueue
         while ($attempt < $maxAttempts) {
             try {
                 DB::beginTransaction();
-                foreach($this->data as $userId => $trafficData){
+                foreach ($this->data as $userId => $trafficData) {
                     if (isset($existingData[$userId])) {
                         $userdata = StatUser::where('id', $existingData[$userId]['id'])->first();
                         $userdata->update([
                             'u' => $userdata['u'] + $trafficData[0],
-                            'd' => $userdata['d'] + $trafficData[1]
+                            'd' => $userdata['d'] + $trafficData[1],
                         ]);
                     } else {
                         $insertData[] = [
@@ -74,7 +76,7 @@ class StatUserJob implements ShouldQueue
                             'u' => $trafficData[0],
                             'd' => $trafficData[1],
                             'record_type' => $this->recordType,
-                            'record_at' => $recordAt
+                            'record_at' => $recordAt,
                         ];
                     }
                 }
@@ -84,6 +86,7 @@ class StatUserJob implements ShouldQueue
                     });
                 }
                 DB::commit();
+
                 return;
             } catch (\Exception $e) {
                 DB::rollback();
@@ -94,7 +97,7 @@ class StatUserJob implements ShouldQueue
                         continue;
                     }
                 }
-                abort(500, '用户统计数据失败'. $e->getMessage());
+                abort(500, '用户统计数据失败' . $e->getMessage());
             }
         }
     }

@@ -2,7 +2,8 @@
 
 namespace App\Payments;
 
-class EPay {
+class EPay
+{
     private $config;
     public function __construct($config)
     {
@@ -31,7 +32,7 @@ class EPay {
                 'label' => 'TYPE',
                 'description' => __('Payment type, e.g. alipay, wxpay, qqpay'),
                 'type' => 'input',
-            ]
+            ],
         ];
     }
 
@@ -43,7 +44,7 @@ class EPay {
             'notify_url' => $order['notify_url'],
             'return_url' => $order['return_url'],
             'out_trade_no' => $order['trade_no'],
-            'pid' => $this->config['pid']
+            'pid' => $this->config['pid'],
         ];
         if (!empty($this->config['type'])) {
             $params['type'] = $this->config['type'];
@@ -53,9 +54,10 @@ class EPay {
         $str = stripslashes(urldecode(http_build_query($params))) . $this->config['key'];
         $params['sign'] = md5($str);
         $params['sign_type'] = 'MD5';
+
         return [
             'type' => 1, // 0:qrcode 1:url
-            'data' => $this->config['url'] . '/submit.php?' . http_build_query($params)
+            'data' => $this->config['url'] . '/submit.php?' . http_build_query($params),
         ];
     }
 
@@ -80,7 +82,7 @@ class EPay {
 
         return [
             'trade_no' => $params['out_trade_no'],
-            'callback_no' => $params['trade_no']
+            'callback_no' => $params['trade_no'],
         ];
     }
 }

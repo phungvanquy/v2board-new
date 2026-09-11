@@ -19,7 +19,7 @@ class UserGenerate extends FormRequest
             'plan_id' => 'nullable|integer',
             'email_prefix' => 'nullable',
             'email_suffix' => 'required',
-            'password' => 'nullable'
+            'password' => 'nullable',
         ];
     }
 
@@ -27,7 +27,7 @@ class UserGenerate extends FormRequest
     {
         return [
             'generate_count.integer' => __('The generation quantity must be a number'),
-            'generate_count.max' => __('The generation quantity cannot exceed 500')
+            'generate_count.max' => __('The generation quantity cannot exceed 500'),
         ];
     }
 }

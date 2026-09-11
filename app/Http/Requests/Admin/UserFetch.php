@@ -16,7 +16,7 @@ class UserFetch extends FormRequest
         return [
             'filter.*.key' => 'required|in:id,email,transfer_enable,device_limit,d,expired_at,uuid,token,invite_by_email,invite_user_id,plan_id,banned,remarks,is_admin',
             'filter.*.condition' => 'required|in:>,<,=,>=,<=,Fuzzy,!=',
-            'filter.*.value' => 'required'
+            'filter.*.value' => 'required',
         ];
     }
 
@@ -27,7 +27,7 @@ class UserFetch extends FormRequest
             'filter.*.key.in' => __('The filter key is invalid'),
             'filter.*.condition.required' => __('The filter condition cannot be empty'),
             'filter.*.condition.in' => __('The filter condition is invalid'),
-            'filter.*.value.required' => __('The filter value cannot be empty')
+            'filter.*.value.required' => __('The filter value cannot be empty'),
         ];
     }
 }

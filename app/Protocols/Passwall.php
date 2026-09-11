@@ -2,9 +2,10 @@
 
 namespace App\Protocols;
 
+use App\Protocols\Contracts\ProtocolFormatter;
 use App\Utils\Helper;
 
-class Passwall
+class Passwall implements ProtocolFormatter
 {
     public $flag = 'passwall';
     private $servers;
@@ -23,7 +24,7 @@ class Passwall
         foreach ($this->servers as $server) {
             $uri .= Helper::buildUri($this->user['uuid'], $server);
         }
+
         return base64_encode($uri);
     }
-
 }

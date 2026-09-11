@@ -5,7 +5,8 @@ namespace App\Payments;
 use Omnipay\Omnipay;
 use Omnipay\WechatPay\Helper;
 
-class WechatPayNative {
+class WechatPayNative
+{
     public function __construct($config)
     {
         $this->config = $config;
@@ -28,7 +29,7 @@ class WechatPayNative {
                 'label' => 'APIKEY(v1)',
                 'description' => '',
                 'type' => 'input',
-            ]
+            ],
         ];
     }
 
@@ -45,7 +46,7 @@ class WechatPayNative {
             'out_trade_no'      => $order['trade_no'],
             'total_fee'         => $order['total_amount'],
             'spbill_create_ip'  => '0.0.0.0',
-            'fee_type'          => 'CNY'
+            'fee_type'          => 'CNY',
         ];
 
         $request  = $gateway->purchase($params);
@@ -54,10 +55,11 @@ class WechatPayNative {
         if ($response['return_code'] !== 'SUCCESS') {
             abort(500, $response['return_msg']);
         }
+
         return [
             'type' => 0,
             'data' => $response['code_url'],
-            'custom_result' => '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>'
+            'custom_result' => '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>',
         ];
     }
 
@@ -69,7 +71,7 @@ class WechatPayNative {
         $gateway->setMchId($this->config['mch_id']);
         $gateway->setApiKey($this->config['api_key']);
         $response = $gateway->completePurchase([
-            'request_params' => request()->getContent() ?: json_encode($_POST)
+            'request_params' => request()->getContent() ?: json_encode($_POST),
         ])->send();
 
         if (!$response->isPaid()) {
@@ -78,7 +80,7 @@ class WechatPayNative {
 
         return [
             'trade_no' => $data['out_trade_no'],
-            'callback_no' => $data['transaction_id']
+            'callback_no' => $data['transaction_id'],
         ];
     }
 }

@@ -2,11 +2,10 @@
 
 namespace App\Exceptions;
 
+use Facade\Ignition\Exceptions\ViewException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Arr;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
-use Facade\Ignition\Exceptions\ViewException;
 
 class Handler extends ExceptionHandler
 {
@@ -54,11 +53,11 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof ViewException) {
-            abort(500, "主题渲染失败。如更新主题，参数可能发生变化请重新配置主题后再试。");
+            abort(500, '主题渲染失败。如更新主题，参数可能发生变化请重新配置主题后再试。');
         }
+
         return parent::render($request, $exception);
     }
-
 
     protected function convertExceptionToArray(Throwable $e)
     {

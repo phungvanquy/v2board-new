@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1\Admin;
 
+use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UserFetch;
 use App\Http\Requests\Admin\UserGenerate;
@@ -9,27 +10,30 @@ use App\Http\Requests\Admin\UserSendMail;
 use App\Http\Requests\Admin\UserUpdate;
 use App\Jobs\SendEmailJob;
 use App\Models\InviteCode;
-use App\Models\Ticket;
 use App\Models\Order;
 use App\Models\Plan;
+use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
 use App\Services\AuthService;
 use App\Utils\Helper;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
     public function resetSecret(Request $request)
     {
         $user = User::find($request->input('id'));
-        if (!$user) abort(500, __('User does not exist'));
+        if (!$user) {
+            throw ApiException::fail(__('User does not exist'));
+        }
         $user->token = Helper::guid();
         $user->uuid = Helper::guid(true);
+
         return response([
-            'data' => $user->save()
+            'data' => $user->save(),
         ]);
     }
 
@@ -86,13 +90,13 @@ class UserController extends Controller
             //统计在线设备
             $countalive = 0;
             $ips = [];
-            $ips_array = Cache::get('ALIVE_IP_USER_'. $res[$i]['id']);
+            $ips_array = Cache::get('ALIVE_IP_USER_' . $res[$i]['id']);
             if ($ips_array) {
                 $countalive = $ips_array['alive_ip'];
-                foreach($ips_array as $nodetypeid => $data) {
+                foreach ($ips_array as $nodetypeid => $data) {
                     if (!is_int($data) && isset($data['aliveips'])) {
-                        foreach($data['aliveips'] as $ip_NodeId) {
-                            $ip = explode("_", $ip_NodeId)[0];
+                        foreach ($data['aliveips'] as $ip_NodeId) {
+                            $ip = explode('_', $ip_NodeId)[0];
                             $ips[] = $ip . '_' . $nodetypeid;
                         }
                     }
@@ -102,23 +106,25 @@ class UserController extends Controller
             $res[$i]['ips'] = implode(', ', $ips);
             $res[$i]['subscribe_url'] = Helper::getSubscribeUrl($res[$i]['token']);
         }
+
         return response([
             'data' => $res,
-            'total' => $total
+            'total' => $total,
         ]);
     }
 
     public function getUserInfoById(Request $request)
     {
         if (empty($request->input('id'))) {
-            abort(500, __('Invalid parameter'));
+            throw ApiException::fail(__('Invalid parameter'));
         }
         $user = User::find($request->input('id'));
         if ($user->invite_user_id) {
             $user['invite_user'] = User::find($user->invite_user_id);
         }
+
         return response([
-            'data' => $user
+            'data' => $user,
         ]);
     }
 
@@ -127,21 +133,21 @@ class UserController extends Controller
         $params = $request->validated();
         $user = User::find($request->input('id'));
         if (!$user) {
-            abort(500, __('User does not exist'));
+            throw ApiException::fail(__('User does not exist'));
         }
         if (User::where('email', $params['email'])->first() && $user->email !== $params['email']) {
-            abort(500, __('Email is already in use'));
+            throw ApiException::fail(__('Email is already in use'));
         }
         if (isset($params['password'])) {
             $params['password'] = password_hash($params['password'], PASSWORD_DEFAULT);
-            $params['password_algo'] = NULL;
+            $params['password_algo'] = null;
         } else {
             unset($params['password']);
         }
         if (isset($params['plan_id'])) {
             $plan = Plan::find($params['plan_id']);
             if (!$plan) {
-                abort(500, __('Subscription plan does not exist'));
+                throw ApiException::fail(__('Subscription plan does not exist'));
             }
             $params['group_id'] = $plan->group_id;
         } else {
@@ -156,7 +162,7 @@ class UserController extends Controller
             $params['invite_user_id'] = null;
         }
 
-        if (isset($params['banned']) && (int)$params['banned'] === 1) {
+        if (isset($params['banned']) && (int) $params['banned'] === 1) {
             $authService = new AuthService($user);
             $authService->removeAllSession();
         }
@@ -164,10 +170,11 @@ class UserController extends Controller
         try {
             $user->update($params);
         } catch (\Exception $e) {
-            abort(500, __('Save failed'));
+            throw ApiException::fail(__('Save failed'));
         }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -186,17 +193,16 @@ class UserController extends Controller
         }
 
         $data = "邮箱,余额,推广佣金,总流量,设备数限制,剩余流量,套餐到期时间,订阅计划,订阅地址\r\n";
-        foreach($res as $user) {
-            $expireDate = $user['expired_at'] === NULL ? '长期有效' : date('Y-m-d H:i:s', $user['expired_at']);
+        foreach ($res as $user) {
+            $expireDate = $user['expired_at'] === null ? '长期有效' : date('Y-m-d H:i:s', $user['expired_at']);
             $balance = $user['balance'] / 100;
             $commissionBalance = $user['commission_balance'] / 100;
             $transferEnable = $user['transfer_enable'] ? $user['transfer_enable'] / 1073741824 : 0;
-            $deviceLimit = $user['devce_limit'] ? $user['devce_limit'] : NULL;
+            $deviceLimit = $user['devce_limit'] ? $user['devce_limit'] : null;
             $notUseFlow = (($user['transfer_enable'] - ($user['u'] + $user['d'])) / 1073741824) ?? 0;
             $planName = $user['plan_name'] ?? '无订阅';
             $subscribeUrl =  Helper::getSubscribeUrl($user['token']);
             $data .= "{$user['email']},{$balance},{$commissionBalance},{$transferEnable}, {$deviceLimit}, {$notUseFlow},{$expireDate},{$planName},{$subscribeUrl}\r\n";
-
         }
         echo "\xEF\xBB\xBF" . $data;
     }
@@ -207,28 +213,29 @@ class UserController extends Controller
             if ($request->input('plan_id')) {
                 $plan = Plan::find($request->input('plan_id'));
                 if (!$plan) {
-                    abort(500, __('Subscription plan does not exist'));
+                    throw ApiException::fail(__('Subscription plan does not exist'));
                 }
             }
             $user = [
                 'email' => $request->input('email_prefix') . '@' . $request->input('email_suffix'),
-                'plan_id' => isset($plan->id) ? $plan->id : NULL,
-                'group_id' => isset($plan->group_id) ? $plan->group_id : NULL,
+                'plan_id' => isset($plan->id) ? $plan->id : null,
+                'group_id' => isset($plan->group_id) ? $plan->group_id : null,
                 'transfer_enable' => isset($plan->transfer_enable) ? $plan->transfer_enable * 1073741824 : 0,
-                'device_limit' => isset($plan->device_limit) ? $plan->device_limit : NULL,
-                'expired_at' => $request->input('expired_at') ?? NULL,
+                'device_limit' => isset($plan->device_limit) ? $plan->device_limit : null,
+                'expired_at' => $request->input('expired_at') ?? null,
                 'uuid' => Helper::guid(true),
-                'token' => Helper::guid()
+                'token' => Helper::guid(),
             ];
             if (User::where('email', $user['email'])->first()) {
-                abort(500, __('Email already exists'));
+                throw ApiException::fail(__('Email already exists'));
             }
             $user['password'] = password_hash($request->input('password') ?? $user['email'], PASSWORD_DEFAULT);
             if (!User::create($user)) {
-                abort(500, __('Failed to generate'));
+                throw ApiException::fail(__('Failed to generate'));
             }
+
             return response([
-                'data' => true
+                'data' => true,
             ]);
         }
         if ($request->input('generate_count')) {
@@ -241,22 +248,22 @@ class UserController extends Controller
         if ($request->input('plan_id')) {
             $plan = Plan::find($request->input('plan_id'));
             if (!$plan) {
-                abort(500, __('Subscription plan does not exist'));
+                throw ApiException::fail(__('Subscription plan does not exist'));
             }
         }
         $users = [];
         for ($i = 0;$i < $request->input('generate_count');$i++) {
             $user = [
                 'email' => Helper::randomChar(6) . '@' . $request->input('email_suffix'),
-                'plan_id' => isset($plan->id) ? $plan->id : NULL,
-                'group_id' => isset($plan->group_id) ? $plan->group_id : NULL,
+                'plan_id' => isset($plan->id) ? $plan->id : null,
+                'group_id' => isset($plan->group_id) ? $plan->group_id : null,
                 'transfer_enable' => isset($plan->transfer_enable) ? $plan->transfer_enable * 1073741824 : 0,
-                'device_limit' => isset($plan->device_limit) ? $plan->device_limit : NULL,
-                'expired_at' => $request->input('expired_at') ?? NULL,
+                'device_limit' => isset($plan->device_limit) ? $plan->device_limit : null,
+                'expired_at' => $request->input('expired_at') ?? null,
                 'uuid' => Helper::guid(true),
                 'token' => Helper::guid(),
                 'created_at' => time(),
-                'updated_at' => time()
+                'updated_at' => time(),
             ];
             $user['password'] = password_hash($request->input('password') ?? $user['email'], PASSWORD_DEFAULT);
             array_push($users, $user);
@@ -264,12 +271,12 @@ class UserController extends Controller
         DB::beginTransaction();
         if (!User::insert($users)) {
             DB::rollBack();
-            abort(500, __('Failed to generate'));
+            throw ApiException::fail(__('Failed to generate'));
         }
         DB::commit();
         $data = "账号,密码,过期时间,UUID,创建时间,订阅地址\r\n";
-        foreach($users as $user) {
-            $expireDate = $user['expired_at'] === NULL ? '长期有效' : date('Y-m-d H:i:s', $user['expired_at']);
+        foreach ($users as $user) {
+            $expireDate = $user['expired_at'] === null ? '长期有效' : date('Y-m-d H:i:s', $user['expired_at']);
             $createDate = date('Y-m-d H:i:s', $user['created_at']);
             $password = $request->input('password') ?? $user['email'];
             $subscribeUrl = Helper::getSubscribeUrl($user['token']);
@@ -292,13 +299,13 @@ class UserController extends Controller
                 'template_value' => [
                     'name' => config('v2board.app_name', 'V2Board'),
                     'url' => config('v2board.app_url'),
-                    'content' => $request->input('content')
-                ]
+                    'content' => $request->input('content'),
+                ],
             ], 'send_email_mass');
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -309,19 +316,19 @@ class UserController extends Controller
         $builder = User::orderBy($sort, $sortType);
         $this->filter($request, $builder);
         try {
-            $builder->each(function ($user){
+            $builder->each(function ($user) {
                 $authService = new AuthService($user);
                 $authService->removeAllSession();
             });
             $builder->update([
-                'banned' => 1
+                'banned' => 1,
             ]);
         } catch (\Exception $e) {
-            abort(500, __('Failed to process'));
+            throw ApiException::fail(__('Failed to process'));
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -334,13 +341,13 @@ class UserController extends Controller
 
         DB::beginTransaction();
         try {
-            $builder->each(function ($user){
+            $builder->each(function ($user) {
                 $authService = new AuthService($user);
                 $authService->removeAllSession();
                 Order::where('user_id', $user->id)->delete();
                 InviteCode::where('user_id', $user->id)->delete();
                 $tickets = Ticket::where('user_id', $user->id)->get();
-                foreach($tickets as $ticket) {
+                foreach ($tickets as $ticket) {
                     TicketMessage::where('ticket_id', $ticket->id)->delete();
                 }
                 Ticket::where('user_id', $user->id)->delete();
@@ -350,11 +357,11 @@ class UserController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            abort(500, __('Failed to batch delete user information'));
-        }  
+            throw ApiException::fail(__('Failed to batch delete user information'));
+        }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -362,7 +369,7 @@ class UserController extends Controller
     {
         $user = User::find($request->input('id'));
         if (!$user) {
-            abort(500, __('User does not exist'));
+            throw ApiException::fail(__('User does not exist'));
         }
         DB::beginTransaction();
         try {
@@ -371,22 +378,22 @@ class UserController extends Controller
             Order::where('user_id', $request->input('id'))->delete();
             User::where('invite_user_id', $request->input('id'))->update(['invite_user_id' => null]);
             InviteCode::where('user_id', $request->input('id'))->delete();
-            
+
             $tickets = Ticket::where('user_id', $request->input('id'))->get();
-            foreach($tickets as $ticket) {
+            foreach ($tickets as $ticket) {
                 TicketMessage::where('ticket_id', $ticket->id)->delete();
             }
             Ticket::where('user_id', $request->input('id'))->delete();
-    
+
             $user->delete();
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            abort(500, __('Failed to delete user'));
+            throw ApiException::fail(__('Failed to delete user'));
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

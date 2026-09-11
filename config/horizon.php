@@ -60,7 +60,7 @@ return [
 
     'prefix' => env(
         'HORIZON_PREFIX',
-        Str::slug(env('APP_NAME', 'laravel'), '_').'_horizon:'
+        Str::slug(env('APP_NAME', 'laravel'), '_') . '_horizon:'
     ),
 
     /*
@@ -183,8 +183,8 @@ return [
                 'balance' => 'auto',
                 'minProcesses' => 1,
                 'maxProcesses' => min(
-                    (int)ceil($parser->getRam()['total'] / 1024 / 1024 / 1024 * 6),
-                    (int)env('HORIZON_MAX_PROCESSES', 128)
+                    (int) ceil($parser->getRam()['total'] / 1024 / 1024 / 1024 * 6),
+                    (int) env('HORIZON_MAX_PROCESSES', 128)
                 ),
                 'tries' => 1,
                 'balanceCooldown' => 3,

@@ -28,3 +28,11 @@ workerman.log
 
 # admin-i18n tooling dependency (installed with: cd admin-i18n && npm install)
 /admin-i18n/node_modules/
+
+# Code-quality tool caches
+/.php-cs-fixer.cache
+/.phpunit.result.cache
+
+# Test coverage output
+/storage/coverage
+/coverage.xml

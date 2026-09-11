@@ -23,7 +23,7 @@ class UserSendMail extends FormRequest
     {
         return [
             'subject.required' => __('Theme cannot be empty'),
-            'content.required' => __('The message cannot be empty')
+            'content.required' => __('The message cannot be empty'),
         ];
     }
 }

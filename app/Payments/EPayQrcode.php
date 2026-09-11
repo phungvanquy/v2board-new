@@ -2,7 +2,7 @@
 
 namespace App\Payments;
 
-use \Curl\Curl;
+use Curl\Curl;
 
 /**
  * V2Board EPay MAPI adapter.
@@ -159,6 +159,7 @@ class EPayQrcode
     {
         $baseUrl = trim((string) $this->config['url']);
         $baseUrl = preg_replace('#/(?:submit|mapi)\.php(?:\?.*)?$#i', '', $baseUrl);
+
         return rtrim($baseUrl, '/') . '/mapi.php';
     }
 
@@ -183,6 +184,7 @@ class EPayQrcode
                 return $ip;
             }
         }
+
         return '127.0.0.1';
     }
 
@@ -198,6 +200,7 @@ class EPayQrcode
         if (strpos($ua, 'qq/') !== false) {
             return 'qq';
         }
+
         return $this->isMobile() ? 'mobile' : 'pc';
     }
 

@@ -30,7 +30,7 @@ class ServerVmessSave extends FormRequest
             'networkSettings.security' => 'nullable|in:auto,aes-128-gcm,chacha20-poly1305,none',
             'ruleSettings' => 'nullable|array',
             'tlsSettings' => 'nullable|array',
-            'dnsSettings' => 'nullable|array'
+            'dnsSettings' => 'nullable|array',
         ];
     }
 
@@ -55,7 +55,7 @@ class ServerVmessSave extends FormRequest
             'networkSettings.security.in' => __('The vmess encryption type must be one of: auto, aes-128-gcm, chacha20-poly1305, none'),
             'ruleSettings.array' => __('The rule configuration is invalid'),
             'tlsSettings.array' => __('The TLS configuration is invalid'),
-            'dnsSettings.array' => __('The DNS configuration is invalid')
+            'dnsSettings.array' => __('The DNS configuration is invalid'),
         ];
     }
 }

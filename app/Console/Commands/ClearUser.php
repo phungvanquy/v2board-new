@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Console\Command;
 
@@ -39,10 +38,10 @@ class ClearUser extends Command
      */
     public function handle()
     {
-        $builder = User::where('plan_id', NULL)
+        $builder = User::where('plan_id', null)
             ->where('transfer_enable', 0)
             ->where('expired_at', 0)
-            ->where('last_login_at', NULL);
+            ->where('last_login_at', null);
         $count = $builder->count();
         if ($builder->delete()) {
             $this->info("已删除{$count}位没有任何数据的用户");

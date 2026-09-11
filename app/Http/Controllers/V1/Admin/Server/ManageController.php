@@ -12,8 +12,9 @@ class ManageController extends Controller
     public function getNodes(Request $request)
     {
         $serverService = new ServerService();
+
         return response([
-            'data' => $serverService->getAllServers()
+            'data' => $serverService->getAllServers(),
         ]);
     }
 
@@ -45,7 +46,7 @@ class ManageController extends Controller
         DB::beginTransaction();
         foreach ($params as $k => $v) {
             $model = 'App\\Models\\Server' . ucfirst($k);
-            foreach($v as $id => $sort) {
+            foreach ($v as $id => $sort) {
                 if (!$model::find($id)->update(['sort' => $sort])) {
                     DB::rollBack();
                     abort(500, __('Save failed'));
@@ -53,8 +54,9 @@ class ManageController extends Controller
             }
         }
         DB::commit();
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

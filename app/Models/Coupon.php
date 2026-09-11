@@ -13,6 +13,6 @@ class Coupon extends Model
         'created_at' => 'timestamp',
         'updated_at' => 'timestamp',
         'limit_plan_ids' => 'array',
-        'limit_period' => 'array'
+        'limit_period' => 'array',
     ];
 }

@@ -45,27 +45,28 @@ class ShadowsocksTidalabController extends Controller
                 'id' => $user->id,
                 'port' => $server->server_port,
                 'cipher' => $server->cipher,
-                'secret' => $user->uuid
+                'secret' => $user->uuid,
             ]);
         }
         $eTag = sha1(json_encode($result));
-        if (strpos($request->header('If-None-Match'), $eTag) !== false ) {
+        if (strpos($request->header('If-None-Match'), $eTag) !== false) {
             abort(304);
         }
+
         return response([
-            'data' => $result
+            'data' => $result,
         ])->header('ETag', "\"{$eTag}\"");
     }
 
     // 后端提交数据
     public function submit(Request $request)
     {
-//         Log::info('serverSubmitData:' . $request->input('node_id') . ':' . request()->getContent() ?: json_encode($_POST));
+        //         Log::info('serverSubmitData:' . $request->input('node_id') . ':' . request()->getContent() ?: json_encode($_POST));
         $server = ServerShadowsocks::find($request->input('node_id'));
         if (!$server) {
             return response([
                 'ret' => 0,
-                'msg' => 'server is not found'
+                'msg' => 'server is not found',
             ]);
         }
         $data = request()->getContent() ?: json_encode($_POST);
@@ -82,7 +83,7 @@ class ShadowsocksTidalabController extends Controller
 
         return response([
             'ret' => 1,
-            'msg' => 'ok'
+            'msg' => 'ok',
         ]);
     }
 }

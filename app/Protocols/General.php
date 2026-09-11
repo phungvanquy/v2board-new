@@ -2,9 +2,10 @@
 
 namespace App\Protocols;
 
+use App\Protocols\Contracts\ProtocolFormatter;
 use App\Utils\Helper;
 
-class General
+class General implements ProtocolFormatter
 {
     public $flag = 'general';
     private $servers;
@@ -23,6 +24,7 @@ class General
         foreach ($this->servers as $server) {
             $uri .= Helper::buildUri($this->user['uuid'], $server);
         }
+
         return base64_encode($uri);
     }
 }

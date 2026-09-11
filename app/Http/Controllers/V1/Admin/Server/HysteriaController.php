@@ -28,7 +28,7 @@ class HysteriaController extends Controller
             'obfs' => 'nullable',
             'obfs_password' => 'nullable',
             'server_name' => 'nullable',
-            'insecure' => 'required|in:0,1'
+            'insecure' => 'required|in:0,1',
         ]);
 
         if (!isset($params['up_mbps'])) {
@@ -38,8 +38,10 @@ class HysteriaController extends Controller
             $params['down_mbps'] = 0;
         }
 
-        if(isset($params['obfs'])) {
-            if(!isset($params['obfs_password']))  $params['obfs_password'] = Helper::getServerKey($request->input('created_at'), 16);
+        if (isset($params['obfs'])) {
+            if (!isset($params['obfs_password'])) {
+                $params['obfs_password'] = Helper::getServerKey($request->input('created_at'), 16);
+            }
         } else {
             $params['obfs_password'] = null;
         }
@@ -54,8 +56,9 @@ class HysteriaController extends Controller
             } catch (\Exception $e) {
                 abort(500, __('Save failed'));
             }
+
             return response([
-                'data' => true
+                'data' => true,
             ]);
         }
 
@@ -64,7 +67,7 @@ class HysteriaController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -76,17 +79,18 @@ class HysteriaController extends Controller
                 abort(500, __('Node ID does not exist'));
             }
         }
+
         return response([
-            'data' => $server->delete()
+            'data' => $server->delete(),
         ]);
     }
 
     public function update(Request $request)
     {
         $request->validate([
-            'show' => 'in:0,1'
+            'show' => 'in:0,1',
         ], [
-            'show.in' => __('The display status is invalid')
+            'show.in' => __('The display status is invalid'),
         ]);
         $params = $request->only([
             'show',
@@ -104,7 +108,7 @@ class HysteriaController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -120,7 +124,7 @@ class HysteriaController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

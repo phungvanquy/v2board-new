@@ -1,0 +1,13 @@
+{
+    "private": true,
+    "name": "v2board",
+    "scripts": {
+        "lint": "eslint resources/js --ext .js",
+        "lint:fix": "eslint resources/js --ext .js --fix"
+    },
+    "devDependencies": {
+        "eslint": "^8.57.0",
+        "eslint-config-prettier": "^9.1.0",
+        "prettier": "^3.3.0"
+    }
+}

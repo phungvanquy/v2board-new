@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Protocols\General;
 use App\Protocols\Singbox\Singbox;
 use App\Protocols\Singbox\SingboxOld;
-use App\Protocols\ClashMeta;
 use App\Services\ServerService;
 use App\Services\UserService;
 use App\Utils\Helper;
@@ -25,7 +24,7 @@ class ClientController extends Controller
         if ($userService->isAvailable($user)) {
             $serverService = new ServerService();
             $servers = $serverService->getAvailableServers($user);
-            if($flag) {
+            if ($flag) {
                 if (!strpos($flag, 'sing')) {
                     $this->setSubscribeInfoToServers($servers, $user);
                     foreach (array_reverse(glob(app_path('Protocols') . '/*.php')) as $file) {
@@ -46,18 +45,24 @@ class ClientController extends Controller
                     } else {
                         $class = new SingboxOld($user, $servers);
                     }
+
                     return $class->handle();
                 }
             }
             $class = new General($user, $servers);
+
             return $class->handle();
         }
     }
 
     private function setSubscribeInfoToServers(&$servers, $user)
     {
-        if (!isset($servers[0])) return;
-        if (!(int)config('v2board.show_info_to_server_enable', 0)) return;
+        if (!isset($servers[0])) {
+            return;
+        }
+        if (!(int) config('v2board.show_info_to_server_enable', 0)) {
+            return;
+        }
         $useTraffic = $user['u'] + $user['d'];
         $totalTraffic = $user['transfer_enable'];
         $remainingTraffic = Helper::trafficConvert($totalTraffic - $useTraffic);

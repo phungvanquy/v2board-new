@@ -7,12 +7,16 @@ use App\Plugins\Telegram\Telegram;
 use App\Utils\Helper;
 use Illuminate\Support\Facades\Cache;
 
-class Bind extends Telegram {
+class Bind extends Telegram
+{
     public $command = '/bind';
     public $description = '将Telegram账号绑定到网站';
 
-    public function handle($message, $match = []) {
-        if (!$message->is_private) return;
+    public function handle($message, $match = [])
+    {
+        if (!$message->is_private) {
+            return;
+        }
         if (!isset($message->args[0])) {
             abort(500, '参数有误，请携带订阅地址发送');
         }
@@ -23,7 +27,7 @@ class Bind extends Telegram {
         if (!$token) {
             abort(500, '订阅地址无效');
         }
-        $submethod = (int)config('v2board.show_subscribe_method', 0);
+        $submethod = (int) config('v2board.show_subscribe_method', 0);
         switch ($submethod) {
             case 0:
                 break;
@@ -37,7 +41,7 @@ class Bind extends Telegram {
             case 2:
                 $usertoken = Cache::get("totp_{$token}");
                 if (!$usertoken) {
-                    $timestep = (int)config('v2board.show_subscribe_expire', 5) * 60;
+                    $timestep = (int) config('v2board.show_subscribe_expire', 5) * 60;
                     $counter = floor(time() / $timestep);
                     $counterBytes = pack('N*', 0) . pack('N*', $counter);
                     $idhash = Helper::base64DecodeUrlSafe($token);

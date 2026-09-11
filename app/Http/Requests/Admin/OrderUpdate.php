@@ -15,7 +15,7 @@ class OrderUpdate extends FormRequest
     {
         return [
             'status' => 'in:0,1,2,3',
-            'commission_status' => 'in:0,1,3'
+            'commission_status' => 'in:0,1,3',
         ];
     }
 
@@ -23,7 +23,7 @@ class OrderUpdate extends FormRequest
     {
         return [
             'status.in' => __('The sales status is invalid'),
-            'commission_status.in' => __('The commission status is invalid')
+            'commission_status.in' => __('The commission status is invalid'),
         ];
     }
 }

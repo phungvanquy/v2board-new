@@ -31,7 +31,7 @@ class UserUpdate extends FormRequest
             'commission_type' => 'integer',
             'commission_balance' => 'integer',
             'remarks' => 'nullable',
-            'speed_limit' => 'nullable|integer'
+            'speed_limit' => 'nullable|integer',
         ];
     }
 
@@ -63,7 +63,7 @@ class UserUpdate extends FormRequest
             'balance.integer' => __('The balance is invalid'),
             'commission_balance.integer' => __('The commission is invalid'),
             'password.min' => __('The password must be at least 8 characters'),
-            'speed_limit.integer' => __('The speed limit is invalid')
+            'speed_limit.integer' => __('The speed limit is invalid'),
         ];
     }
 }

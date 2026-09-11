@@ -7,8 +7,6 @@ use App\Models\Log as LogModel;
 use App\Utils\CacheKey;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Laravel\Horizon\Contracts\JobRepository;
 use Laravel\Horizon\Contracts\MasterSupervisorRepository;
 use Laravel\Horizon\Contracts\MetricsRepository;
@@ -24,24 +22,24 @@ class SystemController extends Controller
             'data' => [
                 'schedule' => $this->getScheduleStatus(),
                 'horizon' => $this->getHorizonStatus(),
-                'schedule_last_runtime' => Cache::get(CacheKey::get('SCHEDULE_LAST_CHECK_AT', null))
-            ]
+                'schedule_last_runtime' => Cache::get(CacheKey::get('SCHEDULE_LAST_CHECK_AT', null)),
+            ],
         ]);
     }
 
     public function getQueueWorkload(WorkloadRepository $workload)
     {
         return response([
-            'data' => collect($workload->get())->sortBy('name')->values()->toArray()
+            'data' => collect($workload->get())->sortBy('name')->values()->toArray(),
         ]);
     }
 
-    protected function getScheduleStatus():bool
+    protected function getScheduleStatus(): bool
     {
         return (time() - 120) < Cache::get(CacheKey::get('SCHEDULE_LAST_CHECK_AT', null));
     }
 
-    protected function getHorizonStatus():bool
+    protected function getHorizonStatus(): bool
     {
         if (! $masters = app(MasterSupervisorRepository::class)->all()) {
             return false;
@@ -69,7 +67,7 @@ class SystemController extends Controller
                 'recentJobs' => app(JobRepository::class)->countRecent(),
                 'status' => $this->getHorizonStatus(),
                 'wait' => collect(app(WaitTimeCalculator::class)->calculate())->take(1),
-            ]
+            ],
         ]);
     }
 
@@ -103,7 +101,8 @@ class SystemController extends Controller
         })->count();
     }
 
-    public function getSystemLog(Request $request) {
+    public function getSystemLog(Request $request)
+    {
         $current = $request->input('current') ? $request->input('current') : 1;
         $pageSize = $request->input('page_size') >= 10 ? $request->input('page_size') : 10;
         $builder = LogModel::orderBy('created_at', 'DESC')
@@ -111,9 +110,10 @@ class SystemController extends Controller
         $total = $builder->count();
         $res = $builder->forPage($current, $pageSize)
             ->get();
+
         return response([
             'data' => $res,
-            'total' => $total
+            'total' => $total,
         ]);
     }
 }

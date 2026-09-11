@@ -4,7 +4,6 @@ namespace App\Http\Controllers\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CouponGenerate;
-use App\Http\Requests\Admin\CouponSave;
 use App\Models\Coupon;
 use App\Utils\Helper;
 use Illuminate\Http\Request;
@@ -22,9 +21,10 @@ class CouponController extends Controller
         $total = $builder->count();
         $coupons = $builder->forPage($current, $pageSize)
             ->get();
+
         return response([
             'data' => $coupons,
-            'total' => $total
+            'total' => $total,
         ]);
     }
 
@@ -43,7 +43,7 @@ class CouponController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -51,6 +51,7 @@ class CouponController extends Controller
     {
         if ($request->input('generate_count')) {
             $this->multiGenerate($request);
+
             return;
         }
 
@@ -71,7 +72,7 @@ class CouponController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -95,6 +96,7 @@ class CouponController extends Controller
             if (isset($item['limit_period']) && is_array($item['limit_period'])) {
                 $item['limit_period'] = json_encode($coupon['limit_period']);
             }
+
             return $item;
         }, $coupons))) {
             DB::rollBack();
@@ -102,14 +104,14 @@ class CouponController extends Controller
         }
         DB::commit();
         $data = "名称,类型,金额或比例,开始时间,结束时间,可用次数,可用于订阅,券码,生成时间\r\n";
-        foreach($coupons as $coupon) {
+        foreach ($coupons as $coupon) {
             $type = ['', '金额', '比例'][$coupon['type']];
-            $value = ['', ($coupon['value'] / 100),$coupon['value']][$coupon['type']];
+            $value = ['', ($coupon['value'] / 100), $coupon['value']][$coupon['type']];
             $startTime = date('Y-m-d H:i:s', $coupon['started_at']);
             $endTime = date('Y-m-d H:i:s', $coupon['ended_at']);
             $limitUse = $coupon['limit_use'] ?? '不限制';
             $createTime = date('Y-m-d H:i:s', $coupon['created_at']);
-            $limitPlanIds = isset($coupon['limit_plan_ids']) ? implode("/", $coupon['limit_plan_ids']) : '不限制';
+            $limitPlanIds = isset($coupon['limit_plan_ids']) ? implode('/', $coupon['limit_plan_ids']) : '不限制';
             $data .= "{$coupon['name']},{$type},{$value},{$startTime},{$endTime},{$limitUse},{$limitPlanIds},{$coupon['code']},{$createTime}\r\n";
         }
         echo $data;
@@ -129,7 +131,7 @@ class CouponController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

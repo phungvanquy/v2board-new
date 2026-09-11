@@ -18,7 +18,9 @@ class KnowledgeController extends Controller
                 ->where('show', 1)
                 ->first()
                 ->toArray();
-            if (!$knowledge) abort(500, __('Article does not exist'));
+            if (!$knowledge) {
+                abort(500, __('Article does not exist'));
+            }
             $user = User::find($request->user['id']);
             $userService = new UserService();
             if (!$userService->isAvailable($user)) {
@@ -31,15 +33,16 @@ class KnowledgeController extends Controller
             $knowledge['body'] = str_replace(
                 '{{safeBase64SubscribeUrl}}',
                 str_replace(
-                    array('+', '/', '='),
-                    array('-', '_', ''),
+                    ['+', '/', '='],
+                    ['-', '_', ''],
                     base64_encode($subscribeUrl)
                 ),
                 $knowledge['body']
             );
             $knowledge['body'] = str_replace('{{subscribeToken}}', $user['token'], $knowledge['body']);
+
             return response([
-                'data' => $knowledge
+                'data' => $knowledge,
             ]);
         }
         $builder = Knowledge::select(['id', 'category', 'title', 'updated_at'])
@@ -56,14 +59,16 @@ class KnowledgeController extends Controller
 
         $knowledges = $builder->get()
             ->groupBy('category');
+
         return response([
-            'data' => $knowledges
+            'data' => $knowledges,
         ]);
     }
 
     private function getBetween($input, $start, $end)
     {
         $substr = substr($input, strlen($start) + strpos($input, $start), (strlen($input) - strpos($input, $end)) * (-1));
+
         return $start . $substr . $end;
     }
 
@@ -72,7 +77,7 @@ class KnowledgeController extends Controller
         while (strpos($body, '<!--access start-->') !== false) {
             $accessData = $this->getBetween($body, '<!--access start-->', '<!--access end-->');
             if ($accessData) {
-                $body = str_replace($accessData, '<div class="v2board-no-access">'. __('You must have a valid subscription to view content in this area') .'</div>', $body);
+                $body = str_replace($accessData, '<div class="v2board-no-access">' . __('You must have a valid subscription to view content in this area') . '</div>', $body);
             }
         }
     }

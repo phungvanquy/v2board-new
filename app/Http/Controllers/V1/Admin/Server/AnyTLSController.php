@@ -40,8 +40,9 @@ class AnyTLSController extends Controller
             } catch (\Exception $e) {
                 abort(500, __('Save failed'));
             }
+
             return response([
-                'data' => true
+                'data' => true,
             ]);
         }
 
@@ -50,7 +51,7 @@ class AnyTLSController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -62,17 +63,18 @@ class AnyTLSController extends Controller
                 abort(500, __('Node ID does not exist'));
             }
         }
+
         return response([
-            'data' => $server->delete()
+            'data' => $server->delete(),
         ]);
     }
 
     public function update(Request $request)
     {
         $request->validate([
-            'show' => 'in:0,1'
+            'show' => 'in:0,1',
         ], [
-            'show.in' => __('The display status is invalid')
+            'show.in' => __('The display status is invalid'),
         ]);
         $params = $request->only([
             'show',
@@ -90,7 +92,7 @@ class AnyTLSController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -106,7 +108,7 @@ class AnyTLSController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

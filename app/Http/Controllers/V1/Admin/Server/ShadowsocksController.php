@@ -23,8 +23,9 @@ class ShadowsocksController extends Controller
             } catch (\Exception $e) {
                 abort(500, __('Save failed'));
             }
+
             return response([
-                'data' => true
+                'data' => true,
             ]);
         }
 
@@ -33,7 +34,7 @@ class ShadowsocksController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -45,8 +46,9 @@ class ShadowsocksController extends Controller
                 abort(500, __('Node ID does not exist'));
             }
         }
+
         return response([
-            'data' => $server->delete()
+            'data' => $server->delete(),
         ]);
     }
 
@@ -68,7 +70,7 @@ class ShadowsocksController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -84,7 +86,7 @@ class ShadowsocksController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

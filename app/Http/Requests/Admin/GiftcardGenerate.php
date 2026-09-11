@@ -18,11 +18,11 @@ class GiftcardGenerate extends FormRequest
             'name' => 'required',
             'type' => 'required|in:1,2,3,4,5',
             'value' => ['required_if:type,1,2,3,5', 'nullable', 'integer'],
-            'plan_id' => ['required_if:type,5', 'nullable','integer'],
+            'plan_id' => ['required_if:type,5', 'nullable', 'integer'],
             'started_at' => 'required|integer',
             'ended_at' => 'required|integer',
             'limit_use' => 'nullable|integer',
-            'code' => ''
+            'code' => '',
         ];
     }
 
@@ -41,7 +41,7 @@ class GiftcardGenerate extends FormRequest
             'started_at.integer' => __('The start time is invalid'),
             'ended_at.required' => __('The end time cannot be empty'),
             'ended_at.integer' => __('The end time is invalid'),
-            'limit_use.integer' => __('The maximum number of uses is invalid')
+            'limit_use.integer' => __('The maximum number of uses is invalid'),
         ];
     }
 }

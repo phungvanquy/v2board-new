@@ -18,7 +18,8 @@ class RequestLog
         if ($request->method() === 'POST') {
             $path = $request->path();
             info("POST {$path}");
-        };
+        }
+
         return $next($request);
     }
 }

@@ -2,10 +2,11 @@
 
 namespace App\Payments;
 
-use Stripe\Stripe;
 use Stripe\Checkout\Session;
+use Stripe\Stripe;
 
-class StripeCheckout {
+class StripeCheckout
+{
     public function __construct($config)
     {
         $this->config = $config;
@@ -38,7 +39,7 @@ class StripeCheckout {
                 'label' => __('Custom field name'),
                 'description' => __('For example, set it to "Contact Details" so you can reach the customer quickly'),
                 'type' => 'input',
-            ]
+            ],
         ];
     }
 
@@ -60,12 +61,12 @@ class StripeCheckout {
                     'price_data' => [
                         'currency' => $currency,
                         'product_data' => [
-                            'name' => $order['trade_no']
+                            'name' => $order['trade_no'],
                         ],
-                        'unit_amount' => floor($order['total_amount'] * $exchange)
+                        'unit_amount' => floor($order['total_amount'] * $exchange),
                     ],
-                    'quantity' => 1
-                ]
+                    'quantity' => 1,
+                ],
             ],
             'mode' => 'payment',
             'invoice_creation' => ['enabled' => true],
@@ -88,9 +89,10 @@ class StripeCheckout {
             info($e);
             abort(500, "Failed to create order. Error: {$e->getMessage}");
         }
+
         return [
             'type' => 1, // 0:qrcode 1:url
-            'data' => $session->url
+            'data' => $session->url,
         ];
     }
 
@@ -113,20 +115,22 @@ class StripeCheckout {
                 if ($object->payment_status === 'paid') {
                     return [
                         'trade_no' => $object->client_reference_id,
-                        'callback_no' => $object->payment_intent
+                        'callback_no' => $object->payment_intent,
                     ];
                 }
                 break;
             case 'checkout.session.async_payment_succeeded':
                 $object = $event->data->object;
+
                 return [
                     'trade_no' => $object->client_reference_id,
-                    'callback_no' => $object->payment_intent
+                    'callback_no' => $object->payment_intent,
                 ];
                 break;
             default:
                 abort(500, 'event is not support');
         }
+
         return('success');
     }
 
@@ -134,6 +138,7 @@ class StripeCheckout {
     {
         $result = file_get_contents("https://api.exchangerate-api.com/v4/latest/{$from}");
         $result = json_decode($result, true);
+
         return $result['rates'][$to];
     }
 }

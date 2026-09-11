@@ -14,7 +14,7 @@ class PlanSort extends FormRequest
     public function rules()
     {
         return [
-            'plan_ids' => 'required|array'
+            'plan_ids' => 'required|array',
         ];
     }
 
@@ -22,7 +22,7 @@ class PlanSort extends FormRequest
     {
         return [
             'plan_ids.required' => __('The subscription plan ID cannot be empty'),
-            'plan_ids.array' => __('The subscription plan ID is invalid')
+            'plan_ids.array' => __('The subscription plan ID is invalid'),
         ];
     }
 }

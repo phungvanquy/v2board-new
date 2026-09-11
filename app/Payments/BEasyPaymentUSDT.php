@@ -2,9 +2,10 @@
 
 namespace App\Payments;
 
-use \Curl\Curl;
+use Curl\Curl;
 
-class BEasyPaymentUSDT {
+class BEasyPaymentUSDT
+{
     public function __construct($config)
     {
         $this->config = $config;
@@ -27,7 +28,7 @@ class BEasyPaymentUSDT {
                 'label' => __('Transaction type'),
                 'description' => __('Your BEPUSDT transaction type'),
                 'type' => 'input',
-            ]
+            ],
         ];
     }
 
@@ -38,7 +39,7 @@ class BEasyPaymentUSDT {
             'trade_type' => $this->config['bepusdt_trade_type'],
             'notify_url' => $order['notify_url'],
             'order_id' => $order['trade_no'],
-            'redirect_url' => $order['return_url']
+            'redirect_url' => $order['return_url'],
         ];
         ksort($params);
         reset($params);
@@ -48,7 +49,7 @@ class BEasyPaymentUSDT {
         $curl = new Curl();
         $curl->setUserAgent('BEPUSDT');
         $curl->setOpt(CURLOPT_SSL_VERIFYPEER, 0);
-        $curl->setOpt(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        $curl->setOpt(CURLOPT_HTTPHEADER, ['Content-Type:application/json']);
         $curl->post($this->config['bepusdt_url'] . '/api/v1/order/create-transaction', json_encode($params));
         $result = $curl->response;
         $curl->close();
@@ -58,9 +59,10 @@ class BEasyPaymentUSDT {
         }
 
         $paymentURL = $result->data->payment_url;
+
         return [
             'type' => 1, // 0:qrcode 1:url
-            'data' => $paymentURL
+            'data' => $paymentURL,
         ];
     }
 
@@ -80,10 +82,11 @@ class BEasyPaymentUSDT {
         if ($status != 2) {
             return('failed');
         }
+
         return [
             'trade_no' => $params['order_id'],
             'callback_no' => $params['trade_id'],
-            'custom_result' => 'ok'
+            'custom_result' => 'ok',
         ];
     }
 }

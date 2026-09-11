@@ -2,17 +2,17 @@
 
 namespace App\Services;
 
+use App\Models\ServerAnytls;
 use App\Models\ServerHysteria;
 use App\Models\ServerLog;
 use App\Models\ServerRoute;
 use App\Models\ServerShadowsocks;
-use App\Models\ServerVless;
-use App\Models\ServerV2node;
-use App\Models\User;
-use App\Models\ServerVmess;
 use App\Models\ServerTrojan;
 use App\Models\ServerTuic;
-use App\Models\ServerAnytls;
+use App\Models\ServerV2node;
+use App\Models\ServerVless;
+use App\Models\ServerVmess;
+use App\Models\User;
 use App\Utils\CacheKey;
 use App\Utils\Helper;
 use Illuminate\Support\Facades\Cache;
@@ -25,9 +25,13 @@ class ServerService
         $model = ServerVless::orderBy('sort', 'ASC');
         $server = $model->get();
         foreach ($server as $key => $v) {
-            if (!$v['show']) continue;
+            if (!$v['show']) {
+                continue;
+            }
             $server[$key]['type'] = 'vless';
-            if (!in_array($user->group_id, $server[$key]['group_id'])) continue;
+            if (!in_array($user->group_id, $server[$key]['group_id'])) {
+                continue;
+            }
             if (strpos($server[$key]['port'], '-') !== false) {
                 $server[$key]['port'] = Helper::randomPort($server[$key]['port']);
             }
@@ -39,19 +43,18 @@ class ServerService
             if (isset($server[$key]['tls_settings'])) {
                 $server[$key]['tls_settings'] = array_diff_key(
                     $server[$key]['tls_settings'],
-                    array_flip(array_filter(['private_key', 'ech_key'], function($k) use ($server, $key) {
+                    array_flip(array_filter(['private_key', 'ech_key'], function ($k) use ($server, $key) {
                         return isset($server[$key]['tls_settings'][$k]);
                     }))
                 );
             }
             if (isset($server[$key]['encryption_settings'])) {
                 if (isset($server[$key]['encryption_settings']['private_key'])) {
-                    $server[$key]['encryption_settings'] = array_diff_key($server[$key]['encryption_settings'], array('private_key' => ''));
+                    $server[$key]['encryption_settings'] = array_diff_key($server[$key]['encryption_settings'], ['private_key' => '']);
                 }
             }
             $servers[] = $server[$key]->toArray();
         }
-
 
         return $servers;
     }
@@ -62,9 +65,13 @@ class ServerService
         $model = ServerVmess::orderBy('sort', 'ASC');
         $vmess = $model->get();
         foreach ($vmess as $key => $v) {
-            if (!$v['show']) continue;
+            if (!$v['show']) {
+                continue;
+            }
             $vmess[$key]['type'] = 'vmess';
-            if (!in_array($user->group_id, $vmess[$key]['group_id'])) continue;
+            if (!in_array($user->group_id, $vmess[$key]['group_id'])) {
+                continue;
+            }
             if (strpos($vmess[$key]['port'], '-') !== false) {
                 $vmess[$key]['port'] = Helper::randomPort($vmess[$key]['port']);
             }
@@ -76,7 +83,6 @@ class ServerService
             $servers[] = $vmess[$key]->toArray();
         }
 
-
         return $servers;
     }
 
@@ -86,9 +92,13 @@ class ServerService
         $model = ServerTrojan::orderBy('sort', 'ASC');
         $trojan = $model->get();
         foreach ($trojan as $key => $v) {
-            if (!$v['show']) continue;
+            if (!$v['show']) {
+                continue;
+            }
             $trojan[$key]['type'] = 'trojan';
-            if (!in_array($user->group_id, $trojan[$key]['group_id'])) continue;
+            if (!in_array($user->group_id, $trojan[$key]['group_id'])) {
+                continue;
+            }
             if (strpos($trojan[$key]['port'], '-') !== false) {
                 $trojan[$key]['port'] = Helper::randomPort($trojan[$key]['port']);
             }
@@ -99,6 +109,7 @@ class ServerService
             }
             $servers[] = $trojan[$key]->toArray();
         }
+
         return $servers;
     }
 
@@ -108,16 +119,21 @@ class ServerService
         $model = ServerTuic::orderBy('sort', 'ASC');
         $servers = $model->get()->keyBy('id');
         foreach ($servers as $key => $v) {
-            if (!$v['show']) continue;
+            if (!$v['show']) {
+                continue;
+            }
             $servers[$key]['type'] = 'tuic';
             $servers[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_TUIC_LAST_CHECK_AT', $v['id']));
-            if (!in_array($user->group_id, $v['group_id'])) continue;
+            if (!in_array($user->group_id, $v['group_id'])) {
+                continue;
+            }
             if (isset($servers[$v['parent_id']])) {
                 $servers[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_TUIC_LAST_CHECK_AT', $v['parent_id']));
                 $servers[$key]['created_at'] = $servers[$v['parent_id']]['created_at'];
             }
             $availableServers[] = $servers[$key]->toArray();
         }
+
         return $availableServers;
     }
 
@@ -127,10 +143,14 @@ class ServerService
         $model = ServerHysteria::orderBy('sort', 'ASC');
         $servers = $model->get()->keyBy('id');
         foreach ($servers as $key => $v) {
-            if (!$v['show']) continue;
+            if (!$v['show']) {
+                continue;
+            }
             $servers[$key]['type'] = 'hysteria';
             $servers[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_HYSTERIA_LAST_CHECK_AT', $v['id']));
-            if (!in_array($user->group_id, $v['group_id'])) continue;
+            if (!in_array($user->group_id, $v['group_id'])) {
+                continue;
+            }
             if (isset($servers[$v['parent_id']])) {
                 $servers[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_HYSTERIA_LAST_CHECK_AT', $v['parent_id']));
                 $servers[$key]['created_at'] = $servers[$v['parent_id']]['created_at'];
@@ -138,6 +158,7 @@ class ServerService
             $servers[$key]['server_key'] = Helper::getServerKey($servers[$key]['created_at'], 16);
             $availableServers[] = $servers[$key]->toArray();
         }
+
         return $availableServers;
     }
 
@@ -147,10 +168,14 @@ class ServerService
         $model = ServerShadowsocks::orderBy('sort', 'ASC');
         $shadowsocks = $model->get()->keyBy('id');
         foreach ($shadowsocks as $key => $v) {
-            if (!$v['show']) continue;
+            if (!$v['show']) {
+                continue;
+            }
             $shadowsocks[$key]['type'] = 'shadowsocks';
             $shadowsocks[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_SHADOWSOCKS_LAST_CHECK_AT', $v['id']));
-            if (!in_array($user->group_id, $v['group_id'])) continue;
+            if (!in_array($user->group_id, $v['group_id'])) {
+                continue;
+            }
             if (strpos($v['port'], '-') !== false) {
                 $shadowsocks[$key]['port'] = Helper::randomPort($v['port']);
             }
@@ -165,6 +190,7 @@ class ServerService
             }
             $servers[] = $shadowsocks[$key]->toArray();
         }
+
         return $servers;
     }
 
@@ -174,10 +200,14 @@ class ServerService
         $model = ServerAnytls::orderBy('sort', 'ASC');
         $anytls = $model->get()->keyBy('id');
         foreach ($anytls as $key => $v) {
-            if (!$v['show']) continue;
+            if (!$v['show']) {
+                continue;
+            }
             $anytls[$key]['type'] = 'anytls';
             $anytls[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_ANYTLS_LAST_CHECK_AT', $v['id']));
-            if (!in_array($user->group_id, $v['group_id'])) continue;
+            if (!in_array($user->group_id, $v['group_id'])) {
+                continue;
+            }
             if (strpos($v['port'], '-') !== false) {
                 $anytls[$key]['port'] = Helper::randomPort($v['port']);
             }
@@ -187,6 +217,7 @@ class ServerService
             }
             $servers[] = $anytls[$key]->toArray();
         }
+
         return $servers;
     }
 
@@ -196,10 +227,14 @@ class ServerService
         $model = ServerV2node::orderBy('sort', 'ASC');
         $v2node = $model->get()->keyBy('id');
         foreach ($v2node as $key => $v) {
-            if (!$v['show']) continue;
+            if (!$v['show']) {
+                continue;
+            }
             $v2node[$key]['type'] = 'v2node';
             $v2node[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_V2NODE_LAST_CHECK_AT', $v['id']));
-            if (!in_array($user->group_id, $v['group_id'])) continue;
+            if (!in_array($user->group_id, $v['group_id'])) {
+                continue;
+            }
             if (isset($v2node[$v['parent_id']])) {
                 $v2node[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_V2NODE_LAST_CHECK_AT', $v['parent_id']));
                 $v2node[$key]['created_at'] = $v2node[$v['parent_id']]['created_at'];
@@ -207,18 +242,19 @@ class ServerService
             if (isset($v2node[$key]['tls_settings'])) {
                 $v2node[$key]['tls_settings'] = array_diff_key(
                     $v2node[$key]['tls_settings'],
-                    array_flip(array_filter(['private_key', 'ech_key'], function($k) use ($v2node, $key) {
+                    array_flip(array_filter(['private_key', 'ech_key'], function ($k) use ($v2node, $key) {
                         return isset($v2node[$key]['tls_settings'][$k]);
                     }))
                 );
             }
             if (isset($v2node[$key]['encryption_settings'])) {
                 if (isset($v2node[$key]['encryption_settings']['private_key'])) {
-                    $v2node[$key]['encryption_settings'] = array_diff_key($v2node[$key]['encryption_settings'], array('private_key' => ''));
+                    $v2node[$key]['encryption_settings'] = array_diff_key($v2node[$key]['encryption_settings'], ['private_key' => '']);
                 }
             }
             $servers[] = $v2node[$key]->toArray();
         }
+
         return $servers;
     }
 
@@ -236,14 +272,16 @@ class ServerService
         );
         $tmp = array_column($servers, 'sort');
         array_multisort($tmp, SORT_ASC, $servers);
+
         return array_map(function ($server) {
             if (strpos($server['port'], '-')) {
-                $server['mport'] = (string)$server['port'];
+                $server['mport'] = (string) $server['port'];
             } else {
-                $server['port'] = (int)$server['port'];
+                $server['port'] = (int) $server['port'];
             }
             $server['is_online'] = (time() - 300 > $server['last_check_at']) ? 0 : 1;
             $server['cache_key'] = "{$server['type']}-{$server['id']}-{$server['updated_at']}-{$server['is_online']}";
+
             return $server;
         }, $servers);
     }
@@ -254,21 +292,23 @@ class ServerService
             ->whereRaw('u + d < transfer_enable')
             ->where(function ($query) {
                 $query->where('expired_at', '>=', time())
-                    ->orWhere('expired_at', NULL);
+                    ->orWhere('expired_at', null);
             })
             ->where('banned', 0)
             ->select([
                 'id',
                 'uuid',
                 'speed_limit',
-                'device_limit'
+                'device_limit',
             ])
             ->get();
     }
 
     public function log(int $userId, int $serverId, int $u, int $d, float $rate, string $method)
     {
-        if (($u + $d) < 10240) return true;
+        if (($u + $d) < 10240) {
+            return true;
+        }
         $timestamp = strtotime(date('Y-m-d'));
         $serverLog = ServerLog::where('log_at', '>=', $timestamp)
             ->where('log_at', '<', $timestamp + 3600)
@@ -281,6 +321,7 @@ class ServerService
             try {
                 $serverLog->increment('u', $u);
                 $serverLog->increment('d', $d);
+
                 return true;
             } catch (\Exception $e) {
                 return false;
@@ -294,6 +335,7 @@ class ServerService
             $serverLog->rate = $rate;
             $serverLog->log_at = $timestamp;
             $serverLog->method = $method;
+
             return $serverLog->save();
         }
     }
@@ -306,6 +348,7 @@ class ServerService
         foreach ($servers as $k => $v) {
             $servers[$k]['type'] = 'shadowsocks';
         }
+
         return $servers;
     }
 
@@ -317,6 +360,7 @@ class ServerService
         foreach ($servers as $k => $v) {
             $servers[$k]['type'] = 'vmess';
         }
+
         return $servers;
     }
 
@@ -328,6 +372,7 @@ class ServerService
         foreach ($servers as $k => $v) {
             $servers[$k]['type'] = 'vless';
         }
+
         return $servers;
     }
 
@@ -339,6 +384,7 @@ class ServerService
         foreach ($servers as $k => $v) {
             $servers[$k]['type'] = 'trojan';
         }
+
         return $servers;
     }
 
@@ -350,6 +396,7 @@ class ServerService
         foreach ($servers as $k => $v) {
             $servers[$k]['type'] = 'tuic';
         }
+
         return $servers;
     }
 
@@ -361,6 +408,7 @@ class ServerService
         foreach ($servers as $k => $v) {
             $servers[$k]['type'] = 'hysteria';
         }
+
         return $servers;
     }
 
@@ -375,6 +423,7 @@ class ServerService
                 $servers[$k]['padding_scheme'] = json_encode($v['padding_scheme']);
             }
         }
+
         return $servers;
     }
 
@@ -401,6 +450,7 @@ class ServerService
                 $apiKeyArg
             );
         }
+
         return $servers;
     }
 
@@ -413,7 +463,7 @@ class ServerService
             $servers[$k]['last_push_at'] = Cache::get(CacheKey::get("SERVER_{$serverType}_LAST_PUSH_AT", $v['parent_id'] ?? $v['id']));
             if ((time() - 300) >= $servers[$k]['last_check_at']) {
                 $servers[$k]['available_status'] = 0;
-            } else if ((time() - 300) >= $servers[$k]['last_push_at']) {
+            } elseif ((time() - 300) >= $servers[$k]['last_push_at']) {
                 $servers[$k]['available_status'] = 1;
             } else {
                 $servers[$k]['available_status'] = 2;
@@ -436,6 +486,7 @@ class ServerService
         $this->mergeData($servers);
         $tmp = array_column($servers, 'sort');
         array_multisort($tmp, SORT_ASC, $servers);
+
         return $servers;
     }
 
@@ -449,8 +500,11 @@ class ServerService
             ->get();
         foreach ($routes as $k => $route) {
             $array = json_decode($route->match, true);
-            if (is_array($array)) $routes[$k]['match'] = $array;
+            if (is_array($array)) {
+                $routes[$k]['match'] = $array;
+            }
         }
+
         return $routes;
     }
 

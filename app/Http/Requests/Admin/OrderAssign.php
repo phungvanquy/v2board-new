@@ -17,7 +17,7 @@ class OrderAssign extends FormRequest
             'plan_id' => 'required',
             'email' => 'required',
             'total_amount' => 'required',
-            'period' => 'required|in:month_price,quarter_price,half_year_price,year_price,two_year_price,three_year_price,onetime_price,reset_price'
+            'period' => 'required|in:month_price,quarter_price,half_year_price,year_price,two_year_price,three_year_price,onetime_price,reset_price',
         ];
     }
 
@@ -28,7 +28,7 @@ class OrderAssign extends FormRequest
             'email.required' => __('Email can not be empty'),
             'total_amount.required' => __('The payment amount cannot be empty'),
             'period.required' => __('The subscription period cannot be empty'),
-            'period.in' => __('The subscription period is invalid')
+            'period.in' => __('The subscription period is invalid'),
         ];
     }
 }

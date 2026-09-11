@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Coupon;
 use App\Models\Order;
-use Illuminate\Support\Facades\DB;
 
 class CouponService
 {
@@ -20,7 +19,7 @@ class CouponService
             ->first();
     }
 
-    public function use(Order $order):bool
+    public function use(Order $order): bool
     {
         $this->setPlanId($order->plan_id);
         $this->setUserId($order->user_id);
@@ -37,13 +36,16 @@ class CouponService
         if ($order->discount_amount > $order->total_amount) {
             $order->discount_amount = $order->total_amount;
         }
-        if ($this->coupon->limit_use !== NULL) {
-            if ($this->coupon->limit_use <= 0) return false;
+        if ($this->coupon->limit_use !== null) {
+            if ($this->coupon->limit_use <= 0) {
+                return false;
+            }
             $this->coupon->limit_use = $this->coupon->limit_use - 1;
             if (!$this->coupon->save()) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -72,13 +74,16 @@ class CouponService
         $this->period = $period;
     }
 
-    public function checkLimitUseWithUser():bool
+    public function checkLimitUseWithUser(): bool
     {
         $usedCount = Order::where('coupon_id', $this->coupon->id)
             ->where('user_id', $this->userId)
             ->whereNotIn('status', [0, 2])
             ->count();
-        if ($usedCount >= $this->coupon->limit_use_with_user) return false;
+        if ($usedCount >= $this->coupon->limit_use_with_user) {
+            return false;
+        }
+
         return true;
     }
 
@@ -87,7 +92,7 @@ class CouponService
         if (!$this->coupon || !$this->coupon->show) {
             abort(500, __('Invalid coupon'));
         }
-        if ($this->coupon->limit_use <= 0 && $this->coupon->limit_use !== NULL) {
+        if ($this->coupon->limit_use <= 0 && $this->coupon->limit_use !== null) {
             abort(500, __('This coupon is no longer available'));
         }
         if (time() < $this->coupon->started_at) {
@@ -106,10 +111,10 @@ class CouponService
                 abort(500, __('The coupon code cannot be used for this period'));
             }
         }
-        if ($this->coupon->limit_use_with_user !== NULL && $this->userId) {
+        if ($this->coupon->limit_use_with_user !== null && $this->userId) {
             if (!$this->checkLimitUseWithUser()) {
                 abort(500, __('The coupon can only be used :limit_use_with_user per person', [
-                    'limit_use_with_user' => $this->coupon->limit_use_with_user
+                    'limit_use_with_user' => $this->coupon->limit_use_with_user,
                 ]));
             }
         }

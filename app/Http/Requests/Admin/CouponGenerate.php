@@ -24,7 +24,7 @@ class CouponGenerate extends FormRequest
             'limit_use_with_user' => 'nullable|integer',
             'limit_plan_ids' => 'nullable|array',
             'limit_period' => 'nullable|array',
-            'code' => ''
+            'code' => '',
         ];
     }
 
@@ -45,7 +45,7 @@ class CouponGenerate extends FormRequest
             'limit_use.integer' => __('The maximum number of uses is invalid'),
             'limit_use_with_user.integer' => __('The per-user usage limit is invalid'),
             'limit_plan_ids.array' => __('The specified subscription is invalid'),
-            'limit_period.array' => __('The specified period is invalid')
+            'limit_period.array' => __('The specified period is invalid'),
         ];
     }
 }

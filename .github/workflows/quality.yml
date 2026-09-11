@@ -1,0 +1,72 @@
+name: quality
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  php:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo_mysql, zip, bcmath, pcntl, posix, exif, gd, redis, igbinary
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ hashFiles('composer.json') }}
+          restore-keys: composer-
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --no-progress --ignore-platform-req=ext-pcntl
+
+      - name: Check code style
+        run: composer lint:check
+
+      - name: Static analysis
+        run: composer analyse
+
+      - name: abort() ratchet (block new ad-hoc abort calls)
+        run: bash tools/abort-ratchet.sh check
+
+      - name: Run tests
+        run: vendor/bin/phpunit --colors=always
+
+      - name: Coverage (informational, phpdbg)
+        run: phpdbg -qrr vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml || vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml || echo "coverage driver unavailable — skipping"
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: |
+            coverage.xml
+            storage/coverage
+          if-no-files-found: ignore
+
+  frontend:
+    runs-on: ubuntu-latest
+    # Skipped when package.json is absent or resources/js has no editable sources.
+    # The admin is currently a prebuilt bundle with only bootstrap/app.js as source.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run lint

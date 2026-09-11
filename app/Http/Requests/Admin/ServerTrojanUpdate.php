@@ -15,14 +15,14 @@ class ServerTrojanUpdate extends FormRequest
     public function rules()
     {
         return [
-            'show' => 'in:0,1'
+            'show' => 'in:0,1',
         ];
     }
 
     public function messages()
     {
         return [
-            'show.in' => __('The display status is invalid')
+            'show.in' => __('The display status is invalid'),
         ];
     }
 }

@@ -5,8 +5,8 @@ namespace App\Http\Controllers\V1\Admin\Server;
 use App\Http\Controllers\Controller;
 use App\Models\Plan;
 use App\Models\ServerGroup;
-use App\Models\ServerVmess;
 use App\Models\ServerVless;
+use App\Models\ServerVmess;
 use App\Models\User;
 use App\Services\ServerService;
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ class GroupController extends Controller
     {
         if ($request->input('group_id')) {
             return response([
-                'data' => [ServerGroup::find($request->input('group_id'))]
+                'data' => [ServerGroup::find($request->input('group_id'))],
             ]);
         }
         $serverGroups = ServerGroup::get();
@@ -28,12 +28,13 @@ class GroupController extends Controller
             $serverGroups[$k]['server_count'] = 0;
             foreach ($servers as $server) {
                 if (in_array($v['id'], $server['group_id'])) {
-                    $serverGroups[$k]['server_count'] = $serverGroups[$k]['server_count']+1;
+                    $serverGroups[$k]['server_count'] = $serverGroups[$k]['server_count'] + 1;
                 }
             }
         }
+
         return response([
-            'data' => $serverGroups
+            'data' => $serverGroups,
         ]);
     }
 
@@ -50,8 +51,9 @@ class GroupController extends Controller
         }
 
         $serverGroup->name = $request->input('name');
+
         return response([
-            'data' => $serverGroup->save()
+            'data' => $serverGroup->save(),
         ]);
     }
 
@@ -84,8 +86,9 @@ class GroupController extends Controller
         if (User::where('group_id', $request->input('id'))->first()) {
             abort(500, __('This group is in use by users and cannot be deleted'));
         }
+
         return response([
-            'data' => $serverGroup->delete()
+            'data' => $serverGroup->delete(),
         ]);
     }
 }

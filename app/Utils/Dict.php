@@ -4,7 +4,7 @@ namespace App\Utils;
 
 class Dict
 {
-    CONST EMAIL_WHITELIST_SUFFIX_DEFAULT = [
+    public const EMAIL_WHITELIST_SUFFIX_DEFAULT = [
         'gmail.com',
         'qq.com',
         '163.com',
@@ -13,11 +13,11 @@ class Dict
         '126.com',
         'outlook.com',
         'yeah.net',
-        'foxmail.com'
+        'foxmail.com',
     ];
-    CONST WITHDRAW_METHOD_WHITELIST_DEFAULT = [
+    public const WITHDRAW_METHOD_WHITELIST_DEFAULT = [
         '支付宝',
         'USDT',
-        'Paypal'
+        'Paypal',
     ];
 }

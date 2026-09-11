@@ -6,14 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\NoticeSave;
 use App\Models\Notice;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class NoticeController extends Controller
 {
     public function fetch(Request $request)
     {
         return response([
-            'data' => Notice::orderBy('id', 'DESC')->get()
+            'data' => Notice::orderBy('id', 'DESC')->get(),
         ]);
     }
 
@@ -22,7 +21,7 @@ class NoticeController extends Controller
         $data = $request->only([
             'title',
             'content',
-            'img_url'
+            'img_url',
         ]);
         if (!$request->input('id')) {
             if (!Notice::create($data)) {
@@ -35,8 +34,9 @@ class NoticeController extends Controller
                 abort(500, '保存失败');
             }
         }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -52,8 +52,9 @@ class NoticeController extends Controller
         if (!$notice->delete()) {
             abort(500, '删除失败');
         }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

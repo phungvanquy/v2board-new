@@ -27,7 +27,7 @@ class ServerTrojanSave extends FormRequest
             'allow_insecure' => 'nullable|in:0,1',
             'server_name' => 'nullable',
             'tags' => 'nullable|array',
-            'rate' => 'required|numeric'
+            'rate' => 'required|numeric',
         ];
     }
 
@@ -45,7 +45,7 @@ class ServerTrojanSave extends FormRequest
             'allow_insecure.in' => __('The allow insecure setting is invalid'),
             'tags.array' => __('The tag is invalid'),
             'rate.required' => __('The rate cannot be empty'),
-            'rate.numeric' => __('The rate is invalid')
+            'rate.numeric' => __('The rate is invalid'),
         ];
     }
 }

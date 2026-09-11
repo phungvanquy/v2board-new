@@ -28,12 +28,18 @@ class UniProxyController extends Controller
             abort(500, 'token is error');
         }
         $this->nodeType = $request->input('node_type');
-        if ($this->nodeType === 'v2ray') $this->nodeType = 'vmess';
-        if ($this->nodeType === 'hysteria2') $this->nodeType = 'hysteria';
+        if ($this->nodeType === 'v2ray') {
+            $this->nodeType = 'vmess';
+        }
+        if ($this->nodeType === 'hysteria2') {
+            $this->nodeType = 'hysteria';
+        }
         $this->nodeId = $request->input('node_id');
         $this->serverService = new ServerService();
         $this->nodeInfo = $this->serverService->getServer($this->nodeId, $this->nodeType);
-        if (!$this->nodeInfo) abort(500, 'server is not exist');
+        if (!$this->nodeInfo) {
+            abort(500, 'server is not exist');
+        }
     }
 
     // 后端获取用户
@@ -78,7 +84,7 @@ class UniProxyController extends Controller
         if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
             // JSON decoding error
             return response([
-                'error' => 'Invalid traffic data'
+                'error' => 'Invalid traffic data',
             ], 400);
         }
         Cache::put(CacheKey::get('SERVER_' . strtoupper($this->nodeType) . '_ONLINE_USER', $this->nodeInfo->id), count($data), 3600);
@@ -87,7 +93,7 @@ class UniProxyController extends Controller
         $userService->trafficFetch($this->nodeInfo->toArray(), $this->nodeType, $data);
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -117,9 +123,11 @@ class UniProxyController extends Controller
                     $alive[$idMap[$key]] = $data['alive_ip'];
                 }
             }
+
             return $alive;
         });
-        return response()->json(['alive' => (object)$alive]);
+
+        return response()->json(['alive' => (object) $alive]);
     }
 
     // 后端提交在线数据
@@ -131,12 +139,12 @@ class UniProxyController extends Controller
         }
         if (empty($data)) {
             return response([
-                'data' => true
+                'data' => true,
             ]);
         }
         if (!is_array($data)) {
             return response([
-                'error' => 'Invalid online data format'
+                'error' => 'Invalid online data format',
             ], 400);
         }
         $updateAt = time();
@@ -144,7 +152,9 @@ class UniProxyController extends Controller
         $cacheKeys = [];
         $keyMap = [];
         foreach ($data as $uid => $_) {
-            if (!is_numeric($uid)) continue;
+            if (!is_numeric($uid)) {
+                continue;
+            }
             $key = 'ALIVE_IP_USER_' . $uid;
             $cacheKeys[] = $key;
             $keyMap[$uid] = $key;
@@ -152,7 +162,7 @@ class UniProxyController extends Controller
 
         if (empty($cacheKeys)) {
             return response([
-                'data' => true
+                'data' => true,
             ]);
         }
 
@@ -182,7 +192,7 @@ class UniProxyController extends Controller
                 foreach ($ips_array as $nodetypeid => $newdata) {
                     if ($nodetypeid !== 'alive_ip' && is_array($newdata) && isset($newdata['aliveips'])) {
                         foreach ($newdata['aliveips'] as $ip_NodeId) {
-                            $ip = explode("_", $ip_NodeId)[0];
+                            $ip = explode('_', $ip_NodeId)[0];
                             $ipmap[$ip] = 1;
                         }
                     }
@@ -206,7 +216,7 @@ class UniProxyController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -219,7 +229,7 @@ class UniProxyController extends Controller
                     'server_port' => $this->nodeInfo->server_port,
                     'cipher' => $this->nodeInfo->cipher,
                     'obfs' => $this->nodeInfo->obfs,
-                    'obfs_settings' => $this->nodeInfo->obfs_settings
+                    'obfs_settings' => $this->nodeInfo->obfs_settings,
                 ];
 
                 if ($this->nodeInfo->cipher === '2022-blake3-aes-128-gcm') {
@@ -234,7 +244,7 @@ class UniProxyController extends Controller
                     'server_port' => $this->nodeInfo->server_port,
                     'network' => $this->nodeInfo->network,
                     'networkSettings' => $this->nodeInfo->networkSettings,
-                    'tls' => $this->nodeInfo->tls
+                    'tls' => $this->nodeInfo->tls,
                 ];
                 break;
             case 'vless':
@@ -246,7 +256,7 @@ class UniProxyController extends Controller
                     'flow' => $this->nodeInfo->flow,
                     'tls_settings' => $this->nodeInfo->tls_settings,
                     'encryption' => $this->nodeInfo->encryption,
-                    'encryption_settings' => $this->nodeInfo->encryption_settings
+                    'encryption_settings' => $this->nodeInfo->encryption_settings,
                 ];
                 break;
             case 'trojan':
@@ -273,7 +283,7 @@ class UniProxyController extends Controller
                     'server_port' => $this->nodeInfo->server_port,
                     'server_name' => $this->nodeInfo->server_name,
                     'up_mbps' => $this->nodeInfo->up_mbps,
-                    'down_mbps' => $this->nodeInfo->down_mbps
+                    'down_mbps' => $this->nodeInfo->down_mbps,
                 ];
                 if ($this->nodeInfo->version == 1) {
                     $response['obfs'] = $this->nodeInfo->obfs_password ?? null;
@@ -291,13 +301,13 @@ class UniProxyController extends Controller
                 $response = [
                     'server_port' => $this->nodeInfo->server_port,
                     'server_name' => $this->nodeInfo->server_name,
-                    'padding_scheme' => $this->nodeInfo->padding_scheme
+                    'padding_scheme' => $this->nodeInfo->padding_scheme,
                 ];
                 break;
         }
         $response['base_config'] = [
-            'push_interval' => (int)config('v2board.server_push_interval', 60),
-            'pull_interval' => (int)config('v2board.server_pull_interval', 60)
+            'push_interval' => (int) config('v2board.server_push_interval', 60),
+            'pull_interval' => (int) config('v2board.server_pull_interval', 60),
         ];
         if ($this->nodeInfo['route_id']) {
             $response['routes'] = $this->serverService->getRoutes($this->nodeInfo['route_id']);

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-
 use App\Models\Payment;
 
 class PaymentService
@@ -12,13 +11,19 @@ class PaymentService
     protected $config;
     protected $payment;
 
-    public function __construct($method, $id = NULL, $uuid = NULL)
+    public function __construct($method, $id = null, $uuid = null)
     {
         $this->method = $method;
         $this->class = '\\App\\Payments\\' . $this->method;
-        if (!class_exists($this->class)) abort(500, 'gate is not found');
-        if ($id) $payment = Payment::find($id)->toArray();
-        if ($uuid) $payment = Payment::where('uuid', $uuid)->first()->toArray();
+        if (!class_exists($this->class)) {
+            abort(500, 'gate is not found');
+        }
+        if ($id) {
+            $payment = Payment::find($id)->toArray();
+        }
+        if ($uuid) {
+            $payment = Payment::where('uuid', $uuid)->first()->toArray();
+        }
         $this->config = [];
         if (isset($payment)) {
             $this->config = $payment['config'];
@@ -26,13 +31,16 @@ class PaymentService
             $this->config['id'] = $payment['id'];
             $this->config['uuid'] = $payment['uuid'];
             $this->config['notify_domain'] = $payment['notify_domain'];
-        };
+        }
         $this->payment = new $this->class($this->config);
     }
 
     public function notify($params)
     {
-        if (!$this->config['enable']) abort(500, 'gate is not enable');
+        if (!$this->config['enable']) {
+            abort(500, 'gate is not enable');
+        }
+
         return $this->payment->notify($params);
     }
 
@@ -45,18 +53,19 @@ class PaymentService
             $notifyUrl = $this->config['notify_domain'] . $parseUrl['path'];
         }
         $currentBase = $this->currentBase();
-        if ($currentBase) { 
+        if ($currentBase) {
             $returnUrl = $currentBase . '/#/order/' . $order['trade_no'];
         } else {
             $returnUrl = url('/#/order/' . $order['trade_no']);
         }
+
         return $this->payment->pay([
             'notify_url' => $notifyUrl,
             'return_url' => $returnUrl,
             'trade_no' => $order['trade_no'],
             'total_amount' => $order['total_amount'],
             'user_id' => $order['user_id'],
-            'stripe_token' => $order['stripe_token']
+            'stripe_token' => $order['stripe_token'],
         ]);
     }
 
@@ -65,8 +74,11 @@ class PaymentService
         $form = $this->payment->form();
         $keys = array_keys($form);
         foreach ($keys as $key) {
-            if (isset($this->config[$key])) $form[$key]['value'] = $this->config[$key];
+            if (isset($this->config[$key])) {
+                $form[$key]['value'] = $this->config[$key];
+            }
         }
+
         return $form;
     }
 
@@ -88,6 +100,7 @@ class PaymentService
             if (preg_match('/^[A-Za-z0-9.\-:\[\]]+$/', $host)) {
                 $scheme = request()->header('X-Forwarded-Proto')
                     ?: (request()->secure() ? 'https' : 'http');
+
                 return $scheme . '://' . $host;
             }
         }

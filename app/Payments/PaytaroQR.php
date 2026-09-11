@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Paytaro 弹窗显码支付接口（V2Board）—— 无收银台模式
  * 由 Paytaro 一键脚本 install-qr.sh 生成。可与收银台模式的 Paytaro.php 共存。
@@ -10,8 +11,8 @@ namespace App\Payments;
 
 class PaytaroQR
 {
-    const API = 'https://v3.paytaro.com';
-    const PAGE_PATH = '/paytaro-qr/pay.php'; // 面板域名下的弹窗页（加密货币用）
+    public const API = 'https://v3.paytaro.com';
+    public const PAGE_PATH = '/paytaro-qr/pay.php'; // 面板域名下的弹窗页（加密货币用）
 
     private $config;
 
@@ -88,6 +89,7 @@ class PaytaroQR
             if ($linkType === 'pc') {
                 return ['type' => 1, 'data' => $payment['data']]; // 电脑网站支付：直接进支付宝 PC 收银台
             }
+
             return ['type' => 0, 'data' => $payment['data']]; // 手机网站支付链接：PC 上画码，支付宝扫一扫即可
         }
 
@@ -121,6 +123,7 @@ class PaytaroQR
         if ($tradeNo === '' || $callbackNo === '') {
             return false;
         }
+
         return [
             'trade_no' => $tradeNo,
             'callback_no' => $callbackNo,
@@ -158,6 +161,7 @@ class PaytaroQR
         if ($status < 200 || $status >= 300) {
             abort(500, sprintf(__('Paytaro: %s'), (string) ($data['error'] ?? $data['message'] ?? ('HTTP ' . $status))));
         }
+
         return $data;
     }
 
@@ -167,12 +171,14 @@ class PaytaroQR
         if (empty($u['scheme']) || empty($u['host'])) {
             return '';
         }
+
         return $u['scheme'] . '://' . $u['host'] . (isset($u['port']) ? ':' . $u['port'] : '');
     }
 
     private function isMobile()
     {
         $ua = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+
         return preg_match('/Android|iPhone|iPad|iPod|Mobile|HarmonyOS/i', $ua) === 1;
     }
 }

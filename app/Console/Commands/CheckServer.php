@@ -49,7 +49,9 @@ class CheckServer extends Command
         $serverService = new ServerService();
         $servers = $serverService->getAllServers();
         foreach ($servers as $server) {
-            if ($server['parent_id']) continue;
+            if ($server['parent_id']) {
+                continue;
+            }
             if ($server['last_check_at'] && (time() - $server['last_check_at']) > 1800) {
                 $telegramService = new TelegramService();
                 $message = sprintf(
@@ -58,7 +60,7 @@ class CheckServer extends Command
                     $server['host']
                 );
                 $telegramService->sendMessageWithAdmin($message);
-                Cache::forget(CacheKey::get(sprintf("SERVER_%s_LAST_CHECK_AT", strtoupper($server['type'])), $server->id));
+                Cache::forget(CacheKey::get(sprintf('SERVER_%s_LAST_CHECK_AT', strtoupper($server['type'])), $server->id));
             }
         }
     }

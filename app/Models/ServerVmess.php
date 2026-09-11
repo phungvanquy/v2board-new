@@ -18,6 +18,6 @@ class ServerVmess extends Model
         'networkSettings' => 'array',
         'dnsSettings' => 'array',
         'ruleSettings' => 'array',
-        'tags' => 'array'
+        'tags' => 'array',
     ];
 }

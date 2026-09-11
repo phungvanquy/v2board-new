@@ -1,0 +1,2536 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$actual_commission_balance\\.$#"
+			count: 2
+			path: app/Console/Commands/CheckCommission.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$commission_balance\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckCommission.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$total_amount\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckCommission.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$trade_no\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckCommission.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$user_id\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckCommission.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\CommissionLog\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckCommission.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Console/Commands/CheckCommission.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckCommission.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:whereIn\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckOrder.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$balance_amount\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$period\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$plan_id\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$status\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$total_amount\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$trade_no\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$type\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$user_id\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$auto_renewal\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$balance\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$expired_at\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$id\\.$#"
+			count: 2
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$plan_id\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\DB\\:\\:rollback\\(\\)\\.$#"
+			count: 2
+			path: app/Console/Commands/CheckRenewal.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Ticket\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/CheckTicket.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/ClearUser.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Log\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/ResetLog.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatServer\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/ResetLog.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatUser\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/ResetLog.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/ResetPassword.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:select\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/ResetTraffic.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/ResetTraffic.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:whereIn\\(\\)\\.$#"
+			count: 2
+			path: app/Console/Commands/ResetTraffic.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\Redis\\:\\:del\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/ResetTraffic.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\Redis\\:\\:setex\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/ResetTraffic.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$email\\.$#"
+			count: 1
+			path: app/Console/Commands/ResetUser.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$token\\.$#"
+			count: 1
+			path: app/Console/Commands/ResetUser.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$uuid\\.$#"
+			count: 1
+			path: app/Console/Commands/ResetUser.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$expired_at\\.$#"
+			count: 1
+			path: app/Console/Commands/SendRemindMail.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$remind_expire\\.$#"
+			count: 1
+			path: app/Console/Commands/SendRemindMail.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$remind_traffic\\.$#"
+			count: 1
+			path: app/Console/Commands/SendRemindMail.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:whereIn\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/TrafficUpdate.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\Redis\\:\\:del\\(\\)\\.$#"
+			count: 2
+			path: app/Console/Commands/TrafficUpdate.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\Redis\\:\\:exists\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/TrafficUpdate.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\Redis\\:\\:hgetall\\(\\)\\.$#"
+			count: 2
+			path: app/Console/Commands/TrafficUpdate.php
+
+		-
+			message: "#^Call to static method error\\(\\) on an unknown class Log\\.$#"
+			count: 1
+			path: app/Console/Commands/TrafficUpdate.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$email\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardInstall.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$is_admin\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardInstall.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$password\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardInstall.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$token\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardInstall.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$uuid\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardInstall.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\ConnectionInterface\\:\\:getPdo\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardInstall.php
+
+		-
+			message: "#^Call to static method call\\(\\) on an unknown class Artisan\\.$#"
+			count: 2
+			path: app/Console/Commands/V2boardInstall.php
+
+		-
+			message: "#^Call to static method exists\\(\\) on an unknown class File\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardInstall.php
+
+		-
+			message: "#^Call to static method get\\(\\) on an unknown class File\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardInstall.php
+
+		-
+			message: "#^Function set_env_var not found\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardInstall.php
+
+		-
+			message: "#^Inner named functions are not supported by PHPStan\\. Consider refactoring to an anonymous function, class method, or a top\\-level\\-defined function\\. See issue \\#165 \\(https\\://github\\.com/phpstan/phpstan/issues/165\\) for more details\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardInstall.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Stat\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardStatistics.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Stat\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardStatistics.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatServer\\:\\:insert\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardStatistics.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatUser\\:\\:insert\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardStatistics.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\DB\\:\\:rollback\\(\\)\\.$#"
+			count: 2
+			path: app/Console/Commands/V2boardStatistics.php
+
+		-
+			message: "#^Call to static method error\\(\\) on an unknown class Log\\.$#"
+			count: 3
+			path: app/Console/Commands/V2boardStatistics.php
+
+		-
+			message: "#^Method App\\\\Console\\\\Commands\\\\V2boardStatistics\\:\\:statServer\\(\\) is unused\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardStatistics.php
+
+		-
+			message: "#^Method App\\\\Console\\\\Commands\\\\V2boardStatistics\\:\\:statUser\\(\\) is unused\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardStatistics.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\ConnectionInterface\\:\\:getPdo\\(\\)\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardUpdate.php
+
+		-
+			message: "#^Call to static method call\\(\\) on an unknown class Artisan\\.$#"
+			count: 2
+			path: app/Console/Commands/V2boardUpdate.php
+
+		-
+			message: "#^Call to static method get\\(\\) on an unknown class File\\.$#"
+			count: 1
+			path: app/Console/Commands/V2boardUpdate.php
+
+		-
+			message: "#^PHPDoc type array of property App\\\\Exceptions\\\\Handler\\:\\:\\$dontFlash is not covariant with PHPDoc type array\\<string\\> of overridden property Illuminate\\\\Foundation\\\\Exceptions\\\\Handler\\:\\:\\$dontFlash\\.$#"
+			count: 1
+			path: app/Exceptions/Handler.php
+
+		-
+			message: "#^PHPDoc type array of property App\\\\Exceptions\\\\Handler\\:\\:\\$dontReport is not covariant with PHPDoc type array\\<string\\> of overridden property Illuminate\\\\Foundation\\\\Exceptions\\\\Handler\\:\\:\\$dontReport\\.$#"
+			count: 1
+			path: app/Exceptions/Handler.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/ConfigController.php
+
+		-
+			message: "#^Parameter \\#2 \\$return of function var_export expects bool, int given\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/ConfigController.php
+
+		-
+			message: "#^Result of method App\\\\Jobs\\\\SendEmailJob\\:\\:handle\\(\\) \\(void\\) is used\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/ConfigController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Coupon\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/CouponController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Coupon\\:\\:find\\(\\)\\.$#"
+			count: 3
+			path: app/Http/Controllers/V1/Admin/CouponController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Coupon\\:\\:insert\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/CouponController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Coupon\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/CouponController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Giftcard\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/GiftcardController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Giftcard\\:\\:find\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/GiftcardController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Giftcard\\:\\:insert\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/GiftcardController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Giftcard\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/GiftcardController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Giftcard\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/GiftcardController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Knowledge\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/KnowledgeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Knowledge\\:\\:find\\(\\)\\.$#"
+			count: 5
+			path: app/Http/Controllers/V1/Admin/KnowledgeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Knowledge\\:\\:get\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/KnowledgeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Knowledge\\:\\:select\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/KnowledgeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Notice\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/NoticeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Notice\\:\\:find\\(\\)\\.$#"
+			count: 3
+			path: app/Http/Controllers/V1/Admin/NoticeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Notice\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/NoticeController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$period\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$plan_id\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$total_amount\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$trade_no\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$type\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$user_id\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\CommissionLog\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 3
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:whereIn\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:get\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\DB\\:\\:rollback\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Cannot access property \\$surplus_order_ids on array\\<string, mixed\\>\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Payment\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/PaymentController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Payment\\:\\:find\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/PaymentController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Payment\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/PaymentController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/PlanController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/PlanController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:find\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/PlanController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/PlanController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/PlanController.php
+
+		-
+			message: "#^Variable \\$plan might not be defined\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/PlanController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerAnytls\\:\\:create\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/Server/AnyTLSController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerAnytls\\:\\:find\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/Server/AnyTLSController.php
+
+		-
+			message: "#^Variable \\$server might not be defined\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/AnyTLSController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerVless\\:\\:\\$group_id\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/GroupController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerVmess\\:\\:\\$group_id\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/GroupController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/GroupController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerGroup\\:\\:find\\(\\)\\.$#"
+			count: 3
+			path: app/Http/Controllers/V1/Admin/Server/GroupController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerGroup\\:\\:get\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/GroupController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/Server/GroupController.php
+
+		-
+			message: "#^Variable \\$serverGroup might not be defined\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/GroupController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerHysteria\\:\\:create\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/Server/HysteriaController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerHysteria\\:\\:find\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/Server/HysteriaController.php
+
+		-
+			message: "#^Variable \\$server might not be defined\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/HysteriaController.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/ManageController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerRoute\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/RouteController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerRoute\\:\\:find\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/Server/RouteController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerRoute\\:\\:get\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/RouteController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerShadowsocks\\:\\:create\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/Server/ShadowsocksController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerShadowsocks\\:\\:find\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/Server/ShadowsocksController.php
+
+		-
+			message: "#^Variable \\$server might not be defined\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/ShadowsocksController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTrojan\\:\\:create\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/Server/TrojanController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTrojan\\:\\:find\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/Server/TrojanController.php
+
+		-
+			message: "#^Variable \\$server might not be defined\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/TrojanController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTuic\\:\\:create\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/Server/TuicController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTuic\\:\\:find\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/Server/TuicController.php
+
+		-
+			message: "#^Variable \\$server might not be defined\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/TuicController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerV2node\\:\\:create\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/Server/V2nodeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerV2node\\:\\:find\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/Server/V2nodeController.php
+
+		-
+			message: "#^Variable \\$server might not be defined\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/V2nodeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVless\\:\\:create\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/Server/VlessController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVless\\:\\:find\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/Server/VlessController.php
+
+		-
+			message: "#^Variable \\$server might not be defined\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/VlessController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVmess\\:\\:create\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/Server/VmessController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVmess\\:\\:find\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/Server/VmessController.php
+
+		-
+			message: "#^Variable \\$server might not be defined\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/Server/VmessController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\CommissionLog\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerAnytls\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerHysteria\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerShadowsocks\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTrojan\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTuic\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerV2node\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVless\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVmess\\:\\:where\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Stat\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatServer\\:\\:select\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatUser\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatUser\\:\\:select\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Ticket\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 5
+			path: app/Http/Controllers/V1/Admin/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Log\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/SystemController.php
+
+		-
+			message: "#^Parameter \\#2 \\$return of function var_export expects bool, int given\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/ThemeController.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Ticket\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Ticket\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\TicketMessage\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\InviteCode\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:find\\(\\)\\.$#"
+			count: 3
+			path: app/Http/Controllers/V1/Admin/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:get\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Ticket\\:\\:where\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\TicketMessage\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 5
+			path: app/Http/Controllers/V1/Admin/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:insert\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:orderBy\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/V1/Admin/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:select\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 6
+			path: app/Http/Controllers/V1/Admin/UserController.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/UserController.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Client/AppController.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Client/AppController.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Client/ClientController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Guest/PaymentController.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:handle\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Guest/TelegramController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Guest/TelegramController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$device_limit\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$email\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$expired_at\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$group_id\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$invite_user_id\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$last_login_at\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$password\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$plan_id\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$speed_limit\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$token\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$transfer_enable\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$uuid\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\InviteCode\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 3
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Variable \\$passwordErrorCount might not be defined\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/AuthController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\InviteCode\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/CommController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/CommController.php
+
+		-
+			message: "#^Method App\\\\Http\\\\Controllers\\\\V1\\\\Passport\\\\CommController\\:\\:getEmailSuffix\\(\\) is unused\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/CommController.php
+
+		-
+			message: "#^Method App\\\\Http\\\\Controllers\\\\V1\\\\Passport\\\\CommController\\:\\:isEmailVerify\\(\\) is unused\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Passport/CommController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerVmess\\:\\:\\$dnsSettings\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Server/DeepbworkController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerVmess\\:\\:\\$network\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Server/DeepbworkController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerVmess\\:\\:\\$networkSettings\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Server/DeepbworkController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerVmess\\:\\:\\$ruleSettings\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Server/DeepbworkController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerVmess\\:\\:\\$tls\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Server/DeepbworkController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerVmess\\:\\:\\$tlsSettings\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Server/DeepbworkController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVmess\\:\\:find\\(\\)\\.$#"
+			count: 3
+			path: app/Http/Controllers/V1/Server/DeepbworkController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerShadowsocks\\:\\:find\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Server/ShadowsocksTidalabController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTrojan\\:\\:find\\(\\)\\.$#"
+			count: 3
+			path: app/Http/Controllers/V1/Server/TrojanTidalabController.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\Cache\\:\\:many\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Server/UniProxyController.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Server/UniProxyController.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between mixed and null will always evaluate to false\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Server/UniProxyController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Notice\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Staff/NoticeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Notice\\:\\:find\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Staff/NoticeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Notice\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Staff/NoticeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Staff/PlanController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:select\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Staff/PlanController.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Staff/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Ticket\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Staff/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Ticket\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Staff/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\TicketMessage\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Staff/TicketController.php
+
+		-
+			message: "#^Call to an undefined method App\\\\Http\\\\Controllers\\\\V1\\\\Staff\\\\UserController\\:\\:filter\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Staff/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Staff/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Staff/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:orderBy\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Staff/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Staff/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Payment\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/CommController.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/CouponController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\InviteCode\\:\\:\\$code\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/InviteController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\InviteCode\\:\\:\\$user_id\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/InviteController.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 8
+			path: app/Http/Controllers/V1/User/InviteController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\CommissionLog\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/InviteController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\InviteCode\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/InviteController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/InviteController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/InviteController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/InviteController.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/KnowledgeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Knowledge\\:\\:select\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/KnowledgeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Knowledge\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/KnowledgeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/KnowledgeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Notice\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/NoticeController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Notice\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/NoticeController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Requests\\\\User\\\\OrderSave\\:\\:\\$user\\.$#"
+			count: 5
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$balance_amount\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$coupon_id\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$period\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$plan_id\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$total_amount\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$trade_no\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$user_id\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 5
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 5
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:whereIn\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Payment\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Payment\\:\\:select\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:get\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\DB\\:\\:rollback\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/OrderController.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/PlanController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/PlanController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/PlanController.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/ServerController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/ServerController.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/StatController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatUser\\:\\:select\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/StatController.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/TelegramController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/TelegramController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Requests\\\\User\\\\TicketSave\\:\\:\\$user\\.$#"
+			count: 5
+			path: app/Http/Controllers/V1/User/TicketController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Requests\\\\User\\\\TicketWithdraw\\:\\:\\$user\\.$#"
+			count: 3
+			path: app/Http/Controllers/V1/User/TicketController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Ticket\\:\\:\\$id\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/TicketController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Ticket\\:\\:\\$subject\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/TicketController.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 6
+			path: app/Http/Controllers/V1/User/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Ticket\\:\\:create\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Ticket\\:\\:where\\(\\)\\.$#"
+			count: 5
+			path: app/Http/Controllers/V1/User/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\TicketMessage\\:\\:create\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\TicketMessage\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/TicketController.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\DB\\:\\:rollback\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/TicketController.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/TicketController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Requests\\\\User\\\\UserChangePassword\\:\\:\\$user\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Requests\\\\User\\\\UserRedeemGiftCard\\:\\:\\$giftcard\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Requests\\\\User\\\\UserRedeemGiftCard\\:\\:\\$user\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Requests\\\\User\\\\UserTransfer\\:\\:\\$user\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Requests\\\\User\\\\UserUpdate\\:\\:\\$user\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$callback_no\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$period\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$plan_id\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$status\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$surplus_amount\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$total_amount\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$trade_no\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$user_id\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
+			count: 14
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Giftcard\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Ticket\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 10
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 3
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\DB\\:\\:rollback\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/User/UserController.php
+
+		-
+			message: "#^PHPDoc type array of property App\\\\Http\\\\Kernel\\:\\:\\$middlewarePriority is not covariant with PHPDoc type array\\<string\\> of overridden property Illuminate\\\\Foundation\\\\Http\\\\Kernel\\:\\:\\$middlewarePriority\\.$#"
+			count: 1
+			path: app/Http/Kernel.php
+
+		-
+			message: "#^Method App\\\\Http\\\\Middleware\\\\Authenticate\\:\\:redirectTo\\(\\) should return string but return statement is missing\\.$#"
+			count: 1
+			path: app/Http/Middleware/Authenticate.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Middleware/Client.php
+
+		-
+			message: "#^Call to static method call\\(\\) on an unknown class App\\.$#"
+			count: 1
+			path: app/Http/Routes/V1/ServerRoute.php
+
+		-
+			message: "#^Call to static method make\\(\\) on an unknown class App\\.$#"
+			count: 1
+			path: app/Http/Routes/V1/ServerRoute.php
+
+		-
+			message: "#^Call to static method call\\(\\) on an unknown class App\\.$#"
+			count: 1
+			path: app/Http/Routes/V2/ServerRoute.php
+
+		-
+			message: "#^Call to static method make\\(\\) on an unknown class App\\.$#"
+			count: 1
+			path: app/Http/Routes/V2/ServerRoute.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Jobs/OrderHandleJob.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\MailLog\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: app/Jobs/SendEmailJob.php
+
+		-
+			message: "#^Method App\\\\Jobs\\\\SendEmailJob\\:\\:handle\\(\\) with return type void returns array\\<string, mixed\\> but should not return anything\\.$#"
+			count: 1
+			path: app/Jobs/SendEmailJob.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatServer\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: app/Jobs/StatServerJob.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatServer\\:\\:lockForUpdate\\(\\)\\.$#"
+			count: 1
+			path: app/Jobs/StatServerJob.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\DB\\:\\:rollback\\(\\)\\.$#"
+			count: 1
+			path: app/Jobs/StatServerJob.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatUser\\:\\:upsert\\(\\)\\.$#"
+			count: 1
+			path: app/Jobs/StatUserJob.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatUser\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Jobs/StatUserJob.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\DB\\:\\:rollback\\(\\)\\.$#"
+			count: 1
+			path: app/Jobs/StatUserJob.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\Redis\\:\\:hincrby\\(\\)\\.$#"
+			count: 2
+			path: app/Jobs/TrafficFetchJob.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Log\\:\\:insert\\(\\)\\.$#"
+			count: 1
+			path: app/Logging/MysqlLoggerHandler.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: app/Logging/MysqlLoggerHandler.php
+
+		-
+			message: "#^Offset 'context' on array\\{message\\: string, context\\: array, level\\: 100\\|200\\|250\\|300\\|400\\|500\\|550\\|600, level_name\\: 'ALERT'\\|'CRITICAL'\\|'DEBUG'\\|'EMERGENCY'\\|'ERROR'\\|'INFO'\\|'NOTICE'\\|'WARNING', channel\\: string, datetime\\: DateTimeImmutable, extra\\: array, formatted\\: mixed, \\.\\.\\.\\} in isset\\(\\) always exists and is not nullable\\.$#"
+			count: 1
+			path: app/Logging/MysqlLoggerHandler.php
+
+		-
+			message: "#^Offset 'request_host' on array\\{message\\: string, context\\: array, level\\: 100\\|200\\|250\\|300\\|400\\|500\\|550\\|600, level_name\\: 'ALERT'\\|'CRITICAL'\\|'DEBUG'\\|'EMERGENCY'\\|'ERROR'\\|'INFO'\\|'NOTICE'\\|'WARNING', channel\\: string, datetime\\: DateTimeImmutable, extra\\: array, formatted\\: mixed, \\.\\.\\.\\} on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Logging/MysqlLoggerHandler.php
+
+		-
+			message: "#^Offset 'request_method' on array\\{message\\: string, context\\: array, level\\: 100\\|200\\|250\\|300\\|400\\|500\\|550\\|600, level_name\\: 'ALERT'\\|'CRITICAL'\\|'DEBUG'\\|'EMERGENCY'\\|'ERROR'\\|'INFO'\\|'NOTICE'\\|'WARNING', channel\\: string, datetime\\: DateTimeImmutable, extra\\: array, formatted\\: mixed, \\.\\.\\.\\} on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Logging/MysqlLoggerHandler.php
+
+		-
+			message: "#^Offset 'request_uri' on array\\{message\\: string, context\\: array, level\\: 100\\|200\\|250\\|300\\|400\\|500\\|550\\|600, level_name\\: 'ALERT'\\|'CRITICAL'\\|'DEBUG'\\|'EMERGENCY'\\|'ERROR'\\|'INFO'\\|'NOTICE'\\|'WARNING', channel\\: string, datetime\\: DateTimeImmutable, extra\\: array, formatted\\: mixed, \\.\\.\\.\\} on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Logging/MysqlLoggerHandler.php
+
+		-
+			message: "#^Parameter \\#1 \\$datetime of function strtotime expects string, DateTimeImmutable given\\.$#"
+			count: 2
+			path: app/Logging/MysqlLoggerHandler.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Payments\\\\AlipayF2F\\:\\:\\$config\\.$#"
+			count: 7
+			path: app/Payments/AlipayF2F.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Payments\\\\BEasyPaymentUSDT\\:\\:\\$config\\.$#"
+			count: 5
+			path: app/Payments/BEasyPaymentUSDT.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$data\\.$#"
+			count: 1
+			path: app/Payments/BEasyPaymentUSDT.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Payments\\\\BTCPay\\:\\:\\$config\\.$#"
+			count: 8
+			path: app/Payments/BTCPay.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 2
+			path: app/Payments/BTCPay.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Payments\\\\CoinPayments\\:\\:\\$config\\.$#"
+			count: 5
+			path: app/Payments/CoinPayments.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Payments\\\\Coinbase\\:\\:\\$config\\.$#"
+			count: 4
+			path: app/Payments/Coinbase.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: app/Payments/Coinbase.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Payments\\\\StripeALL\\:\\:\\$config\\.$#"
+			count: 8
+			path: app/Payments/StripeALL.php
+
+		-
+			message: "#^Access to an undefined property Stripe\\\\StripeObject\\:\\:\\$object\\.$#"
+			count: 3
+			path: app/Payments/StripeALL.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Payments/StripeALL.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Payments/StripeALL.php
+
+		-
+			message: "#^Caught class Stripe\\\\Error\\\\SignatureVerification not found\\.$#"
+			count: 1
+			path: app/Payments/StripeALL.php
+
+		-
+			message: "#^Instantiated class App\\\\Payments\\\\abort not found\\.$#"
+			count: 5
+			path: app/Payments/StripeALL.php
+
+		-
+			message: "#^Throwing object of an unknown class App\\\\Payments\\\\abort\\.$#"
+			count: 5
+			path: app/Payments/StripeALL.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: app/Payments/StripeALL.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Payments\\\\StripeAlipay\\:\\:\\$config\\.$#"
+			count: 5
+			path: app/Payments/StripeAlipay.php
+
+		-
+			message: "#^Access to an undefined property Stripe\\\\StripeObject\\:\\:\\$object\\.$#"
+			count: 2
+			path: app/Payments/StripeAlipay.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Payments/StripeAlipay.php
+
+		-
+			message: "#^Caught class Stripe\\\\Error\\\\SignatureVerification not found\\.$#"
+			count: 1
+			path: app/Payments/StripeAlipay.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Payments\\\\StripeCheckout\\:\\:\\$config\\.$#"
+			count: 5
+			path: app/Payments/StripeCheckout.php
+
+		-
+			message: "#^Access to an undefined property Exception\\:\\:\\$getMessage\\.$#"
+			count: 1
+			path: app/Payments/StripeCheckout.php
+
+		-
+			message: "#^Access to an undefined property Stripe\\\\StripeObject\\:\\:\\$object\\.$#"
+			count: 2
+			path: app/Payments/StripeCheckout.php
+
+		-
+			message: "#^Caught class Stripe\\\\Error\\\\SignatureVerification not found\\.$#"
+			count: 1
+			path: app/Payments/StripeCheckout.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: app/Payments/StripeCheckout.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Payments\\\\StripeCredit\\:\\:\\$config\\.$#"
+			count: 5
+			path: app/Payments/StripeCredit.php
+
+		-
+			message: "#^Access to an undefined property Stripe\\\\StripeObject\\:\\:\\$object\\.$#"
+			count: 2
+			path: app/Payments/StripeCredit.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Payments/StripeCredit.php
+
+		-
+			message: "#^Caught class Stripe\\\\Error\\\\SignatureVerification not found\\.$#"
+			count: 1
+			path: app/Payments/StripeCredit.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Payments\\\\StripeWepay\\:\\:\\$config\\.$#"
+			count: 5
+			path: app/Payments/StripeWepay.php
+
+		-
+			message: "#^Access to an undefined property Stripe\\\\StripeObject\\:\\:\\$object\\.$#"
+			count: 2
+			path: app/Payments/StripeWepay.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Payments/StripeWepay.php
+
+		-
+			message: "#^Caught class Stripe\\\\Error\\\\SignatureVerification not found\\.$#"
+			count: 1
+			path: app/Payments/StripeWepay.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Payments\\\\WechatPayNative\\:\\:\\$config\\.$#"
+			count: 7
+			path: app/Payments/WechatPayNative.php
+
+		-
+			message: "#^Call to static method create\\(\\) on an unknown class Omnipay\\\\Omnipay\\.$#"
+			count: 2
+			path: app/Payments/WechatPayNative.php
+
+		-
+			message: "#^Call to static method xml2array\\(\\) on an unknown class Omnipay\\\\WechatPay\\\\Helper\\.$#"
+			count: 1
+			path: app/Payments/WechatPayNative.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$chat_id\\.$#"
+			count: 2
+			path: app/Plugins/Telegram/Commands/Bind.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Plugins/Telegram/Commands/Bind.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Plugins/Telegram/Commands/ReplyTicket.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Plugins/Telegram/Commands/Traffic.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Plugins/Telegram/Commands/UnBind.php
+
+		-
+			message: "#^Call to static method exists\\(\\) on an unknown class File\\.$#"
+			count: 1
+			path: app/Protocols/Clash.php
+
+		-
+			message: "#^Call to static method exists\\(\\) on an unknown class File\\.$#"
+			count: 1
+			path: app/Protocols/ClashMeta.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 3
+			path: app/Protocols/ClashMeta.php
+
+		-
+			message: "#^Ternary operator condition is always true\\.$#"
+			count: 1
+			path: app/Protocols/ClashMeta.php
+
+		-
+			message: "#^Call to static method exists\\(\\) on an unknown class File\\.$#"
+			count: 1
+			path: app/Protocols/ClashNyanpasu.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 6
+			path: app/Protocols/ClashNyanpasu.php
+
+		-
+			message: "#^Ternary operator condition is always true\\.$#"
+			count: 1
+			path: app/Protocols/ClashNyanpasu.php
+
+		-
+			message: "#^Call to static method exists\\(\\) on an unknown class File\\.$#"
+			count: 1
+			path: app/Protocols/ClashVerge.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 3
+			path: app/Protocols/ClashVerge.php
+
+		-
+			message: "#^Ternary operator condition is always true\\.$#"
+			count: 1
+			path: app/Protocols/ClashVerge.php
+
+		-
+			message: "#^Ternary operator condition is always true\\.$#"
+			count: 3
+			path: app/Protocols/Loon.php
+
+		-
+			message: "#^Ternary operator condition is always false\\.$#"
+			count: 1
+			path: app/Protocols/Shadowsocks.php
+
+		-
+			message: "#^Constructor of class App\\\\Protocols\\\\Singbox\\\\Singbox has an unused parameter \\$options\\.$#"
+			count: 1
+			path: app/Protocols/Singbox/Singbox.php
+
+		-
+			message: "#^Constructor of class App\\\\Protocols\\\\Singbox\\\\SingboxOld has an unused parameter \\$options\\.$#"
+			count: 1
+			path: app/Protocols/Singbox/SingboxOld.php
+
+		-
+			message: "#^Call to static method exists\\(\\) on an unknown class File\\.$#"
+			count: 1
+			path: app/Protocols/Stash.php
+
+		-
+			message: "#^Ternary operator condition is always true\\.$#"
+			count: 2
+			path: app/Protocols/Stash.php
+
+		-
+			message: "#^Call to static method exists\\(\\) on an unknown class File\\.$#"
+			count: 1
+			path: app/Protocols/Surfboard.php
+
+		-
+			message: "#^Ternary operator condition is always true\\.$#"
+			count: 2
+			path: app/Protocols/Surfboard.php
+
+		-
+			message: "#^Call to static method exists\\(\\) on an unknown class File\\.$#"
+			count: 1
+			path: app/Protocols/Surge.php
+
+		-
+			message: "#^Ternary operator condition is always true\\.$#"
+			count: 3
+			path: app/Protocols/Surge.php
+
+		-
+			message: "#^Ternary operator condition is always true\\.$#"
+			count: 1
+			path: app/Protocols/v2RayTun.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:select\\(\\)\\.$#"
+			count: 1
+			path: app/Services/AuthService.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: app/Services/AuthService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$discount_amount\\.$#"
+			count: 3
+			path: app/Services/CouponService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$period\\.$#"
+			count: 1
+			path: app/Services/CouponService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$plan_id\\.$#"
+			count: 1
+			path: app/Services/CouponService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$total_amount\\.$#"
+			count: 2
+			path: app/Services/CouponService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$user_id\\.$#"
+			count: 1
+			path: app/Services/CouponService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Coupon\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Services/CouponService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Services/CouponService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$d\\.$#"
+			count: 1
+			path: app/Services/MailService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$email\\.$#"
+			count: 2
+			path: app/Services/MailService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$expired_at\\.$#"
+			count: 1
+			path: app/Services/MailService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Services/MailService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$remind_traffic\\.$#"
+			count: 1
+			path: app/Services/MailService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$transfer_enable\\.$#"
+			count: 1
+			path: app/Services/MailService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$u\\.$#"
+			count: 1
+			path: app/Services/MailService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$period\\.$#"
+			count: 1
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$surplus_amount\\.$#"
+			count: 2
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$surplus_order_ids\\.$#"
+			count: 3
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Order\\:\\:\\$type\\.$#"
+			count: 2
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Plan\\:\\:\\$device_limit\\.$#"
+			count: 2
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Plan\\:\\:\\$group_id\\.$#"
+			count: 2
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Plan\\:\\:\\$id\\.$#"
+			count: 2
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Plan\\:\\:\\$transfer_enable\\.$#"
+			count: 2
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$d\\.$#"
+			count: 2
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$discount\\.$#"
+			count: 1
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$expired_at\\.$#"
+			count: 4
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$id\\.$#"
+			count: 4
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$invite_user_id\\.$#"
+			count: 3
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$plan_id\\.$#"
+			count: 2
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$transfer_enable\\.$#"
+			count: 2
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$u\\.$#"
+			count: 2
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 5
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:whereIn\\(\\)\\.$#"
+			count: 1
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 2
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\DB\\:\\:rollback\\(\\)\\.$#"
+			count: 1
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Comparison operation \"\\=\\=\" between \\(array\\|float\\|int\\) and 0 results in an error\\.$#"
+			count: 1
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Left side of && is always true\\.$#"
+			count: 1
+			path: app/Services/OrderService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Payment\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Services/PaymentService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Payment\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Services/PaymentService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Services/PlanService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:select\\(\\)\\.$#"
+			count: 1
+			path: app/Services/PlanService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerLog\\:\\:\\$d\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerLog\\:\\:\\$log_at\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerLog\\:\\:\\$method\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerLog\\:\\:\\$rate\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerLog\\:\\:\\$server_id\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerLog\\:\\:\\$u\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ServerLog\\:\\:\\$user_id\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$group_id\\.$#"
+			count: 8
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerAnytls\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerAnytls\\:\\:orderBy\\(\\)\\.$#"
+			count: 2
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerHysteria\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerHysteria\\:\\:orderBy\\(\\)\\.$#"
+			count: 2
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerLog\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerRoute\\:\\:select\\(\\)\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerShadowsocks\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerShadowsocks\\:\\:orderBy\\(\\)\\.$#"
+			count: 2
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTrojan\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTrojan\\:\\:orderBy\\(\\)\\.$#"
+			count: 2
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTuic\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTuic\\:\\:orderBy\\(\\)\\.$#"
+			count: 2
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerV2node\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerV2node\\:\\:orderBy\\(\\)\\.$#"
+			count: 2
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVless\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVless\\:\\:orderBy\\(\\)\\.$#"
+			count: 2
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVmess\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVmess\\:\\:orderBy\\(\\)\\.$#"
+			count: 2
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:whereIn\\(\\)\\.$#"
+			count: 1
+			path: app/Services/ServerService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\CommissionLog\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Services/StatisticalService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 4
+			path: app/Services/StatisticalService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Stat\\:\\:select\\(\\)\\.$#"
+			count: 2
+			path: app/Services/StatisticalService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Stat\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Services/StatisticalService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatServer\\:\\:select\\(\\)\\.$#"
+			count: 1
+			path: app/Services/StatisticalService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatServer\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Services/StatisticalService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\StatUser\\:\\:select\\(\\)\\.$#"
+			count: 1
+			path: app/Services/StatisticalService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:select\\(\\)\\.$#"
+			count: 1
+			path: app/Services/StatisticalService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 2
+			path: app/Services/StatisticalService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:whereIn\\(\\)\\.$#"
+			count: 2
+			path: app/Services/StatisticalService.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$description\\.$#"
+			count: 1
+			path: app/Services/TelegramService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Services/TelegramService.php
+
+		-
+			message: "#^Parameter \\#2 \\$return of function var_export expects bool, int given\\.$#"
+			count: 1
+			path: app/Services/ThemeService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Ticket\\:\\:\\$subject\\.$#"
+			count: 1
+			path: app/Services/TicketService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Ticket\\:\\:\\$user_id\\.$#"
+			count: 2
+			path: app/Services/TicketService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\TicketMessage\\:\\:\\$message\\.$#"
+			count: 1
+			path: app/Services/TicketService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Ticket\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Services/TicketService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\TicketMessage\\:\\:create\\(\\)\\.$#"
+			count: 2
+			path: app/Services/TicketService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Services/TicketService.php
+
+		-
+			message: "#^Call to an undefined static method Illuminate\\\\Support\\\\Facades\\\\DB\\:\\:rollback\\(\\)\\.$#"
+			count: 2
+			path: app/Services/TicketService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$banned\\.$#"
+			count: 1
+			path: app/Services/UserService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$expired_at\\.$#"
+			count: 3
+			path: app/Services/UserService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$plan\\.$#"
+			count: 1
+			path: app/Services/UserService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$plan_id\\.$#"
+			count: 2
+			path: app/Services/UserService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$transfer_enable\\.$#"
+			count: 1
+			path: app/Services/UserService.php
+
+		-
+			message: "#^Binary operation \"\\-\" between '01'\\|'02'\\|'03'\\|'04'\\|'05'\\|'06'\\|'07'\\|'08'\\|'09'\\|'10'\\|'11'\\|'12'\\|'13'\\|'14'\\|'15'\\|'16'\\|'17'\\|'18'\\|'19'\\|'20'\\|'21'\\|'22'\\|'23'\\|'24'\\|'25'\\|'26'\\|'27'\\|'28'\\|'29'\\|'30'\\|'31' and '01'\\|'02'\\|'03'\\|'04'\\|'05'\\|'06'\\|'07'\\|'08'\\|'09'\\|'10'\\|'11'\\|'12'\\|'13'\\|'14'\\|'15'\\|'16'\\|'17'\\|'18'\\|'19'\\|'20'\\|'21'\\|'22'\\|'23'\\|'24'\\|'25'\\|'26'\\|'27'\\|'28'\\|'29'\\|'30'\\|'31' results in an error\\.$#"
+			count: 4
+			path: app/Services/UserService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Services/UserService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\Plan\\:\\:find\\(\\)\\.$#"
+			count: 2
+			path: app/Services/UserService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:lockForUpdate\\(\\)\\.$#"
+			count: 1
+			path: app/Services/UserService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:max\\(\\)\\.$#"
+			count: 1
+			path: app/Services/UserService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Services/UserService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:whereIn\\(\\)\\.$#"
+			count: 1
+			path: app/Services/UserService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:whereRaw\\(\\)\\.$#"
+			count: 2
+			path: app/Services/UserService.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between mixed and 2 will always evaluate to false\\.$#"
+			count: 2
+			path: app/Services/UserService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Support/SubscriptionHelper.php

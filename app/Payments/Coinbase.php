@@ -2,8 +2,10 @@
 
 namespace App\Payments;
 
-class Coinbase {
-    public function __construct($config) {
+class Coinbase
+{
+    public function __construct($config)
+    {
         $this->config = $config;
     }
 
@@ -28,41 +30,41 @@ class Coinbase {
         ];
     }
 
-    public function pay($order) {
-
+    public function pay($order)
+    {
         $params = [
             'name' => '订阅套餐',
             'description' => __('Order No. ') . $order['trade_no'],
             'pricing_type' => 'fixed_price',
             'local_price' => [
                 'amount' => sprintf('%.2f', $order['total_amount'] / 100),
-                'currency' => 'CNY'
+                'currency' => 'CNY',
             ],
             'metadata' => [
-                "outTradeNo" => $order['trade_no'],
+                'outTradeNo' => $order['trade_no'],
             ],
         ];
 
         $params_string = http_build_query($params);
-        
+
         $ret_raw = self::_curlPost($this->config['coinbase_url'], $params_string);
 
         $ret = @json_decode($ret_raw, true);
-        
-        if(empty($ret['data']['hosted_url'])) {
-            abort(500, "error!");
+
+        if (empty($ret['data']['hosted_url'])) {
+            abort(500, 'error!');
         }
+
         return [
             'type' => 1,
             'data' => $ret['data']['hosted_url'],
         ];
     }
 
-    public function notify($params) {
-        
+    public function notify($params)
+    {
         $payload = trim(request()->getContent() ?: json_encode($_POST));
-        $json_param = json_decode($payload, true); 
-
+        $json_param = json_decode($payload, true);
 
         $headerName = 'X-Cc-Webhook-Signature';
         $headers = getallheaders();
@@ -72,20 +74,21 @@ class Coinbase {
         if (!self::hashEqual($signatureHeader, $computedSignature)) {
             abort(400, 'HMAC signature does not match');
         }
-        
+
         $out_trade_no = $json_param['event']['data']['metadata']['outTradeNo'];
-        $pay_trade_no=$json_param['event']['id'];
+        $pay_trade_no = $json_param['event']['id'];
+
         return [
             'trade_no' => $out_trade_no,
-            'callback_no' => $pay_trade_no
+            'callback_no' => $pay_trade_no,
         ];
         http_response_code(200);
+
         return('success');
     }
 
-
-    private function _curlPost($url,$params=false){
-        
+    private function _curlPost($url, $params = false)
+    {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -93,13 +96,15 @@ class Coinbase {
         curl_setopt($ch, CURLOPT_TIMEOUT, 300);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
         curl_setopt(
-            $ch, CURLOPT_HTTPHEADER, array('X-CC-Api-Key:' .$this->config['coinbase_api_key'], 'X-CC-Version: 2018-03-22')
+            $ch,
+            CURLOPT_HTTPHEADER,
+            ['X-CC-Api-Key:' . $this->config['coinbase_api_key'], 'X-CC-Version: 2018-03-22']
         );
         $result = curl_exec($ch);
         curl_close($ch);
+
         return $result;
     }
-
 
     /**
      * @param string $str1
@@ -121,9 +126,8 @@ class Coinbase {
             for ($i = strlen($res) - 1; $i >= 0; $i--) {
                 $ret |= ord($res[$i]);
             }
+
             return !$ret;
         }
     }
-    
 }
-

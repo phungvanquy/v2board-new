@@ -17,7 +17,7 @@ class MailSend extends FormRequest
             'type' => 'required|in:1,2,3,4',
             'subject' => 'required',
             'content' => 'required',
-            'receiver' => 'array'
+            'receiver' => 'array',
         ];
     }
 
@@ -28,7 +28,7 @@ class MailSend extends FormRequest
             'type.in' => __('The send type is invalid'),
             'subject.required' => __('Theme cannot be empty'),
             'content.required' => __('Content cannot be empty'),
-            'receiver.array' => __('The recipient is invalid')
+            'receiver.array' => __('The recipient is invalid'),
         ];
     }
 }

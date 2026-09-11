@@ -2,7 +2,9 @@
 
 namespace App\Protocols;
 
-class Shadowsocks
+use App\Protocols\Contracts\ProtocolFormatter;
+
+class Shadowsocks implements ProtocolFormatter
 {
     public $flag = 'shadowsocks';
     private $servers;
@@ -41,19 +43,20 @@ class Shadowsocks
         $subs['bytes_remaining'] = $bytesRemaining;
         $subs['servers'] = array_merge($subs['servers'] ? $subs['servers'] : [], $configs);
 
-        return json_encode($subs, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        return json_encode($subs, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     }
 
     public static function SIP008($server, $user)
     {
         $config = [
-            "id" => $server['id'],
-            "remarks" => $server['name'],
-            "server" => $server['host'],
-            "server_port" => $server['port'],
-            "password" => $user['uuid'],
-            "method" => $server['cipher']
+            'id' => $server['id'],
+            'remarks' => $server['name'],
+            'server' => $server['host'],
+            'server_port' => $server['port'],
+            'password' => $user['uuid'],
+            'method' => $server['cipher'],
         ];
+
         return $config;
     }
 }

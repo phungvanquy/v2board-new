@@ -2,9 +2,10 @@
 
 namespace App\Protocols;
 
+use App\Protocols\Contracts\ProtocolFormatter;
 use App\Utils\Helper;
 
-class Loon
+class Loon implements ProtocolFormatter
 {
     public $flag = 'loon';
     private $servers;
@@ -30,21 +31,21 @@ class Loon
             }
             if ($item['type'] === 'shadowsocks') {
                 $uri .= self::buildShadowsocks($user['uuid'], $item);
-            }elseif ($item['type'] === 'vmess') {
+            } elseif ($item['type'] === 'vmess') {
                 $uri .= self::buildVmess($user['uuid'], $item);
-            }elseif ($item['type'] === 'vless' && (($item['network'] ?? null) === 'tcp' || ($item['network'] ?? null) === 'ws')) {
+            } elseif ($item['type'] === 'vless' && (($item['network'] ?? null) === 'tcp' || ($item['network'] ?? null) === 'ws')) {
                 $uri .= self::buildVless($user['uuid'], $item);
-            }elseif ($item['type'] === 'trojan' && (($item['network'] ?? null) !== 'grpc')) {
+            } elseif ($item['type'] === 'trojan' && (($item['network'] ?? null) !== 'grpc')) {
                 $uri .= self::buildTrojan($user['uuid'], $item);
-            }elseif ($item['type'] === 'hysteria' && $item['version'] === 2) { //loon只支持hysteria2
+            } elseif ($item['type'] === 'hysteria' && $item['version'] === 2) { //loon只支持hysteria2
                 $uri .= self::buildHysteria($user['uuid'], $item);
-            }elseif ($item['type'] === 'anytls') {
+            } elseif ($item['type'] === 'anytls') {
                 $uri .= self::buildAnytls($user['uuid'], $item);
             }
         }
+
         return $uri;
     }
-
 
     public static function buildShadowsocks($password, $server)
     {
@@ -93,44 +94,52 @@ class Loon
             "{$uuid}",
             'fast-open=false',
             'udp=true',
-            "alterId=0"
+            'alterId=0',
         ];
 
         if ($server['network'] === 'tcp') {
             array_push($config, 'transport=tcp');
             if ($server['networkSettings']) {
                 $tcpSettings = $server['networkSettings'];
-                if (isset($tcpSettings['header']['type']) && !empty($tcpSettings['header']['type']) && $tcpSettings['header']['type'] == 'http')
+                if (isset($tcpSettings['header']['type']) && !empty($tcpSettings['header']['type']) && $tcpSettings['header']['type'] == 'http') {
                     $config = str_replace('transport=tcp', "transport={$tcpSettings['header']['type']}", $config);
-                if (isset($tcpSettings['header']['request']['path'][0]) && !empty($tcpSettings['header']['request']['path'][0]))
+                }
+                if (isset($tcpSettings['header']['request']['path'][0]) && !empty($tcpSettings['header']['request']['path'][0])) {
                     array_push($config, "path={$tcpSettings['header']['request']['path'][0]}");
-                if (isset($tcpSettings['header']['request']['headers']['Host'][0]) && !empty($tcpSettings['header']['request']['headers']['Host'][0]))
+                }
+                if (isset($tcpSettings['header']['request']['headers']['Host'][0]) && !empty($tcpSettings['header']['request']['headers']['Host'][0])) {
                     array_push($config, "host={$tcpSettings['header']['request']['headers']['Host'][0]}");
+                }
             }
         }
         if ($server['tls']) {
             array_push($config, 'over-tls=true');
             if ($server['tlsSettings']) {
                 $tlsSettings = $server['tlsSettings'];
-                if (isset($tlsSettings['allowInsecure']) && !empty($tlsSettings['allowInsecure']))
+                if (isset($tlsSettings['allowInsecure']) && !empty($tlsSettings['allowInsecure'])) {
                     array_push($config, 'skip-cert-verify=' . ($tlsSettings['allowInsecure'] ? 'true' : 'false'));
-                if (isset($tlsSettings['serverName']) && !empty($tlsSettings['serverName']))
+                }
+                if (isset($tlsSettings['serverName']) && !empty($tlsSettings['serverName'])) {
                     array_push($config, "tls-name={$tlsSettings['serverName']}");
+                }
             }
         }
         if ($server['network'] === 'ws') {
             array_push($config, 'transport=ws');
             if ($server['networkSettings']) {
                 $wsSettings = $server['networkSettings'];
-                if (isset($wsSettings['path']) && !empty($wsSettings['path']))
+                if (isset($wsSettings['path']) && !empty($wsSettings['path'])) {
                     array_push($config, "path={$wsSettings['path']}");
-                if (isset($wsSettings['headers']['Host']) && !empty($wsSettings['headers']['Host']))
+                }
+                if (isset($wsSettings['headers']['Host']) && !empty($wsSettings['headers']['Host'])) {
                     array_push($config, "host={$wsSettings['headers']['Host']}");
+                }
             }
         }
 
         $uri = implode(',', $config);
         $uri .= "\r\n";
+
         return $uri;
     }
 
@@ -143,19 +152,22 @@ class Loon
             "{$uuid}",
             'fast-open=false',
             'udp=true',
-            "alterId=0"
+            'alterId=0',
         ];
 
         if ($server['network'] === 'tcp') {
             array_push($config, 'transport=tcp');
             if ($server['network_settings']) {
                 $tcpSettings = $server['network_settings'];
-                if (isset($tcpSettings['header']['type']) && !empty($tcpSettings['header']['type']) && $tcpSettings['header']['type'] == 'http')
+                if (isset($tcpSettings['header']['type']) && !empty($tcpSettings['header']['type']) && $tcpSettings['header']['type'] == 'http') {
                     $config = str_replace('transport=tcp', "transport={$tcpSettings['header']['type']}", $config);
-                if (isset($tcpSettings['header']['request']['path'][0]) && !empty($tcpSettings['header']['request']['path'][0]))
+                }
+                if (isset($tcpSettings['header']['request']['path'][0]) && !empty($tcpSettings['header']['request']['path'][0])) {
                     array_push($config, "path={$tcpSettings['header']['request']['path'][0]}");
-                if (isset($tcpSettings['header']['request']['headers']['Host'][0]) && !empty($tcpSettings['header']['request']['headers']['Host'][0]))
+                }
+                if (isset($tcpSettings['header']['request']['headers']['Host'][0]) && !empty($tcpSettings['header']['request']['headers']['Host'][0])) {
                     array_push($config, "host={$tcpSettings['header']['request']['headers']['Host'][0]}");
+                }
             }
         }
         if ($server['tls'] === 1) {
@@ -163,41 +175,50 @@ class Loon
             array_push($config, "flow={$server['flow']}");
             if ($server['tls_settings']) {
                 $tlsSettings = $server['tls_settings'];
-                if (!empty($tlsSettings['allow_insecure'] ?? 0))
+                if (!empty($tlsSettings['allow_insecure'] ?? 0)) {
                     array_push($config, 'skip-cert-verify=true');
-                if (isset($tlsSettings['server_name']) && !empty($tlsSettings['server_name']))
+                }
+                if (isset($tlsSettings['server_name']) && !empty($tlsSettings['server_name'])) {
                     array_push($config, "tls-name={$tlsSettings['server_name']}");
+                }
             }
-        }elseif($server['tls'] === 2){
+        } elseif ($server['tls'] === 2) {
             array_push($config, "flow={$server['flow']}");
             if ($server['tls_settings']) {
                 $tlsSettings = $server['tls_settings'];
-                if (isset($tlsSettings['public_key']) && !empty($tlsSettings['public_key']))
+                if (isset($tlsSettings['public_key']) && !empty($tlsSettings['public_key'])) {
                     array_push($config, "public-key={$tlsSettings['public_key']}");
-                if (isset($tlsSettings['short_id']) && !empty($tlsSettings['short_id']))
+                }
+                if (isset($tlsSettings['short_id']) && !empty($tlsSettings['short_id'])) {
                     array_push($config, "short-id={$tlsSettings['short_id']}");
-                if (isset($tlsSettings['server_name']) && !empty($tlsSettings['server_name']))
+                }
+                if (isset($tlsSettings['server_name']) && !empty($tlsSettings['server_name'])) {
                     array_push($config, "sni={$tlsSettings['server_name']}");
-                if (!empty($tlsSettings['allow_insecure'] ?? 0))
+                }
+                if (!empty($tlsSettings['allow_insecure'] ?? 0)) {
                     array_push($config, 'skip-cert-verify=true');
+                }
             }
         }
         if ($server['network'] === 'ws') {
             array_push($config, 'transport=ws');
             if ($server['network_settings']) {
                 $wsSettings = $server['network_settings'];
-                if (isset($wsSettings['path']) && !empty($wsSettings['path']))
+                if (isset($wsSettings['path']) && !empty($wsSettings['path'])) {
                     array_push($config, "path={$wsSettings['path']}");
-                if (isset($wsSettings['headers']['Host']) && !empty($wsSettings['headers']['Host']))
+                }
+                if (isset($wsSettings['headers']['Host']) && !empty($wsSettings['headers']['Host'])) {
                     array_push($config, "host={$wsSettings['headers']['Host']}");
+                }
             }
         }
 
         $uri = implode(',', $config);
         $uri .= "\r\n";
+
         return $uri;
     }
-    
+
     public static function buildTrojan($password, $server)
     {
         $config = [
@@ -205,33 +226,35 @@ class Loon
             "{$server['host']}",
             "{$server['port']}",
             "{$password}",
-            !empty($server['server_name']) ? "tls-name={$server['server_name']}" : "",
+            !empty($server['server_name']) ? "tls-name={$server['server_name']}" : '',
             'fast-open=false',
-            'udp=true'
+            'udp=true',
         ];
         if (!empty($server['allow_insecure'])) {
             array_push($config, $server['allow_insecure'] ? 'skip-cert-verify=true' : 'skip-cert-verify=false');
         }
-        if (isset($server['network']) && (string)$server['network'] === 'ws') {
+        if (isset($server['network']) && (string) $server['network'] === 'ws') {
             array_push($config, 'ws=true');
             if ($server['network_settings']) {
                 $wsSettings = $server['network_settings'];
-                if (isset($wsSettings['path']) && !empty($wsSettings['path']))
+                if (isset($wsSettings['path']) && !empty($wsSettings['path'])) {
                     array_push($config, "ws-path={$wsSettings['path']}");
-                if (isset($wsSettings['headers']['Host']) && !empty($wsSettings['headers']['Host']))
+                }
+                if (isset($wsSettings['headers']['Host']) && !empty($wsSettings['headers']['Host'])) {
                     array_push($config, "ws-headers=Host:{$wsSettings['headers']['Host']}");
+                }
             }
         }
         $config = array_filter($config);
         $uri = implode(',', $config);
         $uri .= "\r\n";
+
         return $uri;
     }
-    
+
     public static function buildHysteria($password, $server)
     {
-
-        $parts = explode(",",$server['port']);
+        $parts = explode(',', $server['port']);
         $firstPart = $parts[0];
         if (strpos($firstPart, '-') !== false) {
             $range = explode('-', $firstPart);
@@ -246,18 +269,19 @@ class Loon
             "{$firstPort}",
             "password={$password}",
             "download-bandwidth={$server['up_mbps']}",
-            $server['server_name'] ? "sni={$server['server_name']}" : "",
-            'udp=true'
+            $server['server_name'] ? "sni={$server['server_name']}" : '',
+            'udp=true',
         ];
         if (!empty($server['insecure'])) {
             array_push($config, $server['insecure'] ? 'skip-cert-verify=true' : 'skip-cert-verify=false');
         }
-        if (isset($server['obfs'])){
+        if (isset($server['obfs'])) {
             array_push($config, 'salamander-password=' . $server['obfs_password']);
         }
         $config = array_filter($config);
         $uri = implode(',', $config);
         $uri .= "\r\n";
+
         return $uri;
     }
 
@@ -268,7 +292,7 @@ class Loon
             "{$server['host']}",
             "{$server['port']}",
             "{$password}",
-            "udp=true"
+            'udp=true',
         ];
         $tlsSettings = $server['tls_settings'] ?? [];
         $sni = $server['server_name'] ?? $tlsSettings['server_name'] ?? '';
@@ -280,6 +304,7 @@ class Loon
 
         $uri = implode(',', $config);
         $uri .= "\r\n";
+
         return $uri;
     }
 }

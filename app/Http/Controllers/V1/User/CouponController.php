@@ -17,8 +17,9 @@ class CouponController extends Controller
         $couponService->setPlanId($request->input('plan_id'));
         $couponService->setUserId($request->user['id']);
         $couponService->check();
+
         return response([
-            'data' => $couponService->getCoupon()
+            'data' => $couponService->getCoupon(),
         ]);
     }
 }

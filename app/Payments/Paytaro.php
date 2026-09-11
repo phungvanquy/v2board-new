@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Paytaro 支付接口（V2Board / Xboard）
  * 预置。后台「支付配置」添加时接口选择 Paytaro；
@@ -9,7 +10,7 @@ namespace App\Payments;
 
 class Paytaro
 {
-    const GATEWAY_URL = 'https://v3.paytaro.com';
+    public const GATEWAY_URL = 'https://v3.paytaro.com';
 
     private $config;
 
@@ -51,12 +52,15 @@ class Paytaro
     private function sign(array $params)
     {
         unset($params['sign'], $params['sign_type']);
-        $params = array_filter($params, function ($v) { return $v !== '' && $v !== null; });
+        $params = array_filter($params, function ($v) {
+            return $v !== '' && $v !== null;
+        });
         ksort($params);
         $pairs = [];
         foreach ($params as $k => $v) {
             $pairs[] = $k . '=' . $v;
         }
+
         return md5(implode('&', $pairs) . $this->appSecret());
     }
 
@@ -71,7 +75,9 @@ class Paytaro
             'name' => $order['trade_no'],
             'money' => number_format($order['total_amount'] / 100, 2, '.', ''),
         ];
-        $params = array_filter($params, function ($v) { return $v !== '' && $v !== null; });
+        $params = array_filter($params, function ($v) {
+            return $v !== '' && $v !== null;
+        });
         $params['sign'] = $this->sign($params);
         $params['sign_type'] = 'MD5';
 
@@ -89,6 +95,7 @@ class Paytaro
         if (($params['trade_status'] ?? '') !== 'TRADE_SUCCESS') {
             return false;
         }
+
         return [
             'trade_no' => $params['out_trade_no'],
             'callback_no' => $params['trade_no'],

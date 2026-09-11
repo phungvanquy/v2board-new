@@ -4,9 +4,9 @@ namespace App\Http\Controllers\V1\Admin\Server;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServerV2node;
+use App\Utils\Helper;
 use Illuminate\Http\Request;
 use ParagonIE_Sodium_Compat as SodiumCompat;
-use App\Utils\Helper;
 
 class V2nodeController extends Controller
 {
@@ -43,7 +43,7 @@ class V2nodeController extends Controller
             'tags' => 'nullable|array',
             'rate' => 'required',
             'show' => 'nullable|in:0,1',
-            'sort' => 'nullable'
+            'sort' => 'nullable',
         ]);
         if ($params['protocol'] == 'anytls' && $params['tls'] === 0) {
             $params['tls'] = 1;
@@ -51,7 +51,7 @@ class V2nodeController extends Controller
         if (in_array($params['protocol'], ['hysteria2', 'trojan', 'tuic'])) {
             $params['tls'] = 1;
         }
-        if (isset($params['tls']) && (int)$params['tls'] === 2) {
+        if (isset($params['tls']) && (int) $params['tls'] === 2) {
             $keyPair = SodiumCompat::crypto_box_keypair();
             $params['tls_settings'] = $params['tls_settings'] ?? [];
             if (!isset($params['tls_settings']['public_key'])) {
@@ -64,7 +64,7 @@ class V2nodeController extends Controller
                 $params['tls_settings']['short_id'] = substr(sha1($params['tls_settings']['private_key']), 0, 8);
             }
             if (!isset($params['tls_settings']['server_port'])) {
-                $params['tls_settings']['server_port'] = "443";
+                $params['tls_settings']['server_port'] = '443';
             }
         }
         if (isset($params['tls_settings']) && !empty($params['tls_settings']['ech']) && $params['tls_settings']['ech'] === 'custom') {
@@ -87,17 +87,17 @@ class V2nodeController extends Controller
             if (!isset($params['tls_settings']['pinned_peer_cert_sha256'])) {
                 $sni = $params['tls_settings']['server_name'] ?? 'example.com';
                 $key = openssl_pkey_new([
-                    "private_key_type" => OPENSSL_KEYTYPE_EC,
-                    "curve_name" => "prime256v1"
+                    'private_key_type' => OPENSSL_KEYTYPE_EC,
+                    'curve_name' => 'prime256v1',
                 ]);
                 if ($key === false) {
                     abort(500, __('Failed to create'));
                 }
 
                 $csr = openssl_csr_new([
-                    'commonName' => $sni
+                    'commonName' => $sni,
                 ], $key, [
-                    'digest_alg' => 'sha256'
+                    'digest_alg' => 'sha256',
                 ]);
 
                 if ($csr === false) {
@@ -110,7 +110,7 @@ class V2nodeController extends Controller
                     $key,
                     3650,
                     [
-                        'digest_alg' => 'sha256'
+                        'digest_alg' => 'sha256',
                     ]
                 );
 
@@ -169,19 +169,19 @@ class V2nodeController extends Controller
                     $extra['noSSEHeader'] = filter_var($extra['noSSEHeader'], FILTER_VALIDATE_BOOLEAN);
                 }
                 if (isset($extra['scMaxBufferedPosts'])) {
-                    $extra['scMaxBufferedPosts'] = (int)$extra['scMaxBufferedPosts'];
+                    $extra['scMaxBufferedPosts'] = (int) $extra['scMaxBufferedPosts'];
                 }
                 if (isset($extra['xmux']) && is_array($extra['xmux'])) {
                     $xmux = $extra['xmux'];
                     if (isset($xmux['hKeepAlivePeriod'])) {
-                        $xmux['hKeepAlivePeriod'] = (int)$xmux['hKeepAlivePeriod'];
+                        $xmux['hKeepAlivePeriod'] = (int) $xmux['hKeepAlivePeriod'];
                     }
                     $extra['xmux'] = $xmux;
                 }
                 if (isset($extra['downloadSettings']) && is_array($extra['downloadSettings'])) {
                     $downloadSettings = $extra['downloadSettings'];
                     if (isset($downloadSettings['port'])) {
-                        $downloadSettings['port'] = (int)$downloadSettings['port'];
+                        $downloadSettings['port'] = (int) $downloadSettings['port'];
                     }
                     $extra['downloadSettings'] = $downloadSettings;
                 }
@@ -223,7 +223,9 @@ class V2nodeController extends Controller
         }
 
         if (isset($params['obfs'])) {
-            if (!isset($params['obfs_password']))  $params['obfs_password'] = Helper::getServerKey($request->input('created_at'), 16);
+            if (!isset($params['obfs_password'])) {
+                $params['obfs_password'] = Helper::getServerKey($request->input('created_at'), 16);
+            }
         } else {
             $params['obfs_password'] = null;
         }
@@ -242,16 +244,18 @@ class V2nodeController extends Controller
             } catch (\Exception $e) {
                 abort(500, __('Save failed'));
             }
+
             return response([
-                'data' => true
+                'data' => true,
             ]);
         }
 
         if (!ServerV2node::create($params)) {
             abort(500, __('Failed to create'));
         }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -263,8 +267,9 @@ class V2nodeController extends Controller
                 abort(500, __('Node ID does not exist'));
             }
         }
+
         return response([
-            'data' => $server->delete()
+            'data' => $server->delete(),
         ]);
     }
 
@@ -284,8 +289,9 @@ class V2nodeController extends Controller
         } catch (\Exception $e) {
             abort(500, __('Save failed'));
         }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -301,7 +307,7 @@ class V2nodeController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

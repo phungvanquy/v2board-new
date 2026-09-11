@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Protocols;
+
+use App\Protocols\Contracts\ProtocolFormatter;
 use App\Utils\Helper;
 
-class SSRPlus
+class SSRPlus implements ProtocolFormatter
 {
     public $flag = 'ssrplus';
     private $servers;
@@ -22,6 +24,7 @@ class SSRPlus
         foreach ($this->servers as $server) {
             $uri .= Helper::buildUri($this->user['uuid'], $server);
         }
+
         return base64_encode($uri);
     }
 }

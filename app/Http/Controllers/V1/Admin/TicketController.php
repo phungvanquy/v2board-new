@@ -8,8 +8,6 @@ use App\Models\TicketMessage;
 use App\Models\User;
 use App\Services\TicketService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 class TicketController extends Controller
 {
@@ -29,29 +27,33 @@ class TicketController extends Controller
                     $ticket['message'][$i]['is_me'] = false;
                 }
             }
+
             return response([
-                'data' => $ticket
+                'data' => $ticket,
             ]);
         }
         $current = $request->input('current') ? $request->input('current') : 1;
         $pageSize = $request->input('pageSize') >= 10 ? $request->input('pageSize') : 10;
         $model = Ticket::orderBy('updated_at', 'DESC');
-        if ($request->input('status') !== NULL) {
+        if ($request->input('status') !== null) {
             $model->where('status', $request->input('status'));
         }
-        if ($request->input('reply_status') !== NULL) {
+        if ($request->input('reply_status') !== null) {
             $model->whereIn('reply_status', $request->input('reply_status'));
         }
-        if ($request->input('email') !== NULL) {
+        if ($request->input('email') !== null) {
             $user = User::where('email', $request->input('email'))->first();
-            if ($user) $model->where('user_id', $user->id);
+            if ($user) {
+                $model->where('user_id', $user->id);
+            }
         }
         $total = $model->count();
         $res = $model->forPage($current, $pageSize)
             ->get();
+
         return response([
             'data' => $res,
-            'total' => $total
+            'total' => $total,
         ]);
     }
 
@@ -69,8 +71,9 @@ class TicketController extends Controller
             $request->input('message'),
             $request->user['id']
         );
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -88,8 +91,9 @@ class TicketController extends Controller
         if (!$ticket->save()) {
             abort(500, __('Close failed'));
         }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

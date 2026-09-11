@@ -2,9 +2,10 @@
 
 namespace App\Protocols;
 
+use App\Protocols\Contracts\ProtocolFormatter;
 use App\Utils\Helper;
 
-class QuantumultX
+class QuantumultX implements ProtocolFormatter
 {
     public $flag = 'quantumult%20x';
     private $servers;
@@ -104,8 +105,12 @@ class QuantumultX
             $host = $netSettings['headers']['Host'] ?? $netSettings['Host'] ?? null;
             $path = $netSettings['path'] ?? null;
 
-            if ($host) $config[] = "obfs-host={$host}";
-            if ($path) $config[] = "obfs-uri={$path}";
+            if ($host) {
+                $config[] = "obfs-host={$host}";
+            }
+            if ($path) {
+                $config[] = "obfs-uri={$path}";
+            }
         }
 
         $config[] = 'fast-open=false';
@@ -133,8 +138,12 @@ class QuantumultX
         if (isset($server['tlsSettings'])) {
             $legacy = is_array($server['tlsSettings']) ? $server['tlsSettings'] : [];
             $current = $server['tls_settings'] ?? [];
-            if (isset($legacy['serverName'])) $legacy['server_name'] = $legacy['serverName'];
-            if (isset($legacy['allowInsecure'])) $legacy['allow_insecure'] = $legacy['allowInsecure'];
+            if (isset($legacy['serverName'])) {
+                $legacy['server_name'] = $legacy['serverName'];
+            }
+            if (isset($legacy['allowInsecure'])) {
+                $legacy['allow_insecure'] = $legacy['allowInsecure'];
+            }
             $server['tls_settings'] = array_replace_recursive($legacy, $current);
             unset($server['tlsSettings']);
         }
@@ -146,7 +155,7 @@ class QuantumultX
             "password={$uuid}",
             'fast-open=true',
             'udp-relay=true',
-            "tag={$server['name']}"
+            "tag={$server['name']}",
         ];
 
         $tlsSettings = $server['tls_settings'] ?? [];
@@ -213,11 +222,16 @@ class QuantumultX
             $host = $sni;
         }
 
-        if ($host) $config[] = "obfs-host={$host}";
-        if ($path) $config[] = "obfs-uri={$path}";
+        if ($host) {
+            $config[] = "obfs-host={$host}";
+        }
+        if ($path) {
+            $config[] = "obfs-uri={$path}";
+        }
 
         $uri = implode(',', $config);
         $uri .= "\r\n";
+
         return $uri;
     }
 
@@ -229,7 +243,7 @@ class QuantumultX
             'method=none',
             "password={$uuid}",
             'udp-relay=true',
-            "tag={$server['name']}"
+            "tag={$server['name']}",
         ];
 
         // fast-open (REALITY: false, Others: true)
@@ -257,8 +271,12 @@ class QuantumultX
 
             // REALITY
             if ($server['tls'] == 2) {
-                if (isset($tlsSettings['public_key'])) $config[] = "reality-base64-pubkey={$tlsSettings['public_key']}";
-                if (isset($tlsSettings['short_id'])) $config[] = "reality-hex-shortid={$tlsSettings['short_id']}";
+                if (isset($tlsSettings['public_key'])) {
+                    $config[] = "reality-base64-pubkey={$tlsSettings['public_key']}";
+                }
+                if (isset($tlsSettings['short_id'])) {
+                    $config[] = "reality-hex-shortid={$tlsSettings['short_id']}";
+                }
             }
         }
 
@@ -305,11 +323,16 @@ class QuantumultX
             $host = $sni;
         }
 
-        if ($host) $config[] = "obfs-host={$host}";
-        if ($path) $config[] = "obfs-uri={$path}";
+        if ($host) {
+            $config[] = "obfs-host={$host}";
+        }
+        if ($path) {
+            $config[] = "obfs-uri={$path}";
+        }
 
         $uri = implode(',', $config);
         $uri .= "\r\n";
+
         return $uri;
     }
 
@@ -320,7 +343,7 @@ class QuantumultX
 
         // v2_server_trojan 表：将外层列字段映射到 tls_settings
         if (isset($server['allow_insecure'])) {
-            $server['tls_settings']['allow_insecure'] = (bool)$server['allow_insecure'];
+            $server['tls_settings']['allow_insecure'] = (bool) $server['allow_insecure'];
         }
         if (isset($server['server_name'])) {
             $server['tls_settings']['server_name'] = $server['server_name'];
@@ -334,7 +357,7 @@ class QuantumultX
             "password={$password}",
             'fast-open=true',
             'udp-relay=true',
-            "tag={$server['name']}"
+            "tag={$server['name']}",
         ];
 
         $tlsSettings = $server['tls_settings'] ?? [];
@@ -366,8 +389,12 @@ class QuantumultX
                 $host = $sni;
             }
 
-            if ($host) $config[] = "obfs-host={$host}";
-            if ($path) $config[] = "obfs-uri={$path}";
+            if ($host) {
+                $config[] = "obfs-host={$host}";
+            }
+            if ($path) {
+                $config[] = "obfs-uri={$path}";
+            }
 
             if ($allowInsecure) {
                 $config[] = 'tls-verification=false';
@@ -377,6 +404,7 @@ class QuantumultX
         $config = array_filter($config);
         $uri = implode(',', $config);
         $uri .= "\r\n";
+
         return $uri;
     }
 
@@ -386,8 +414,8 @@ class QuantumultX
         $config = [
             "anytls={$server['host']}:{$server['port']}",
             "password={$password}",
-            "udp-relay=true",
-            "tag={$server['name']}"
+            'udp-relay=true',
+            "tag={$server['name']}",
         ];
 
         $tlsSettings = $server['tls_settings'] ?? [];
@@ -408,6 +436,7 @@ class QuantumultX
         $config = array_filter($config);
         $uri = implode(',', $config);
         $uri .= "\r\n";
+
         return $uri;
     }
 }

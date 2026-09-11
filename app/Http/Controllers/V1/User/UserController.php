@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1\User;
 
+use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UserChangePassword;
 use App\Http\Requests\User\UserRedeemGiftCard;
@@ -27,11 +28,12 @@ class UserController extends Controller
     {
         $user = User::find($request->user['id']);
         if (!$user) {
-            abort(500, __('The user does not exist'));
+            throw ApiException::fail(__('The user does not exist'));
         }
         $authService = new AuthService($user);
+
         return response([
-            'data' => $authService->getSessions()
+            'data' => $authService->getSessions(),
         ]);
     }
 
@@ -39,24 +41,26 @@ class UserController extends Controller
     {
         $user = User::find($request->user['id']);
         if (!$user) {
-            abort(500, __('The user does not exist'));
+            throw ApiException::fail(__('The user does not exist'));
         }
         $authService = new AuthService($user);
+
         return response([
-            'data' => $authService->removeSession($request->input('session_id'))
+            'data' => $authService->removeSession($request->input('session_id')),
         ]);
     }
 
     public function checkLogin(Request $request)
     {
         $data = [
-            'is_login' => $request->user['id'] ? true : false
+            'is_login' => $request->user['id'] ? true : false,
         ];
         if ($request->user['is_admin']) {
             $data['is_admin'] = true;
         }
+
         return response([
-            'data' => $data
+            'data' => $data,
         ]);
     }
 
@@ -64,7 +68,7 @@ class UserController extends Controller
     {
         $user = User::find($request->user['id']);
         if (!$user) {
-            abort(500, __('The user does not exist'));
+            throw ApiException::fail(__('The user does not exist'));
         }
         if (!Helper::multiPasswordVerify(
             $user->password_algo,
@@ -72,44 +76,45 @@ class UserController extends Controller
             $request->input('old_password'),
             $user->password
         )) {
-            abort(500, __('The old password is wrong'));
+            throw ApiException::fail(__('The old password is wrong'));
         }
         $user->password = password_hash($request->input('new_password'), PASSWORD_DEFAULT);
-        $user->password_algo = NULL;
-        $user->password_salt = NULL;
+        $user->password_algo = null;
+        $user->password_salt = null;
         if (!$user->save()) {
-            abort(500, __('Save failed'));
+            throw ApiException::fail(__('Save failed'));
         }
         $authService = new AuthService($user);
         $authService->removeAllSession();
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
-    public function newPeriod(Request $request) 
+    public function newPeriod(Request $request)
     {
         if (!config('v2board.allow_new_period', 0)) {
-            abort(500, __('Renewal is not allowed'));
+            throw ApiException::fail(__('Renewal is not allowed'));
         }
         DB::beginTransaction();
         try {
             $user = User::find($request->user['id']);
             if (!$user) {
-                abort(500, __('The user does not exist'));
+                throw ApiException::fail(__('The user does not exist'));
             }
             if ($user->transfer_enable > $user->u + $user->d) {
-                abort(500, __('You have not used up your traffic, you cannot renew your subscription'));
+                throw ApiException::fail(__('You have not used up your traffic, you cannot renew your subscription'));
             }
             $userService = new UserService();
             $reset_day = $userService->getResetDay($user);
             if ($reset_day === null) {
-                abort(500, __('You do not allow to renew the subscription'));
+                throw ApiException::fail(__('You do not allow to renew the subscription'));
             }
             unset($user->plan);
             $reset_period = $userService->getResetPeriod($user);
             if ($reset_period === null) {
-                abort(500, __('You do not allow to renew the subscription'));
+                throw ApiException::fail(__('You do not allow to renew the subscription'));
             }
             switch ($reset_period) {
                 case 1:
@@ -125,7 +130,7 @@ class UserController extends Controller
                 case 365:
                     break;
                 default:
-                    abort(500, __('Invalid reset period'));
+                    throw ApiException::fail(__('Invalid reset period'));
             }
             if ($reset_day <= 0) {
                 $reset_day = $reset_period;
@@ -135,22 +140,23 @@ class UserController extends Controller
                     [
                         'expired_at' => $user->expired_at - $reset_day * 86400,
                         'u' => 0,
-                        'd' => 0
+                        'd' => 0,
                     ]
                 )) {
                     throw new \Exception(__('Save failed'));
                 }
             } else {
-                abort(500, __('You do not have enough time to renew your subscription'));
+                throw ApiException::fail(__('You do not have enough time to renew your subscription'));
             }
 
             DB::commit();
+
             return response([
-                'data' => true
+                'data' => true,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            abort(500, $e->getMessage());
+            throw ApiException::fail($e->getMessage());
         }
     }
 
@@ -161,27 +167,27 @@ class UserController extends Controller
         try {
             $user = User::find($request->user['id']);
             if (!$user) {
-                abort(500, __('The user does not exist'));
+                throw ApiException::fail(__('The user does not exist'));
             }
             $giftcard_input = $request->giftcard;
             $giftcard = Giftcard::where('code', $giftcard_input)->first();
 
             if (!$giftcard) {
-                abort(500, __('The gift card does not exist'));
+                throw ApiException::fail(__('The gift card does not exist'));
             }
 
             $currentTime = time();
             if ($giftcard->started_at && $currentTime < $giftcard->started_at) {
-                abort(500, __('The gift card is not yet valid'));
+                throw ApiException::fail(__('The gift card is not yet valid'));
             }
 
             if ($giftcard->ended_at && $currentTime > $giftcard->ended_at) {
-                abort(500, __('The gift card has expired'));
+                throw ApiException::fail(__('The gift card has expired'));
             }
 
             if ($giftcard->limit_use !== null) {
                 if (!is_numeric($giftcard->limit_use) || $giftcard->limit_use <= 0) {
-                    abort(500, __('The gift card usage limit has been reached'));
+                    throw ApiException::fail(__('The gift card usage limit has been reached'));
                 }
             }
 
@@ -191,7 +197,7 @@ class UserController extends Controller
             }
 
             if (in_array($user->id, $usedUserIds)) {
-                abort(500, __('The gift card has already been used by this user'));
+                throw ApiException::fail(__('The gift card has already been used by this user'));
             }
 
             $usedUserIds[] = $user->id;
@@ -209,7 +215,7 @@ class UserController extends Controller
                             $user->expired_at += $giftcard->value * 86400;
                         }
                     } else {
-                        abort(500, __('Not suitable gift card type'));
+                        throw ApiException::fail(__('Not suitable gift card type'));
                     }
                     break;
                 case 3:
@@ -228,17 +234,17 @@ class UserController extends Controller
                         $user->device_limit = $plan->device_limit;
                         $user->u = 0;
                         $user->d = 0;
-                        if($giftcard->value == 0) {
+                        if ($giftcard->value == 0) {
                             $user->expired_at = null;
                         } else {
                             $user->expired_at = $currentTime + $giftcard->value * 86400;
                         }
                     } else {
-                        abort(500, __('Not suitable gift card type'));
+                        throw ApiException::fail(__('Not suitable gift card type'));
                     }
                     break;
                 default:
-                    abort(500, __('Unknown gift card type'));
+                    throw ApiException::fail(__('Unknown gift card type'));
             }
 
             if ($giftcard->limit_use !== null) {
@@ -254,11 +260,11 @@ class UserController extends Controller
             return response([
                 'data' => true,
                 'type' => $giftcard->type,
-                'value' => $giftcard->value
+                'value' => $giftcard->value,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            abort(500, $e->getMessage());
+            throw ApiException::fail($e->getMessage());
         }
     }
 
@@ -282,15 +288,16 @@ class UserController extends Controller
                 'discount',
                 'commission_rate',
                 'telegram_id',
-                'uuid'
+                'uuid',
             ])
             ->first();
         if (!$user) {
-            abort(500, __('The user does not exist'));
+            throw ApiException::fail(__('The user does not exist'));
         }
         $user['avatar_url'] = 'https://cravatar.cn/avatar/' . md5($user->email) . '?s=64&d=identicon';
+
         return response([
-            'data' => $user
+            'data' => $user,
         ]);
     }
 
@@ -304,10 +311,11 @@ class UserController extends Controller
                 ->where('user_id', $request->user['id'])
                 ->count(),
             User::where('invite_user_id', $request->user['id'])
-                ->count()
+                ->count(),
         ];
+
         return response([
-            'data' => $stat
+            'data' => $stat,
         ]);
     }
 
@@ -323,16 +331,16 @@ class UserController extends Controller
                 'transfer_enable',
                 'device_limit',
                 'email',
-                'uuid'
+                'uuid',
             ])
             ->first();
         if (!$user) {
-            abort(500, __('The user does not exist'));
+            throw ApiException::fail(__('The user does not exist'));
         }
         if ($user->plan_id) {
             $user['plan'] = Plan::find($user->plan_id);
             if (!$user['plan']) {
-                abort(500, __('Subscription plan does not exist'));
+                throw ApiException::fail(__('Subscription plan does not exist'));
             }
         }
 
@@ -349,8 +357,9 @@ class UserController extends Controller
         $userService = new UserService();
         $user['reset_day'] = $userService->getResetDay($user);
         $user['allow_new_period'] = config('v2board.allow_new_period', 0);
+
         return response([
-            'data' => $user
+            'data' => $user,
         ]);
     }
 
@@ -358,13 +367,14 @@ class UserController extends Controller
     {
         $user = User::find($request->user['id']);
         if (!$user) {
-            abort(500, __('The user does not exist'));
+            throw ApiException::fail(__('The user does not exist'));
         }
         if (!$user->update(['telegram_id' => null])) {
-            abort(500, __('Unbind telegram failed'));
+            throw ApiException::fail(__('Unbind telegram failed'));
         }
+
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -372,15 +382,16 @@ class UserController extends Controller
     {
         $user = User::find($request->user['id']);
         if (!$user) {
-            abort(500, __('The user does not exist'));
+            throw ApiException::fail(__('The user does not exist'));
         }
         $user->uuid = Helper::guid(true);
         $user->token = Helper::guid();
         if (!$user->save()) {
-            abort(500, __('Reset failed'));
+            throw ApiException::fail(__('Reset failed'));
         }
+
         return response([
-            'data' => Helper::getSubscribeUrl($user['token'])
+            'data' => Helper::getSubscribeUrl($user['token']),
         ]);
     }
 
@@ -389,21 +400,21 @@ class UserController extends Controller
         $updateData = $request->only([
             'auto_renewal',
             'remind_expire',
-            'remind_traffic'
+            'remind_traffic',
         ]);
 
         $user = User::find($request->user['id']);
         if (!$user) {
-            abort(500, __('The user does not exist'));
+            throw ApiException::fail(__('The user does not exist'));
         }
         try {
             $user->update($updateData);
         } catch (\Exception $e) {
-            abort(500, __('Save failed'));
+            throw ApiException::fail(__('Save failed'));
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -411,10 +422,10 @@ class UserController extends Controller
     {
         $user = User::find($request->user['id']);
         if (!$user) {
-            abort(500, __('The user does not exist'));
+            throw ApiException::fail(__('The user does not exist'));
         }
         if ($request->input('transfer_amount') > $user->commission_balance) {
-            abort(500, __('Insufficient commission balance'));
+            throw ApiException::fail(__('Insufficient commission balance'));
         }
         DB::beginTransaction();
         $order = new Order();
@@ -434,15 +445,15 @@ class UserController extends Controller
         $order->total_amount = 0;
         $order->surplus_amount = $request->input('transfer_amount');
         $order->callback_no = '佣金划转 Commission transfer';
-        if (!$order->save()||!$user->save()) {
+        if (!$order->save() || !$user->save()) {
             DB::rollback();
-            abort(500, __('Transfer failed'));
+            throw ApiException::fail(__('Transfer failed'));
         }
 
         DB::commit();
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -450,7 +461,7 @@ class UserController extends Controller
     {
         $user = User::find($request->user['id']);
         if (!$user) {
-            abort(500, __('The user does not exist'));
+            throw ApiException::fail(__('The user does not exist'));
         }
 
         $code = Helper::guid();
@@ -462,8 +473,9 @@ class UserController extends Controller
         } else {
             $url = url($redirect);
         }
+
         return response([
-            'data' => $url
+            'data' => $url,
         ]);
     }
 }

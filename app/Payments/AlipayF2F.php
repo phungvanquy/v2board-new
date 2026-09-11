@@ -3,9 +3,11 @@
 /**
  * 自己写别抄，抄NMB抄
  */
+
 namespace App\Payments;
 
-class AlipayF2F {
+class AlipayF2F
+{
     public function __construct($config)
     {
         $this->config = $config;
@@ -32,8 +34,8 @@ class AlipayF2F {
             'product_name' => [
                 'label' => __('Custom product name'),
                 'description' => __('Shown on the Alipay statement'),
-                'type' => 'input'
-            ]
+                'type' => 'input',
+            ],
         ];
     }
 
@@ -49,12 +51,13 @@ class AlipayF2F {
             $gateway->setBizContent([
                 'subject' => $this->config['product_name'] ?? (config('v2board.app_name', 'V2Board') . ' - 订阅'),
                 'out_trade_no' => $order['trade_no'],
-                'total_amount' => $order['total_amount'] / 100
+                'total_amount' => $order['total_amount'] / 100,
             ]);
             $gateway->send();
+
             return [
                 'type' => 0, // 0:qrcode 1:url
-                'data' => $gateway->getQrCodeUrl()
+                'data' => $gateway->getQrCodeUrl(),
             ];
         } catch (\Exception $e) {
             abort(500, $e->getMessage());
@@ -63,7 +66,9 @@ class AlipayF2F {
 
     public function notify($params)
     {
-        if ($params['trade_status'] !== 'TRADE_SUCCESS') return false;
+        if ($params['trade_status'] !== 'TRADE_SUCCESS') {
+            return false;
+        }
         $gateway = new \Library\AlipayF2F();
         $gateway->setAppId($this->config['app_id']);
         $gateway->setPrivateKey($this->config['private_key']); // 可以是路径，也可以是密钥内容
@@ -75,7 +80,7 @@ class AlipayF2F {
                  */
                 return [
                     'trade_no' => $params['out_trade_no'],
-                    'callback_no' => $params['trade_no']
+                    'callback_no' => $params['trade_no'],
                 ];
             } else {
                 /**

@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Encryption\Encrypter;
 use App\Models\User;
 use App\Utils\Helper;
+use Illuminate\Console\Command;
+use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\DB;
 
 class V2boardInstall extends Command
@@ -42,7 +42,7 @@ class V2boardInstall extends Command
     public function handle()
     {
         try {
-            $this->info("__     ______  ____                      _  ");
+            $this->info('__     ______  ____                      _  ');
             $this->info("\ \   / /___ \| __ )  ___   __ _ _ __ __| | ");
             $this->info(" \ \ / /  __) |  _ \ / _ \ / _` | '__/ _` | ");
             $this->info("  \ V /  / __/| |_) | (_) | (_| | | | (_| | ");
@@ -61,7 +61,7 @@ class V2boardInstall extends Command
                 'DB_HOST' => $this->ask('请输入数据库地址（默认:localhost）', 'localhost'),
                 'DB_DATABASE' => $this->ask('请输入数据库名'),
                 'DB_USERNAME' => $this->ask('请输入数据库用户名'),
-                'DB_PASSWORD' => $this->ask('请输入数据库密码')
+                'DB_PASSWORD' => $this->ask('请输入数据库密码'),
             ]);
             \Artisan::call('config:clear');
             \Artisan::call('config:cache');
@@ -74,8 +74,8 @@ class V2boardInstall extends Command
             if (!$file) {
                 abort(500, '数据库文件不存在');
             }
-            $sql = str_replace("\n", "", $file);
-            $sql = preg_split("/;/", $sql);
+            $sql = str_replace("\n", '', $file);
+            $sql = preg_split('/;/', $sql);
             if (!is_array($sql)) {
                 abort(500, '数据库文件格式有误');
             }
@@ -118,6 +118,7 @@ class V2boardInstall extends Command
         $user->uuid = Helper::guid(true);
         $user->token = Helper::guid();
         $user->is_admin = 1;
+
         return $user->save();
     }
 
@@ -145,11 +146,13 @@ class V2boardInstall extends Command
 
             $file = fopen($envPath, 'w');
             fwrite($file, $contents);
+
             return fclose($file);
         }
-        foreach($data as $key => $value) {
+        foreach ($data as $key => $value) {
             set_env_var($key, $value);
         }
+
         return true;
     }
 }

@@ -15,7 +15,7 @@ class PlanUpdate extends FormRequest
     {
         return [
             'show' => 'in:0,1',
-            'renew' => 'in:0,1'
+            'renew' => 'in:0,1',
         ];
     }
 
@@ -23,7 +23,7 @@ class PlanUpdate extends FormRequest
     {
         return [
             'show.in' => __('The sales status is invalid'),
-            'renew.in' => __('The renewal status is invalid')
+            'renew.in' => __('The renewal status is invalid'),
         ];
     }
 }

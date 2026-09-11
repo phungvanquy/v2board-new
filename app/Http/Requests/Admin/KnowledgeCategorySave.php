@@ -15,7 +15,7 @@ class KnowledgeCategorySave extends FormRequest
     {
         return [
             'name' => 'required',
-            'language' => 'required'
+            'language' => 'required',
         ];
     }
 
@@ -23,7 +23,7 @@ class KnowledgeCategorySave extends FormRequest
     {
         return [
             'name.required' => __('The category name cannot be empty'),
-            'language.required' => __('The category language cannot be empty')
+            'language.required' => __('The category language cannot be empty'),
         ];
     }
 }

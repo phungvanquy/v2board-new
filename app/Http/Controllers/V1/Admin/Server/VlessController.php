@@ -4,9 +4,9 @@ namespace App\Http\Controllers\V1\Admin\Server;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServerVless;
+use App\Utils\Helper;
 use Illuminate\Http\Request;
 use ParagonIE_Sodium_Compat as SodiumCompat;
-use App\Utils\Helper;
 
 class VlessController extends Controller
 {
@@ -30,10 +30,10 @@ class VlessController extends Controller
             'tags' => 'nullable|array',
             'rate' => 'required',
             'show' => 'nullable|in:0,1',
-            'sort' => 'nullable'
+            'sort' => 'nullable',
         ]);
 
-        if (isset($params['tls']) && (int)$params['tls'] === 2) {
+        if (isset($params['tls']) && (int) $params['tls'] === 2) {
             $keyPair = SodiumCompat::crypto_box_keypair();
             $params['tls_settings'] = $params['tls_settings'] ?? [];
             if (!isset($params['tls_settings']['public_key'])) {
@@ -46,7 +46,7 @@ class VlessController extends Controller
                 $params['tls_settings']['short_id'] = substr(sha1($params['tls_settings']['private_key']), 0, 8);
             }
             if (!isset($params['tls_settings']['server_port'])) {
-                $params['tls_settings']['server_port'] = "443";
+                $params['tls_settings']['server_port'] = '443';
             }
         }
         if ($params['network'] != 'tcp') {
@@ -63,19 +63,19 @@ class VlessController extends Controller
                     $extra['noSSEHeader'] = filter_var($extra['noSSEHeader'], FILTER_VALIDATE_BOOLEAN);
                 }
                 if (isset($extra['scMaxBufferedPosts'])) {
-                    $extra['scMaxBufferedPosts'] = (int)$extra['scMaxBufferedPosts'];
+                    $extra['scMaxBufferedPosts'] = (int) $extra['scMaxBufferedPosts'];
                 }
                 if (isset($extra['xmux']) && is_array($extra['xmux'])) {
                     $xmux = $extra['xmux'];
                     if (isset($xmux['hKeepAlivePeriod'])) {
-                        $xmux['hKeepAlivePeriod'] = (int)$xmux['hKeepAlivePeriod'];
+                        $xmux['hKeepAlivePeriod'] = (int) $xmux['hKeepAlivePeriod'];
                     }
                     $extra['xmux'] = $xmux;
                 }
                 if (isset($extra['downloadSettings']) && is_array($extra['downloadSettings'])) {
                     $downloadSettings = $extra['downloadSettings'];
                     if (isset($downloadSettings['port'])) {
-                        $downloadSettings['port'] = (int)$downloadSettings['port'];
+                        $downloadSettings['port'] = (int) $downloadSettings['port'];
                     }
                     $extra['downloadSettings'] = $downloadSettings;
                 }
@@ -108,8 +108,9 @@ class VlessController extends Controller
             } catch (\Exception $e) {
                 abort(500, __('Save failed'));
             }
+
             return response([
-                'data' => true
+                'data' => true,
             ]);
         }
 
@@ -118,7 +119,7 @@ class VlessController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -130,8 +131,9 @@ class VlessController extends Controller
                 abort(500, __('Node ID does not exist'));
             }
         }
+
         return response([
-            'data' => $server->delete()
+            'data' => $server->delete(),
         ]);
     }
 
@@ -153,7 +155,7 @@ class VlessController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 
@@ -169,7 +171,7 @@ class VlessController extends Controller
         }
 
         return response([
-            'data' => true
+            'data' => true,
         ]);
     }
 }

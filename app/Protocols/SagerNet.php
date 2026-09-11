@@ -2,10 +2,10 @@
 
 namespace App\Protocols;
 
-
+use App\Protocols\Contracts\ProtocolFormatter;
 use App\Utils\Helper;
 
-class SagerNet
+class SagerNet implements ProtocolFormatter
 {
     public $flag = 'sagernet';
     private $servers;
@@ -22,11 +22,12 @@ class SagerNet
         $uri = '';
 
         foreach ($this->servers as $server) {
-            if($server['type'] === 'hysteria') {
+            if ($server['type'] === 'hysteria') {
                 continue;
             }
             $uri .= Helper::buildUri($this->user['uuid'], $server);
         }
+
         return base64_encode($uri);
     }
 }

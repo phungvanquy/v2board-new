@@ -17,13 +17,18 @@ class Admin
     public function handle($request, Closure $next)
     {
         $authorization = $request->input('auth_data') ?? $request->header('authorization');
-        if (!$authorization) abort(403, __('Not logged in or session expired'));
+        if (!$authorization) {
+            abort(403, __('Not logged in or session expired'));
+        }
 
         $user = AuthService::decryptAuthData($authorization);
-        if (!$user || !$user['is_admin']) abort(403, __('Not logged in or session expired'));
+        if (!$user || !$user['is_admin']) {
+            abort(403, __('Not logged in or session expired'));
+        }
         $request->merge([
-            'user' => $user
+            'user' => $user,
         ]);
+
         return $next($request);
     }
 }

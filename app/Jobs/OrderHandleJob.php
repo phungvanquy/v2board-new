@@ -12,7 +12,10 @@ use Illuminate\Queue\SerializesModels;
 
 class OrderHandleJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
     protected $tradeNo;
 
     public $tries = 3;
@@ -38,7 +41,9 @@ class OrderHandleJob implements ShouldQueue
         $order = Order::where('trade_no', $this->tradeNo)
             ->first();
 
-        if (!$order) return;
+        if (!$order) {
+            return;
+        }
 
         $orderService = new OrderService($order);
         switch ($order->status) {

@@ -3,10 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Models\Plan;
-use Illuminate\Console\Command;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use App\Services\TelegramService;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
 class ResetTraffic extends Command
@@ -34,7 +34,7 @@ class ResetTraffic extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->builder = User::where('expired_at', '!=', NULL)
+        $this->builder = User::where('expired_at', '!=', null)
             ->where('expired_at', '>', time());
     }
 
@@ -48,8 +48,8 @@ class ResetTraffic extends Command
         ini_set('memory_limit', -1);
         Redis::setex('traffic_reset_lock', 300, 1);
         $resetMethods = Plan::select(
-            DB::raw("GROUP_CONCAT(`id`) as plan_ids"),
-            DB::raw("reset_traffic_method as method")
+            DB::raw('GROUP_CONCAT(`id`) as plan_ids'),
+            DB::raw('reset_traffic_method as method')
         )
             ->groupBy('reset_traffic_method')
             ->get()
@@ -57,25 +57,26 @@ class ResetTraffic extends Command
         foreach ($resetMethods as $resetMethod) {
             $planIds = explode(',', $resetMethod['plan_ids']);
             switch (true) {
-                case ($resetMethod['method'] === NULL): {
+                case ($resetMethod['method'] === null): {
                     $resetTrafficMethod = config('v2board.reset_traffic_method', 0);
                     $builder = with(clone($this->builder))->whereIn('plan_id', $planIds);
-                    switch ((int)$resetTrafficMethod) {
+                    switch ((int) $resetTrafficMethod) {
                         // month first day
                         case 0:
                             $this->resetByMonthFirstDay($builder);
                             break;
-                        // expire day
+                            // expire day
                         case 1:
                             $this->resetByExpireDay($builder);
                             break;
-                        // no action
+                            // no action
                         case 2:
                             break;
-                        // year first day
+                            // year first day
                         case 3:
                             $this->resetByYearFirstDay($builder);
-                        // year expire day
+                            // year expire day
+                            // no break
                         case 4:
                             $this->resetByExpireYear($builder);
                     }
@@ -122,18 +123,18 @@ class ResetTraffic extends Command
         $this->retryTransaction(function () use ($users) {
             User::whereIn('id', $users)->update([
                 'u' => 0,
-                'd' => 0
+                'd' => 0,
             ]);
         });
     }
 
     private function resetByYearFirstDay($builder): void
     {
-        if ((string)date('md') === '0101') {
+        if ((string) date('md') === '0101') {
             $this->retryTransaction(function () use ($builder) {
                 $builder->update([
                     'u' => 0,
-                    'd' => 0
+                    'd' => 0,
                 ]);
             });
         }
@@ -141,11 +142,11 @@ class ResetTraffic extends Command
 
     private function resetByMonthFirstDay($builder): void
     {
-        if ((string)date('d') === '01') {
+        if ((string) date('d') === '01') {
             $this->retryTransaction(function () use ($builder) {
                 $builder->update([
                     'u' => 0,
-                    'd' => 0
+                    'd' => 0,
                 ]);
             });
         }
@@ -159,17 +160,16 @@ class ResetTraffic extends Command
         foreach ($builder->get() as $item) {
             $expireDay = date('d', $item->expired_at);
 
-            if (($expireDay === $today) ||(($today === $lastDay) && $expireDay >= $lastDay)) {
+            if (($expireDay === $today) || (($today === $lastDay) && $expireDay >= $lastDay)) {
                 if (time() < $item->expired_at - 2160000) {
                     array_push($users, $item->id);
                 }
             }
-
         }
         $this->retryTransaction(function () use ($users) {
             User::whereIn('id', $users)->update([
                 'u' => 0,
-                'd' => 0
+                'd' => 0,
             ]);
         });
     }
@@ -181,16 +181,17 @@ class ResetTraffic extends Command
         while ($attempts < $maxAttempts) {
             try {
                 DB::transaction($callback);
+
                 return;
             } catch (\Exception $e) {
                 $attempts++;
                 if ($attempts >= $maxAttempts || strpos($e->getMessage(), '40001') === false && strpos(strtolower($e->getMessage()), 'deadlock') === false) {
                     $telegramService = new TelegramService();
                     $message = sprintf(
-                        date('Y/m/d H:i:s') . "用户流量重置失败：" . $e->getMessage()
+                        date('Y/m/d H:i:s') . '用户流量重置失败：' . $e->getMessage()
                     );
                     $telegramService->sendMessageWithAdmin($message);
-                    abort(500, '用户流量重置失败'. $e->getMessage());
+                    abort(500, '用户流量重置失败' . $e->getMessage());
                 }
                 sleep(5);
             }

@@ -13,25 +13,28 @@ class PlanController extends Controller
     public function fetch(Request $request)
     {
         $counts = User::select(
-            DB::raw("plan_id"),
-            DB::raw("count(*) as count")
+            DB::raw('plan_id'),
+            DB::raw('count(*) as count')
         )
-            ->where('plan_id', '!=', NULL)
+            ->where('plan_id', '!=', null)
             ->where(function ($query) {
                 $query->where('expired_at', '>=', time())
-                    ->orWhere('expired_at', NULL);
+                    ->orWhere('expired_at', null);
             })
-            ->groupBy("plan_id")
+            ->groupBy('plan_id')
             ->get();
         $plans = Plan::orderBy('sort', 'ASC')->get();
         foreach ($plans as $k => $v) {
             $plans[$k]->count = 0;
             foreach ($counts as $kk => $vv) {
-                if ($plans[$k]->id === $counts[$kk]->plan_id) $plans[$k]->count = $counts[$kk]->count;
+                if ($plans[$k]->id === $counts[$kk]->plan_id) {
+                    $plans[$k]->count = $counts[$kk]->count;
+                }
             }
         }
+
         return response([
-            'data' => $plans
+            'data' => $plans,
         ]);
     }
 }

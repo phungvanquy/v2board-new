@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 class StatServerJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
     //protected $u;
     //protected $d;
     protected $data;
@@ -28,7 +31,7 @@ class StatServerJob implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(array $data,array $server, $protocol, $recordType = 'd')
+    public function __construct(array $data, array $server, $protocol, $recordType = 'd')
     {
         $this->onQueue('stat');
         //$this->u = $u;
@@ -54,7 +57,7 @@ class StatServerJob implements ShouldQueue
             DB::beginTransaction();
             $u = 0;
             $d = 0;
-            foreach(array_keys($this->data) as $userId){
+            foreach (array_keys($this->data) as $userId) {
                 $u += $this->data[$userId][0];
                 $d += $this->data[$userId][1];
             }
@@ -66,7 +69,7 @@ class StatServerJob implements ShouldQueue
             if ($serverdata) {
                 $serverdata->update([
                     'u' => $serverdata['u'] + $u,
-                    'd' => $serverdata['d'] + $d
+                    'd' => $serverdata['d'] + $d,
                 ]);
             } else {
                 StatServer::create([
@@ -75,13 +78,13 @@ class StatServerJob implements ShouldQueue
                     'u' => $u,
                     'd' => $d,
                     'record_type' => $this->recordType,
-                    'record_at' => $recordAt
+                    'record_at' => $recordAt,
                 ]);
             }
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            abort(500, '节点统计数据失败'. $e->getMessage());
+            abort(500, '节点统计数据失败' . $e->getMessage());
         }
     }
 }
