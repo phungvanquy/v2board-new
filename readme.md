@@ -2,66 +2,171 @@
 
 [![](https://img.shields.io/badge/TgChat-@UnOfficialV2board讨论-blue.svg)](https://t.me/unofficialV2board)
 
-## 本分支支持的后端
- - [修改版V2bX](https://github.com/wyx2685/V2bX)
- - [v2node](https://github.com/wyx2685/v2node)
+# V2Board
 
-## 原版迁移步骤
+V2Board is a proxy-service panel for managing users, subscriptions, payments and proxy nodes (Shadowsocks / V2Ray / Trojan / Hysteria / TUIC / AnyTLS). This fork ships a **one-command Docker deployment** plus an **English admin dashboard** — the upstream panel is Chinese-only.
 
-按以下步骤进行面板代码文件迁移：
+Supported node backends: [V2bX](https://github.com/wyx2685/V2bX) · [v2node](https://github.com/wyx2685/v2node)
 
-    git remote set-url origin https://github.com/wyx2685/v2board  
-    git checkout master  
-    ./update.sh  
+---
 
+## Quick start (Docker — recommended)
 
-按以下步骤配置缓存驱动为redis，然后刷新设置缓存，重启队列:
-
-    sed -i 's/^CACHE_DRIVER=.*/CACHE_DRIVER=redis/' .env
-    php artisan config:clear
-    php artisan config:cache
-    php artisan horizon:terminate
-
-最后进入后台重新保存主题： 主题配置-选择default主题-主题设置-确定保存
-
-# **V2Board**
-
-- PHP7.3+
-- Composer
-- MySQL5.5+
-- Redis
-- Laravel
-
-## Docker Compose
-
-Run the whole stack (app + nginx + MySQL + Redis + Horizon) with one command —
-no PHP, MySQL, or Redis needed on the host:
+Requirements: **Docker Engine 24+** and **Compose v2** (`docker compose version` should print `v2.x`). No PHP / MySQL / Redis needed on the host.
 
 ```bash
-cp .env.docker.example .env    # then edit the secrets
-docker compose up -d --build
+git clone https://github.com/phungvanquy/v2board-new.git && cd v2board-new
+cp .env.docker.example .env          # then edit the secrets inside
+docker compose up -d --build         # first boot imports the DB and pre-warms the theme
+docker compose ps                    # all 5 services should show (healthy)
 ```
 
-Site: <http://localhost:8080>. First boot imports `database/install.sql` and
-creates the admin when `ADMIN_EMAIL` / `ADMIN_PASSWORD` are set in `.env`.
+| What | URL |
+|------|-----|
+| **Site** | http://localhost:8080/ |
+| **Admin** | http://localhost:8080/`hash('crc32b', config('app.key'))` |
+| **Health probe** | http://localhost:8080/healthz → `ok` |
 
-Full guide — service layout, environment, first boot vs. existing data, updates,
-backup/restore, the optional `webman` profile, live-reload override and
-troubleshooting: [docs/docker.md](docs/docker.md).
+Find your admin path (it is the CRC32 of `APP_KEY` unless you override it in **System config → secure_path**):
 
-## Demo
-[Demo_user](https://v2bdemo.v-50.me/)
-[Demo_admin](https://v2bdemo.v-50.me/admindashboard)
-邮箱和密码可随意输入
+```bash
+docker compose exec app php artisan tinker \
+  --execute 'echo "/".(config("v2board.secure_path") ?: config("v2board.frontend_admin_path") ?: hash("crc32b", config("app.key")))."\n";'
+```
 
-## Document
-[Click](https://v2board.com)
+### Create the first admin
+
+**Option A — automatic (recommended for new installs).** Put these in `.env` *before* the first `docker compose up`:
+
+```ini
+ADMIN_EMAIL=you@example.com
+ADMIN_PASSWORD=choose-at-least-8-chars
+```
+
+The entrypoint creates that admin when `v2_user` is still empty.
+
+**Option B — after the stack is already up:**
+
+```bash
+docker compose exec app php artisan tinker
+```
+```php
+$email = 'you@example.com';
+$pw = 'choose-at-least-8-chars';
+$user = new App\Models\User();
+$user->email = $email;
+$user->password = password_hash($pw, PASSWORD_DEFAULT);
+$user->uuid = App\Utils\Helper::guid(true);
+$user->token = App\Utils\Helper::guid();
+$user->is_admin = 1;
+$user->save();
+```
+
+Sign in at the admin URL above with that email + password.
+
+### 5-minute onboarding checklist (after you can log in)
+
+1. **System config** — `Admin → System config` → set **Site name**, **Site URL** (`APP_URL` must be a `http(s)://` URL reachable by nodes), **Subscribe URL / Path**, then **Save**. Verify the save sticks after a refresh (a bug here was fixed in `771db31d` — report it if it regresses).
+2. **Payment** — `Admin → Payment config` → enable at least one gateway or users cannot pay. The **Payment docs** are gateway-specific; most need a callback URL pointing at your `APP_URL`.
+3. **Plans** — `Admin → Subscriptions` → **Add** a plan (traffic, duration, price). Plans are what users buy; without one the storefront is empty.
+4. **Nodes** — `Admin → Nodes` → **Add** a node group, then add nodes under it (grouped by protocol: Shadowsocks / VMess / VLESS / Trojan / Hysteria / TUIC). Each node needs a backing backend (V2bX / v2node) pointed at your panel via `server_api_url` + `server_token` (configured in **System → Server**). See the upstream docs at [v2board.com](https://v2board.com) for node wiring.
+5. **Test a user** — create or register a test user, assign a plan, copy its subscription URL and import it into a client (Clash / V2RayN / Shadowrocket / Quantumult X). Traffic should increment in **Users** → the user row.
+6. **Backups** — `docker compose` keeps data in named volumes (`db_data`, `redis_data`, `app_storage`, `app_config`, `app_bootstrap_cache`). Only `down -v` destroys them. See **Backup & restore** below.
+
+Full operator reference — service layout, environment variables, updates, backups, the optional `webman` profile, live-reload override and troubleshooting: [**docs/docker.md**](docs/docker.md).
+
+---
+
+## Bare-metal deployment (no Docker)
+
+The `init.sh` / `update.sh` / `cli-php.ini` / `pm2.yaml` path is still supported and unchanged:
+
+- Requirements: **PHP 7.3+**, **Composer**, **MySQL 5.5+**, **Redis**, **Laravel**
+- `bash init.sh` on a fresh host (interactive — sets `.env`, imports `database/install.sql`)
+- `./update.sh` to pull and run `v2board:update`
+- See `./init.sh` and the upstream guide at [v2board.com](https://v2board.com)
+
+### Migrating an existing panel to this fork
+
+```bash
+git remote set-url origin https://github.com/phungvanquy/v2board-new.git
+git checkout master
+./update.sh
+sed -i 's/^CACHE_DRIVER=.*/CACHE_DRIVER=redis/' .env
+php artisan config:clear
+php artisan config:cache
+php artisan horizon:terminate
+# then in the admin: Theme config → pick `default` → Theme settings → Save
+```
+
+---
+
+## Common operations (Docker)
+
+```bash
+docker compose logs -f                  # all services
+docker compose logs -f app horizon      # just PHP + queue
+docker compose exec app php artisan horizon:status
+docker compose exec app php artisan tinker
+docker compose exec db mysql -uv2board -p"$DB_PASSWORD" v2board
+docker compose restart horizon          # after queue issues
+docker compose down                     # stop, keep volumes
+docker compose down -v                  # stop and wipe all data!
+```
+
+Apply a panel update without losing data:
+
+```bash
+git pull
+docker compose build app nginx          # preserve db_data
+docker compose up -d
+docker compose exec app php artisan v2board:update
+```
+
+Back up / restore a volume (example: `db_data`):
+
+```bash
+docker volume ls | grep v2board
+mkdir -p backups
+docker run --rm -v v2board_db_data:/data -v "$PWD/backups:/backup" alpine \
+  tar czf /backup/db_data-$(date +%F).tgz -C /data .
+# restore (stop first)
+docker compose down
+docker run --rm -v v2board_db_data:/data -v "$PWD/backups:/backup" alpine \
+  sh -c 'rm -rf /data/* && tar xzf /backup/db_data-YYYY-MM-DD.tgz -C /data'
+docker compose up -d
+```
+
+Live code reload for development (no rebuild on every edit):
+
+```bash
+cp docker-compose.override.yml.example docker-compose.override.yml
+docker compose up -d   # merges the override automatically
+```
+
+---
+
+## This fork vs upstream
+
+- **Admin in English.** The panel's admin UI was rewritten from Chinese to English at the bundle level (`admin-i18n/` pipeline, locale table, `__()` PHP keys, guard/shape checks). No API or theme changes.
+- **Docker-first.** The `Dockerfile` + `docker-compose.yml` + `.env.docker.example` path above does not exist upstream (their `.gitignore` hid `docker-compose.yml`). Host provisioning is no longer required.
+- Everything else (theme, user-facing site, node protocols, payments) tracks upstream `wyx2685/v2board`.
+
+---
+
+## Demo / upstream docs
+
+- Demo user: <https://v2bdemo.v-50.me/>  —  Demo admin: <https://v2bdemo.v-50.me/admindashboard> (any email/password)
+- Upstream docs: <https://v2board.com>
 
 ## Sponsors
+
 Thanks to the open source project license provided by [Jetbrains](https://www.jetbrains.com/)
 
 ## Community
-🔔Telegram Group: [@unofficialV2board](https://t.me/unofficialV2board)  
+
+Telegram: [@unofficialV2board](https://t.me/unofficialV2board)
 
 ## How to Feedback
+
 Follow the template in the issue to submit your question correctly, and we will have someone follow up with you.
