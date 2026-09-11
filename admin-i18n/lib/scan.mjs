@@ -132,6 +132,14 @@ export function scanFile(filePath) {
 }
 
 export function scanAll(root = '.') {
+  const alt = path.join(root, 'admin-i18n', 'orig');
+  if (fs.existsSync(path.join(alt, 'umi.js')) && !process.env.ADMIN_I18N_FROM_LIVE) {
+    return [
+      ...scanFile(path.join(alt, 'umi.js')),
+      ...scanFile(path.join(alt, 'vendors.async.js')),
+      ...scanFile(path.join(alt, 'components.async.js')),
+    ];
+  }
   const all = [];
   for (const f of BUNDLE_FILES) all.push(...scanFile(path.join(root, BUNDLE_DIR, f)));
   return all;

@@ -15,7 +15,7 @@ class UserFetch extends FormRequest
     {
         return [
             'filter.*.key' => 'required|in:id,email,transfer_enable,device_limit,d,expired_at,uuid,token,invite_by_email,invite_user_id,plan_id,banned,remarks,is_admin',
-            'filter.*.condition' => 'required|in:>,<,=,>=,<=,模糊,!=',
+            'filter.*.condition' => 'required|in:>,<,=,>=,<=,Fuzzy,!=',
             'filter.*.value' => 'required'
         ];
     }
@@ -23,11 +23,11 @@ class UserFetch extends FormRequest
     public function messages()
     {
         return [
-            'filter.*.key.required' => '过滤键不能为空',
-            'filter.*.key.in' => '过滤键参数有误',
-            'filter.*.condition.required' => '过滤条件不能为空',
-            'filter.*.condition.in' => '过滤条件参数有误',
-            'filter.*.value.required' => '过滤值不能为空'
+            'filter.*.key.required' => __('The filter key cannot be empty'),
+            'filter.*.key.in' => __('The filter key is invalid'),
+            'filter.*.condition.required' => __('The filter condition cannot be empty'),
+            'filter.*.condition.in' => __('The filter condition is invalid'),
+            'filter.*.value.required' => __('The filter value cannot be empty')
         ];
     }
 }

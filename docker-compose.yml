@@ -1,0 +1,202 @@
+name: v2board
+
+services:
+  # ── App: PHP-FPM + Laravel ─────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.2}
+        WITH_WEBMAN: ${WITH_WEBMAN:-true}
+    image: v2board-app:local
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DB_HOST: db
+      REDIS_HOST: redis
+    volumes:
+      # Host .env — create it before `up` (`cp .env.docker.example .env`).
+      # Required so APP_KEY / DB_PASSWORD survive `recreate`.
+      - type: bind
+        source: ./.env
+        target: /var/www/.env
+      - app_storage:/var/www/storage
+      - app_bootstrap_cache:/var/www/bootstrap/cache
+      - app_config:/var/www/config
+    healthcheck:
+      test: ["CMD-SHELL", "php artisan --version >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks: [v2board]
+
+  # ── Nginx ──────────────────────────────────────────────────────────
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: nginx
+    image: v2board-nginx:local
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"
+    volumes:
+      - app_storage:/var/www/storage:ro
+    depends_on:
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    networks: [v2board]
+
+  # ── MySQL 8.0 ──────────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    command: >-
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --skip-name-resolve
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-v2board}
+      MYSQL_USER: ${DB_USERNAME:-v2board}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-change_me}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-change_me_root}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" >/dev/null 2>&1 || mysqladmin ping -h 127.0.0.1 >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks: [v2board]
+
+  # ── Redis 7 ────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: >-
+      sh -c 'if [ -n "$$REDIS_PASSWORD" ]; then
+               exec redis-server --requirepass "$$REDIS_PASSWORD" --save 60 1;
+             else
+               exec redis-server --save 60 1;
+             fi'
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "if [ -n \"$$REDIS_PASSWORD\" ]; then redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG; else redis-cli ping | grep -q PONG; fi"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks: [v2board]
+
+  # ── Horizon ────────────────────────────────────────────────────────
+  horizon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.2}
+        WITH_WEBMAN: ${WITH_WEBMAN:-true}
+    image: v2board-app:local
+    restart: unless-stopped
+    command: ["php", "artisan", "horizon"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DB_HOST: db
+      REDIS_HOST: redis
+      SKIP_DB_INIT: "1"
+    volumes:
+      - type: bind
+        source: ./.env
+        target: /var/www/.env
+        read_only: true
+      - app_storage:/var/www/storage
+      - app_bootstrap_cache:/var/www/bootstrap/cache
+      - app_config:/var/www/config:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "php artisan horizon:status 2>/dev/null | grep -qi running || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    networks: [v2board]
+
+  # ── Webman (Adapterman/Workerman) — optional: --profile webman ────
+  webman:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.2}
+        WITH_WEBMAN: "true"
+    image: v2board-app:local
+    profiles: ["webman"]
+    restart: unless-stopped
+    command: ["php", "-c", "cli-php.ini", "webman.php"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DB_HOST: db
+      REDIS_HOST: redis
+      SKIP_DB_INIT: "1"
+    volumes:
+      - type: bind
+        source: ./.env
+        target: /var/www/.env
+        read_only: true
+      - app_storage:/var/www/storage
+      - app_bootstrap_cache:/var/www/bootstrap/cache
+      - app_config:/var/www/config:ro
+    ports:
+      - "${WEBMAN_PORT:-6600}:6600"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks: [v2board]
+
+volumes:
+  db_data:
+  redis_data:
+  app_storage:
+  app_bootstrap_cache:
+  app_config:
+
+networks:
+  v2board:
+    driver: bridge

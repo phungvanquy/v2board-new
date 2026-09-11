@@ -6,7 +6,7 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 `extract.mjs`, `translate.mjs` and `guard.mjs`.
 
 - CJK literals: **1586** occurrences across **47** module(s)
-- translated: **717** | allowlisted: **7** | pending: **535**
+- translated: **1251** | allowlisted: **8** | pending: **0**
 
 ## `umi.js@1dM+` — 196 string(s)
 
@@ -34,15 +34,15 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 - "请输入站点URL，末尾不要/" → "Enter the site URL, no trailing /" _(x1)_
 - "强制HTTPS" → "Force HTTPS" _(x1)_
 - "当站点没有使用HTTPS，CDN或反代开启强制HTTPS时需要开启。" → "Enable when the site itself is not HTTPS but a CDN or reverse proxy forces HTTPS." _(x1)_
-- "用于显示需要LOGO的地方。" → "Used wherever a logo is shown." _(x1)_
-- "请输入LOGO URL，末尾不要/" → "Enter the logo URL, no trailing /" _(x1)_
+- "用于显示需要LOGO的地方。" → "Used wherever the LOGO is shown." _(x1)_
+- "请输入LOGO URL，末尾不要/" → "Enter the LOGO URL, no trailing /" _(x1)_
 - "订阅URL" → "Subscription URL" _(x1)_
 - "用于订阅所使用，留空则为站点URL。如需多个订阅URL随机获取请使用逗号进行分割。" → "Used for subscriptions. Left empty it is the site URL. Separate several URLs with commas to pick one at random." _(x1)_
 - "请输入订阅URL，末尾不要/。逗号分割支持多域名" → "Enter the subscription URL, no trailing /. Separate several domains with commas" _(x1)_
 - "订阅路径" → "Subscription path" _(x1)_
 - "用于订阅所使用，留空则为/api/v1/client/subscribe。如需更换不同的订阅路径请设置。" → "Used for subscriptions. Left empty it is /api/v1/client/subscribe. Set this to change the subscribe path." _(x1)_
 - "用户条款(TOS)URL" → "Terms of service (TOS) URL" _(x1)_
-- "用于跳转到用户条款(TOS)" → "Link to the terms of service" _(x1)_
+- "用于跳转到用户条款(TOS)" → "Link to the terms of service (TOS)" _(x1)_
 - "请输入用户条款URL，末尾不要/" → "Enter the terms of service URL, no trailing /" _(x1)_
 - "停止新用户注册" → "Disable new registration" _(x1)_
 - "开启后任何人都将无法进行注册。" → "When enabled, nobody can register." _(x1)_
@@ -90,7 +90,7 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 - "每月1号" → "The 1st of each month" _(x1)_
 - "按月重置" → "Reset monthly" _(x1)_
 - "不重置" → "Never reset" _(x1)_
-- "每年1月1日" → "January 1st each year" _(x1)_
+- "每年1月1日" → "January 1, each year" _(x1)_
 - "按年重置" → "Reset yearly" _(x1)_
 - "开启折抵方案" → "Enable proration" _(x1)_
 - "开启后用户更换订阅将会由系统对原有订阅进行折抵，方案参考文档。" → "When enabled, the system credits the old subscription when a user switches. See the documentation for the formula." _(x1)_
@@ -142,7 +142,7 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 - "关闭提现" → "Disable withdrawals" _(x1)_
 - "关闭后将禁止用户申请提现，且邀请佣金将会直接进入用户余额。" → "When disabled, users cannot request withdrawals and referral commission goes straight into their balance." _(x1)_
 - "三级分销" → "Three-tier commission" _(x1)_
-- "开启后将佣金将按照设置的3成比例进行分成，三成比例合计请不要>100%。" → "When enabled, commission is split across the three configured ratios. Their sum must not exceed 100%." _(x1)_
+- "开启后将佣金将按照设置的3成比例进行分成，三成比例合计请不要>100%。" → "When enabled, commission is split across the 3 configured ratios. Their sum must not exceed 100%." _(x1)_
 - "一级邀请人比例" → "First-level referrer ratio" _(x1)_
 - "请输入比例如：50" → "Enter a percentage, e.g. 50" _(x1)_
 - "二级邀请人比例" → "Second-level referrer ratio" _(x1)_
@@ -209,7 +209,7 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 
 ## `umi.js@uzXD` — 126 string(s)
 
-- " 编辑" → "Edit" _(x16)_
+- " 编辑" → " Edit" _(x16)_
 - "无" → "None" _(x15)_
 - "留空自动生成" → "Leave empty to generate automatically" _(x8)_
 - "否" → "No" _(x7)_
@@ -270,8 +270,8 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 - "数据包中继模式" → "Packet relay mode" _(x2)_
 - "拥塞控制算法" → "Congestion control algorithm" _(x2)_
 - "客户端启用 0-RTT" → "Enable 0-RTT on the client" _(x2)_
-- " 复制" → "Copy" _(x2)_
-- " 删除" → "Delete" _(x2)_
+- " 复制" → " Copy" _(x2)_
+- " 删除" → " Delete" _(x2)_
 - "节点ID" → "Node ID" _(x2)_
 - "HYSTERIA版本" → "HYSTERIA version" _(x1)_
 - "混淆密码obfsParam" → "Obfs password obfsParam" _(x1)_
@@ -315,9 +315,9 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 - "一键安装指令" → "One-line install command" _(x1)_
 - "操作 " → "Actions " _(x1)_
 - "显隐" → "Show/hide" _(x1)_
-- " 未运行" → "Not running" _(x1)_
-- " 无人使用或服务端上报异常" → "No users, or the server is not reporting" _(x1)_
-- " 运行正常" → "Running normally" _(x1)_
+- " 未运行" → " Not running" _(x1)_
+- " 无人使用或服务端上报异常" → " No users, or the server is not reporting" _(x1)_
+- " 运行正常" → " Running normally" _(x1)_
 - "节点 " → "Node " _(x1)_
 - "地址" → "Address" _(x1)_
 - "复制成功" → "Copied" _(x1)_
@@ -433,183 +433,183 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 
 ## `umi.js@d1ca` — 56 string(s)
 
-- "模糊" → "__TBD__" _(x3)_ `[TBD]`
-- "提醒" → "__TBD__" _(x2)_ `[TBD]`
+- "模糊" → "Fuzzy" _(x3)_
+- "提醒" → "Notice" _(x2)_
 - "确定" → "OK" _(x2)_
 - "取消" → "Cancel" _(x2)_
-- "邮箱" → "__TBD__" _(x2)_ `[TBD]`
-- "封禁" → "__TBD__" _(x2)_ `[TBD]`
-- "正常" → "__TBD__" _(x2)_ `[TBD]`
+- "邮箱" → "Email" _(x2)_
+- "封禁" → "Banned" _(x2)_
+- "正常" → "Normal" _(x2)_
 - "订阅" → "Subscription" _(x2)_
-- "到期时间" → "__TBD__" _(x2)_ `[TBD]`
+- "到期时间" → "Expires At" _(x2)_
 - "操作" → "Actions" _(x2)_
-- " 编辑" → "Edit" _(x2)_
-- " 分配订单" → "__TBD__" _(x2)_ `[TBD]`
-- " 复制订阅URL" → "__TBD__" _(x2)_ `[TBD]`
-- " 重置UUID及订阅URL" → "__TBD__" _(x2)_ `[TBD]`
-- " TA的订单" → "__TBD__" _(x2)_ `[TBD]`
-- " TA的邀请" → "__TBD__" _(x2)_ `[TBD]`
-- " TA的流量记录" → "__TBD__" _(x2)_ `[TBD]`
-- " 删除用户" → "__TBD__" _(x2)_ `[TBD]`
-- "确定要进行封禁吗？" → "__TBD__" _(x1)_ `[TBD]`
-- "确定要进行删除吗？" → "__TBD__" _(x1)_ `[TBD]`
-- "重置安全信息" → "__TBD__" _(x1)_ `[TBD]`
-- "确定要重置" → "__TBD__" _(x1)_ `[TBD]`
-- "的安全信息吗？" → "__TBD__" _(x1)_ `[TBD]`
-- "删除用户" → "__TBD__" _(x1)_ `[TBD]`
-- "确定要删除" → "__TBD__" _(x1)_ `[TBD]`
-- "的用户信息吗？" → "__TBD__" _(x1)_ `[TBD]`
-- "最后在线" → "__TBD__" _(x1)_ `[TBD]`
-- "从未在线" → "__TBD__" _(x1)_ `[TBD]`
-- "状态" → "__TBD__" _(x1)_ `[TBD]`
+- " 编辑" → " Edit" _(x2)_
+- " 分配订单" → " Assign Order" _(x2)_
+- " 复制订阅URL" → " Copy Subscription URL" _(x2)_
+- " 重置UUID及订阅URL" → " Reset UUID and Subscription URL" _(x2)_
+- " TA的订单" → " Their Orders" _(x2)_
+- " TA的邀请" → " Their Invites" _(x2)_
+- " TA的流量记录" → " Their Traffic Records" _(x2)_
+- " 删除用户" → " Delete User" _(x2)_
+- "确定要进行封禁吗？" → "Are you sure you want to ban this user?" _(x1)_
+- "确定要进行删除吗？" → "Are you sure you want to delete this?" _(x1)_
+- "重置安全信息" → "Reset Security Info" _(x1)_
+- "确定要重置" → "Are you sure you want to reset " _(x1)_
+- "的安全信息吗？" → "'s security information?" _(x1)_
+- "删除用户" → "Delete User" _(x1)_
+- "确定要删除" → "Are you sure you want to delete " _(x1)_
+- "的用户信息吗？" → "'s user information?" _(x1)_
+- "最后在线" → "Last Online" _(x1)_
+- "从未在线" → "Never Online" _(x1)_
+- "状态" → "Status" _(x1)_
 - "权限组" → "Permission group" _(x1)_
-- "已用(G)" → "__TBD__" _(x1)_ `[TBD]`
-- "流量(G)" → "__TBD__" _(x1)_ `[TBD]`
-- "设备数" → "__TBD__" _(x1)_ `[TBD]`
-- "长期有效" → "__TBD__" _(x1)_ `[TBD]`
-- "余额" → "__TBD__" _(x1)_ `[TBD]`
-- "佣金" → "__TBD__" _(x1)_ `[TBD]`
-- "加入时间" → "__TBD__" _(x1)_ `[TBD]`
+- "已用(G)" → "Used (G)" _(x1)_
+- "流量(G)" → "Traffic (G)" _(x1)_
+- "设备数" → "Devices" _(x1)_
+- "长期有效" → "Never Expires" _(x1)_
+- "余额" → "Balance" _(x1)_
+- "佣金" → "Commission" _(x1)_
+- "加入时间" → "Joined At" _(x1)_
 - "操作 " → "Actions " _(x1)_
-- "用户管理" → "__TBD__" _(x1)_ `[TBD]`
-- "Tips：可以使用过滤器过滤后再使用操作对过滤的用户进行操作。" → "__TBD__" _(x1)_ `[TBD]`
-- "用户ID" → "__TBD__" _(x1)_ `[TBD]`
-- "无订阅" → "__TBD__" _(x1)_ `[TBD]`
-- "流量" → "__TBD__" _(x1)_ `[TBD]`
-- "下行" → "__TBD__" _(x1)_ `[TBD]`
-- "账号状态" → "__TBD__" _(x1)_ `[TBD]`
-- "邀请人邮箱" → "__TBD__" _(x1)_ `[TBD]`
-- "邀请人ID" → "__TBD__" _(x1)_ `[TBD]`
-- "备注" → "__TBD__" _(x1)_ `[TBD]`
-- "管理员" → "__TBD__" _(x1)_ `[TBD]`
+- "用户管理" → "User Management" _(x1)_
+- "Tips：可以使用过滤器过滤后再使用操作对过滤的用户进行操作。" → "Tip: apply the filter first, then run actions on the filtered users." _(x1)_
+- "用户ID" → "User ID" _(x1)_
+- "无订阅" → "No Subscription" _(x1)_
+- "流量" → "Traffic" _(x1)_
+- "下行" → "Downstream" _(x1)_
+- "账号状态" → "Account Status" _(x1)_
+- "邀请人邮箱" → "Inviter Email" _(x1)_
+- "邀请人ID" → "Inviter ID" _(x1)_
+- "备注" → "Remarks" _(x1)_
+- "管理员" → "Admin" _(x1)_
 - "是" → "Yes" _(x1)_
 - "否" → "No" _(x1)_
-- " 过滤器" → "__TBD__" _(x1)_ `[TBD]`
-- " 导出CSV" → "__TBD__" _(x1)_ `[TBD]`
-- " 发送邮件" → "__TBD__" _(x1)_ `[TBD]`
-- " 批量封禁" → "__TBD__" _(x1)_ `[TBD]`
-- " 批量删除" → "__TBD__" _(x1)_ `[TBD]`
+- " 过滤器" → " Filter" _(x1)_
+- " 导出CSV" → " Export CSV" _(x1)_
+- " 发送邮件" → " Send Mail" _(x1)_
+- " 批量封禁" → " Batch Ban" _(x1)_
+- " 批量删除" → " Batch Delete" _(x1)_
 
 ## `umi.js@ih8c` — 51 string(s)
 
-- "留空则不限制" → "__TBD__" _(x3)_ `[TBD]`
-- "月付" → "__TBD__" _(x2)_ `[TBD]`
-- "季付" → "__TBD__" _(x2)_ `[TBD]`
-- "年付" → "__TBD__" _(x2)_ `[TBD]`
-- "两年付" → "__TBD__" _(x2)_ `[TBD]`
-- "三年付" → "__TBD__" _(x2)_ `[TBD]`
-- "一次性" → "__TBD__" _(x2)_ `[TBD]`
-- "重置包" → "__TBD__" _(x2)_ `[TBD]`
-- "设备数限制" → "__TBD__" _(x2)_ `[TBD]`
+- "留空则不限制" → "Leave empty for unlimited" _(x3)_
+- "月付" → "One Month" _(x2)_
+- "季付" → "Three Months" _(x2)_
+- "年付" → "One Year" _(x2)_
+- "两年付" → "Two Years" _(x2)_
+- "三年付" → "Three Years" _(x2)_
+- "一次性" → "One-time" _(x2)_
+- "重置包" → "Reset Package" _(x2)_
+- "设备数限制" → "Device Limit" _(x2)_
 - "请选择权限组" → "Select a permission group" _(x2)_
-- " 编辑" → "Edit" _(x2)_
-- " 删除" → "Delete" _(x2)_
-- "编辑订阅" → "__TBD__" _(x1)_ `[TBD]`
-- "新建订阅" → "__TBD__" _(x1)_ `[TBD]`
-- "套餐名称" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入套餐名称" → "__TBD__" _(x1)_ `[TBD]`
-- "套餐描述" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入套餐描述，支持HTML" → "__TBD__" _(x1)_ `[TBD]`
-- "售价设置 " → "__TBD__" _(x1)_ `[TBD]`
-- "将金额留空则不会进行出售" → "__TBD__" _(x1)_ `[TBD]`
-- "半年" → "__TBD__" _(x1)_ `[TBD]`
-- "套餐流量" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入套餐流量" → "__TBD__" _(x1)_ `[TBD]`
+- " 编辑" → " Edit" _(x2)_
+- " 删除" → " Delete" _(x2)_
+- "编辑订阅" → "Edit Subscription" _(x1)_
+- "新建订阅" → "New Subscription" _(x1)_
+- "套餐名称" → "Plan Name" _(x1)_
+- "请输入套餐名称" → "Enter the plan name" _(x1)_
+- "套餐描述" → "Plan Description" _(x1)_
+- "请输入套餐描述，支持HTML" → "Enter the plan description, HTML is supported" _(x1)_
+- "售价设置 " → "Pricing " _(x1)_
+- "将金额留空则不会进行出售" → "Leave the price empty to stop selling" _(x1)_
+- "半年" → "Six Months" _(x1)_
+- "套餐流量" → "Plan Traffic" _(x1)_
+- "请输入套餐流量" → "Enter the plan traffic" _(x1)_
 - "权限组 " → "Permission group " _(x1)_
 - "添加权限组" → "Add permission group" _(x1)_
-- "流量重置方式" → "__TBD__" _(x1)_ `[TBD]`
-- "跟随系统设置" → "__TBD__" _(x1)_ `[TBD]`
+- "流量重置方式" → "Traffic Reset Method" _(x1)_
+- "跟随系统设置" → "Follow System Settings" _(x1)_
 - "每月1号" → "The 1st of each month" _(x1)_
 - "按月重置" → "Reset monthly" _(x1)_
 - "不重置" → "Never reset" _(x1)_
-- "每年1月1日" → "January 1st each year" _(x1)_
+- "每年1月1日" → "January 1, each year" _(x1)_
 - "按年重置" → "Reset yearly" _(x1)_
-- "最大容纳用户量" → "__TBD__" _(x1)_ `[TBD]`
-- "限速" → "__TBD__" _(x1)_ `[TBD]`
-- "勾选后变更的流量、限速、权限组将应用到该套餐下的用户" → "__TBD__" _(x1)_ `[TBD]`
-- "强制更新到用户" → "__TBD__" _(x1)_ `[TBD]`
+- "最大容纳用户量" → "User Capacity" _(x1)_
+- "限速" → "Speed Limit" _(x1)_
+- "勾选后变更的流量、限速、权限组将应用到该套餐下的用户" → "When checked, changes to traffic, speed limit and groups apply to the users of this plan" _(x1)_
+- "强制更新到用户" → "Force Update to Users" _(x1)_
 - "取消" → "Cancel" _(x1)_
 - "提交" → "Submit" _(x1)_
 - "排序" → "Sort" _(x1)_
-- "销售状态" → "__TBD__" _(x1)_ `[TBD]`
-- "续费 " → "__TBD__" _(x1)_ `[TBD]`
-- "在订阅停止销售时，已购用户是否可以续费" → "__TBD__" _(x1)_ `[TBD]`
-- "名称" → "__TBD__" _(x1)_ `[TBD]`
-- "统计" → "__TBD__" _(x1)_ `[TBD]`
-- "流量" → "__TBD__" _(x1)_ `[TBD]`
-- "半年付" → "__TBD__" _(x1)_ `[TBD]`
+- "销售状态" → "On Sale" _(x1)_
+- "续费 " → "Renewal " _(x1)_
+- "在订阅停止销售时，已购用户是否可以续费" → "Whether existing users can renew after the subscription stops selling" _(x1)_
+- "名称" → "Name" _(x1)_
+- "统计" → "Stats" _(x1)_
+- "流量" → "Traffic" _(x1)_
+- "半年付" → "Six Months" _(x1)_
 - "权限组" → "Permission group" _(x1)_
 - "操作" → "Actions" _(x1)_
 - "操作 " → "Actions " _(x1)_
-- "订阅管理" → "__TBD__" _(x1)_ `[TBD]`
-- " 添加订阅" → "__TBD__" _(x1)_ `[TBD]`
+- "订阅管理" → "Subscriptions" _(x1)_
+- " 添加订阅" → " Add Subscription" _(x1)_
 
 ## `umi.js@pi3A` — 49 string(s)
 
-- "模糊" → "__TBD__" _(x4)_ `[TBD]`
-- "佣金金额" → "__TBD__" _(x3)_ `[TBD]`
-- "订单号" → "__TBD__" _(x2)_ `[TBD]`
-- "订单状态" → "__TBD__" _(x2)_ `[TBD]`
-- "订阅计划" → "__TBD__" _(x2)_ `[TBD]`
-- "回调单号" → "__TBD__" _(x2)_ `[TBD]`
-- "支付金额" → "__TBD__" _(x2)_ `[TBD]`
-- "创建时间" → "__TBD__" _(x2)_ `[TBD]`
-- "佣金状态" → "__TBD__" _(x2)_ `[TBD]`
-- "已支付" → "__TBD__" _(x2)_ `[TBD]`
-- "标记为 " → "__TBD__" _(x2)_ `[TBD]`
-- "待确认" → "__TBD__" _(x2)_ `[TBD]`
-- "无效" → "__TBD__" _(x2)_ `[TBD]`
-- "订单信息" → "__TBD__" _(x1)_ `[TBD]`
-- "邮箱" → "__TBD__" _(x1)_ `[TBD]`
-- "订单周期" → "__TBD__" _(x1)_ `[TBD]`
-- "余额支付" → "__TBD__" _(x1)_ `[TBD]`
-- "优惠金额" → "__TBD__" _(x1)_ `[TBD]`
-- "退回金额" → "__TBD__" _(x1)_ `[TBD]`
-- "折抵金额" → "__TBD__" _(x1)_ `[TBD]`
-- "更新时间" → "__TBD__" _(x1)_ `[TBD]`
-- "邀请人" → "__TBD__" _(x1)_ `[TBD]`
-- "查看TA邀请的人" → "__TBD__" _(x1)_ `[TBD]`
-- "实际发放" → "__TBD__" _(x1)_ `[TBD]`
-- "# 订单号" → "__TBD__" _(x1)_ `[TBD]`
-- "类型" → "__TBD__" _(x1)_ `[TBD]`
-- "新购" → "__TBD__" _(x1)_ `[TBD]`
-- "续费" → "__TBD__" _(x1)_ `[TBD]`
-- "变更" → "__TBD__" _(x1)_ `[TBD]`
-- "流量包" → "__TBD__" _(x1)_ `[TBD]`
+- "模糊" → "Fuzzy" _(x4)_
+- "佣金金额" → "Commission Amount" _(x3)_
+- "订单号" → "Order No." _(x2)_
+- "订单状态" → "Order Status" _(x2)_
+- "订阅计划" → "Subscription Plan" _(x2)_
+- "回调单号" → "Callback No." _(x2)_
+- "支付金额" → "Amount Paid" _(x2)_
+- "创建时间" → "Created At" _(x2)_
+- "佣金状态" → "Commission Status" _(x2)_
+- "已支付" → "Paid" _(x2)_
+- "标记为 " → "Mark as " _(x2)_
+- "待确认" → "Pending Confirmation" _(x2)_
+- "无效" → "Invalid" _(x2)_
+- "订单信息" → "Order Details" _(x1)_
+- "邮箱" → "Email" _(x1)_
+- "订单周期" → "Order Period" _(x1)_
+- "余额支付" → "Paid by Balance" _(x1)_
+- "优惠金额" → "Discount Amount" _(x1)_
+- "退回金额" → "Refund Amount" _(x1)_
+- "折抵金额" → "Deduction Amount" _(x1)_
+- "更新时间" → "Updated At" _(x1)_
+- "邀请人" → "Inviter" _(x1)_
+- "查看TA邀请的人" → "View People Invited by This User" _(x1)_
+- "实际发放" → "Actually Paid" _(x1)_
+- "# 订单号" → "# Order No." _(x1)_
+- "类型" → "Type" _(x1)_
+- "新购" → "New Purchase" _(x1)_
+- "续费" → "Renewal" _(x1)_
+- "变更" → "Change" _(x1)_
+- "流量包" → "Data Package" _(x1)_
 - "充值" → "Top up" _(x1)_
-- "周期" → "__TBD__" _(x1)_ `[TBD]`
-- "标记为[已支付]后将会由系统进行开通后并完成" → "__TBD__" _(x1)_ `[TBD]`
-- "订单状态 " → "__TBD__" _(x1)_ `[TBD]`
+- "周期" → "Period" _(x1)_
+- "标记为[已支付]后将会由系统进行开通后并完成" → "Marking as [Paid] lets the system process the activation and complete it" _(x1)_
+- "订单状态 " → "Order Status " _(x1)_
 - "取消" → "Cancel" _(x1)_
-- "佣金状态 " → "__TBD__" _(x1)_ `[TBD]`
-- "标记为[有效]后将会由系统处理后发放到用户并完成" → "__TBD__" _(x1)_ `[TBD]`
-- "有效" → "__TBD__" _(x1)_ `[TBD]`
-- "订单管理" → "__TBD__" _(x1)_ `[TBD]`
-- "未支付" → "__TBD__" _(x1)_ `[TBD]`
-- "已取消" → "__TBD__" _(x1)_ `[TBD]`
-- "已完成" → "__TBD__" _(x1)_ `[TBD]`
-- "已折抵" → "__TBD__" _(x1)_ `[TBD]`
-- "发放中" → "__TBD__" _(x1)_ `[TBD]`
-- "已发放" → "__TBD__" _(x1)_ `[TBD]`
-- "用户ID" → "__TBD__" _(x1)_ `[TBD]`
-- "邀请人ID" → "__TBD__" _(x1)_ `[TBD]`
-- " 过滤器" → "__TBD__" _(x1)_ `[TBD]`
-- " 添加订单" → "__TBD__" _(x1)_ `[TBD]`
+- "佣金状态 " → "Commission Status " _(x1)_
+- "标记为[有效]后将会由系统处理后发放到用户并完成" → "Marking as [Valid] lets the system process it, issue it to the user and complete it" _(x1)_
+- "有效" → "Valid" _(x1)_
+- "订单管理" → "Orders" _(x1)_
+- "未支付" → "Unpaid" _(x1)_
+- "已取消" → "Cancelled" _(x1)_
+- "已完成" → "Completed" _(x1)_
+- "已折抵" → "Applied" _(x1)_
+- "发放中" → "Paying" _(x1)_
+- "已发放" → "Paid" _(x1)_
+- "用户ID" → "User ID" _(x1)_
+- "邀请人ID" → "Inviter ID" _(x1)_
+- " 过滤器" → " Filter" _(x1)_
+- " 添加订单" → " Add Order" _(x1)_
 
 ## `umi.js@3XVG` — 47 string(s)
 
-- "端口" → "__TBD__" _(x2)_ `[TBD]`
+- "端口" → "Port" _(x2)_
 - "编辑配置" → "Edit configuration" _(x2)_
-- "DNS服务器表" → "__TBD__" _(x1)_ `[TBD]`
-- "服务器组" → "__TBD__" _(x1)_ `[TBD]`
-- "DNS服务器地址" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入DNS服务器地址" → "__TBD__" _(x1)_ `[TBD]`
-- "域名" → "__TBD__" _(x1)_ `[TBD]`
-- "域名列表，此列表包含的域名，将优先使用此服务器进行查询。一行一条" → "__TBD__" _(x1)_ `[TBD]`
-- "添加" → "__TBD__" _(x1)_ `[TBD]`
-- "域名过滤器" → "__TBD__" _(x1)_ `[TBD]`
-- "协议过滤器" → "__TBD__" _(x1)_ `[TBD]`
-- "不使用请留空" → "__TBD__" _(x1)_ `[TBD]`
+- "DNS服务器表" → "DNS Server Table" _(x1)_
+- "服务器组" → "Server Group" _(x1)_
+- "DNS服务器地址" → "DNS Server Address" _(x1)_
+- "请输入DNS服务器地址" → "Enter the DNS server address" _(x1)_
+- "域名" → "Domain" _(x1)_
+- "域名列表，此列表包含的域名，将优先使用此服务器进行查询。一行一条" → "Domain list. Domains in this list are resolved by this server first. One per line" _(x1)_
+- "添加" → "Add" _(x1)_
+- "域名过滤器" → "Domain Filter" _(x1)_
+- "协议过滤器" → "Protocol Filter" _(x1)_
+- "不使用请留空" → "Leave empty if unused" _(x1)_
 - "请求失败" → "Request failed" _(x1)_
 - "传输协议配置格式有误" → "Invalid transport protocol configuration" _(x1)_
 - "协议详细配置" → "Protocol details" _(x1)_
@@ -627,10 +627,10 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 - "请选择权限组" → "Select a permission group" _(x1)_
 - "节点地址" → "Node address" _(x1)_
 - "请输入连接地址" → "Enter the connection address" _(x1)_
-- "编辑TLS配置" → "__TBD__" _(x1)_ `[TBD]`
-- "是否支持TLS" → "__TBD__" _(x1)_ `[TBD]`
-- "不支持" → "__TBD__" _(x1)_ `[TBD]`
-- "支持" → "__TBD__" _(x1)_ `[TBD]`
+- "编辑TLS配置" → "Edit TLS Config" _(x1)_
+- "是否支持TLS" → "TLS Supported" _(x1)_
+- "不支持" → "Not Supported" _(x1)_
+- "支持" → "Supported" _(x1)_
 - "连接端口" → "Connection port" _(x1)_
 - "用户连接端口" → "Client port" _(x1)_
 - "服务端口" → "Service port" _(x1)_
@@ -648,94 +648,94 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 
 ## `umi.js@showgiftcardpage` — 44 string(s)
 
-- "名称" → "__TBD__" _(x2)_ `[TBD]`
-- "套餐" → "__TBD__" _(x2)_ `[TBD]`
-- " 天" → "__TBD__" _(x2)_ `[TBD]`
+- "名称" → "Name" _(x2)_
+- "套餐" → "Plan" _(x2)_
+- " 天" → " day(s)" _(x2)_
 - "取消" → "Cancel" _(x2)_
-- "天" → "__TBD__" _(x2)_ `[TBD]`
-- "指定订阅" → "__TBD__" _(x2)_ `[TBD]`
-- "类型" → "__TBD__" _(x1)_ `[TBD]`
-- "金额" → "__TBD__" _(x1)_ `[TBD]`
-- "时长" → "__TBD__" _(x1)_ `[TBD]`
-- "流量" → "__TBD__" _(x1)_ `[TBD]`
+- "天" → "day(s)" _(x2)_
+- "指定订阅" → "Specified Subscriptions" _(x2)_
+- "类型" → "Type" _(x1)_
+- "金额" → "Amount" _(x1)_
+- "时长" → "Duration" _(x1)_
+- "流量" → "Traffic" _(x1)_
 - "重置" → "Reset" _(x1)_
-- "数值" → "__TBD__" _(x1)_ `[TBD]`
-- "卡密" → "__TBD__" _(x1)_ `[TBD]`
+- "数值" → "Value" _(x1)_
+- "卡密" → "Code" _(x1)_
 - "复制成功" → "Copied" _(x1)_
-- "剩余次数" → "__TBD__" _(x1)_ `[TBD]`
-- "无限" → "__TBD__" _(x1)_ `[TBD]`
-- "有效期" → "__TBD__" _(x1)_ `[TBD]`
+- "剩余次数" → "Uses Left" _(x1)_
+- "无限" → "Unlimited" _(x1)_
+- "有效期" → "Validity" _(x1)_
 - "操作" → "Actions" _(x1)_
 - "编辑" → "Edit" _(x1)_
-- "警告" → "__TBD__" _(x1)_ `[TBD]`
-- "确定要删除该条项目吗？" → "__TBD__" _(x1)_ `[TBD]`
+- "警告" → "Warning" _(x1)_
+- "确定要删除该条项目吗？" → "Are you sure you want to delete this item?" _(x1)_
 - "确定" → "OK" _(x1)_
-- "删除" → "__TBD__" _(x1)_ `[TBD]`
-- "礼品卡管理" → "__TBD__" _(x1)_ `[TBD]`
-- "添加礼品卡" → "__TBD__" _(x1)_ `[TBD]`
-- "编辑礼品卡" → "__TBD__" _(x1)_ `[TBD]`
-- "新建礼品卡" → "__TBD__" _(x1)_ `[TBD]`
+- "删除" → "Delete" _(x1)_
+- "礼品卡管理" → "Gift Cards" _(x1)_
+- "添加礼品卡" → "Add Gift Card" _(x1)_
+- "编辑礼品卡" → "Edit Gift Card" _(x1)_
+- "新建礼品卡" → "New Gift Card" _(x1)_
 - "提交" → "Submit" _(x1)_
-- "请输入礼品卡名称" → "__TBD__" _(x1)_ `[TBD]`
-- "自定义礼品卡卡密" → "__TBD__" _(x1)_ `[TBD]`
-- "自定义礼品卡卡密(留空随机生成)" → "__TBD__" _(x1)_ `[TBD]`
-- "礼品卡类型" → "__TBD__" _(x1)_ `[TBD]`
-- "增加账户余额" → "__TBD__" _(x1)_ `[TBD]`
-- "增加订阅时长" → "__TBD__" _(x1)_ `[TBD]`
-- "增加套餐流量" → "__TBD__" _(x1)_ `[TBD]`
-- "重置套餐流量" → "__TBD__" _(x1)_ `[TBD]`
-- "兑换订阅套餐" → "__TBD__" _(x1)_ `[TBD]`
-- "一次性套餐输入0" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入值" → "__TBD__" _(x1)_ `[TBD]`
-- "礼品卡有效期" → "__TBD__" _(x1)_ `[TBD]`
-- "最大使用次数" → "__TBD__" _(x1)_ `[TBD]`
-- "限制最大使用次数，用完则无法使用(为空则不限制)" → "__TBD__" _(x1)_ `[TBD]`
-- "生成数量" → "__TBD__" _(x1)_ `[TBD]`
-- "输入数量批量生成" → "__TBD__" _(x1)_ `[TBD]`
+- "请输入礼品卡名称" → "Enter the gift card name" _(x1)_
+- "自定义礼品卡卡密" → "Custom Gift Card Code" _(x1)_
+- "自定义礼品卡卡密(留空随机生成)" → "Custom Gift Card Code (leave empty to generate randomly)" _(x1)_
+- "礼品卡类型" → "Gift Card Type" _(x1)_
+- "增加账户余额" → "Add Account Balance" _(x1)_
+- "增加订阅时长" → "Add Subscription Duration" _(x1)_
+- "增加套餐流量" → "Add Plan Traffic" _(x1)_
+- "重置套餐流量" → "Reset Plan Traffic" _(x1)_
+- "兑换订阅套餐" → "Redeem a subscription plan" _(x1)_
+- "一次性套餐输入0" → "Enter 0 for a one-time plan" _(x1)_
+- "请输入值" → "Enter a value" _(x1)_
+- "礼品卡有效期" → "Gift Card Validity" _(x1)_
+- "最大使用次数" → "Maximum Uses" _(x1)_
+- "限制最大使用次数，用完则无法使用(为空则不限制)" → "Maximum total uses; the coupon stops working once used up (empty for unlimited)" _(x1)_
+- "生成数量" → "Quantity" _(x1)_
+- "输入数量批量生成" → "Enter a quantity to batch generate" _(x1)_
 
 ## `umi.js@Q55k` — 41 string(s)
 
 - "取消" → "Cancel" _(x2)_
-- "启用" → "__TBD__" _(x1)_ `[TBD]`
-- "券名称" → "__TBD__" _(x1)_ `[TBD]`
-- "类型" → "__TBD__" _(x1)_ `[TBD]`
-- "金额" → "__TBD__" _(x1)_ `[TBD]`
-- "比例" → "__TBD__" _(x1)_ `[TBD]`
-- "券码" → "__TBD__" _(x1)_ `[TBD]`
+- "启用" → "Enabled" _(x1)_
+- "券名称" → "Coupon Name" _(x1)_
+- "类型" → "Type" _(x1)_
+- "金额" → "Amount" _(x1)_
+- "比例" → "Ratio" _(x1)_
+- "券码" → "Code" _(x1)_
 - "复制成功" → "Copied" _(x1)_
-- "剩余次数" → "__TBD__" _(x1)_ `[TBD]`
-- "无限" → "__TBD__" _(x1)_ `[TBD]`
-- "有效期" → "__TBD__" _(x1)_ `[TBD]`
+- "剩余次数" → "Uses Left" _(x1)_
+- "无限" → "Unlimited" _(x1)_
+- "有效期" → "Validity" _(x1)_
 - "操作" → "Actions" _(x1)_
 - "编辑" → "Edit" _(x1)_
-- "警告" → "__TBD__" _(x1)_ `[TBD]`
-- "确定要删除该条项目吗？" → "__TBD__" _(x1)_ `[TBD]`
+- "警告" → "Warning" _(x1)_
+- "确定要删除该条项目吗？" → "Are you sure you want to delete this item?" _(x1)_
 - "确定" → "OK" _(x1)_
-- "删除" → "__TBD__" _(x1)_ `[TBD]`
-- "优惠券管理" → "__TBD__" _(x1)_ `[TBD]`
-- " 添加优惠券" → "__TBD__" _(x1)_ `[TBD]`
-- "编辑优惠券" → "__TBD__" _(x1)_ `[TBD]`
-- "新建优惠券" → "__TBD__" _(x1)_ `[TBD]`
+- "删除" → "Delete" _(x1)_
+- "优惠券管理" → "Coupons" _(x1)_
+- " 添加优惠券" → " Add Coupon" _(x1)_
+- "编辑优惠券" → "Edit Coupon" _(x1)_
+- "新建优惠券" → "New Coupon" _(x1)_
 - "提交" → "Submit" _(x1)_
-- "名称" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入优惠券名称" → "__TBD__" _(x1)_ `[TBD]`
-- "自定义优惠券码" → "__TBD__" _(x1)_ `[TBD]`
-- "自定义优惠券码(留空随机生成)" → "__TBD__" _(x1)_ `[TBD]`
-- "优惠信息" → "__TBD__" _(x1)_ `[TBD]`
-- "按金额优惠" → "__TBD__" _(x1)_ `[TBD]`
-- "按比例优惠" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入值" → "__TBD__" _(x1)_ `[TBD]`
-- "优惠券有效期" → "__TBD__" _(x1)_ `[TBD]`
-- "最大使用次数" → "__TBD__" _(x1)_ `[TBD]`
-- "限制最大使用次数，用完则无法使用(为空则不限制)" → "__TBD__" _(x1)_ `[TBD]`
-- "每个用户可使用次数" → "__TBD__" _(x1)_ `[TBD]`
-- "限制每个用户可使用次数(为空则不限制)" → "__TBD__" _(x1)_ `[TBD]`
-- "指定订阅" → "__TBD__" _(x1)_ `[TBD]`
-- "限制指定订阅可以使用优惠(为空则不限制)" → "__TBD__" _(x1)_ `[TBD]`
-- "指定周期" → "__TBD__" _(x1)_ `[TBD]`
-- "限制指定周期可以使用优惠(为空则不限制)" → "__TBD__" _(x1)_ `[TBD]`
-- "生成数量" → "__TBD__" _(x1)_ `[TBD]`
-- "输入数量批量生成" → "__TBD__" _(x1)_ `[TBD]`
+- "名称" → "Name" _(x1)_
+- "请输入优惠券名称" → "Enter the coupon name" _(x1)_
+- "自定义优惠券码" → "Custom Coupon Code" _(x1)_
+- "自定义优惠券码(留空随机生成)" → "Custom Coupon Code (leave empty to generate randomly)" _(x1)_
+- "优惠信息" → "Discount" _(x1)_
+- "按金额优惠" → "Discount by Amount" _(x1)_
+- "按比例优惠" → "Discount by Ratio" _(x1)_
+- "请输入值" → "Enter a value" _(x1)_
+- "优惠券有效期" → "Coupon Validity" _(x1)_
+- "最大使用次数" → "Maximum Uses" _(x1)_
+- "限制最大使用次数，用完则无法使用(为空则不限制)" → "Maximum total uses; the coupon stops working once used up (empty for unlimited)" _(x1)_
+- "每个用户可使用次数" → "Uses Per User" _(x1)_
+- "限制每个用户可使用次数(为空则不限制)" → "Limit uses per user (empty for unlimited)" _(x1)_
+- "指定订阅" → "Specified Subscriptions" _(x1)_
+- "限制指定订阅可以使用优惠(为空则不限制)" → "Restrict to these subscriptions (empty for unlimited)" _(x1)_
+- "指定周期" → "Specified Periods" _(x1)_
+- "限制指定周期可以使用优惠(为空则不限制)" → "Restrict to these periods (empty for unlimited)" _(x1)_
+- "生成数量" → "Quantity" _(x1)_
+- "输入数量批量生成" → "Enter a quantity to batch generate" _(x1)_
 
 ## `vendors.async.js@XDpg` — 41 string(s)
 
@@ -784,43 +784,43 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 ## `umi.js@CgOb` — 39 string(s)
 
 - "取消" → "Cancel" _(x2)_
-- "余额" → "__TBD__" _(x2)_ `[TBD]`
-- "推广佣金" → "__TBD__" _(x2)_ `[TBD]`
-- "已用上行" → "__TBD__" _(x2)_ `[TBD]`
-- "已用下行" → "__TBD__" _(x2)_ `[TBD]`
-- "留空则不限制" → "__TBD__" _(x2)_ `[TBD]`
-- "用户管理" → "__TBD__" _(x1)_ `[TBD]`
-- "邮箱" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入邮箱" → "__TBD__" _(x1)_ `[TBD]`
-- "邀请人邮箱" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入邀请人邮箱" → "__TBD__" _(x1)_ `[TBD]`
-- "密码" → "__TBD__" _(x1)_ `[TBD]`
-- "如需修改密码请输入" → "__TBD__" _(x1)_ `[TBD]`
-- "流量" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入流量" → "__TBD__" _(x1)_ `[TBD]`
-- "设备数限制" → "__TBD__" _(x1)_ `[TBD]`
-- "到期时间" → "__TBD__" _(x1)_ `[TBD]`
-- "长期有效" → "__TBD__" _(x1)_ `[TBD]`
-- "订阅计划" → "__TBD__" _(x1)_ `[TBD]`
-- "请选择用户订阅计划" → "__TBD__" _(x1)_ `[TBD]`
+- "余额" → "Balance" _(x2)_
+- "推广佣金" → "Commission" _(x2)_
+- "已用上行" → "Upstream Used" _(x2)_
+- "已用下行" → "Downstream Used" _(x2)_
+- "留空则不限制" → "Leave empty for unlimited" _(x2)_
+- "用户管理" → "User Management" _(x1)_
+- "邮箱" → "Email" _(x1)_
+- "请输入邮箱" → "Enter an email" _(x1)_
+- "邀请人邮箱" → "Inviter Email" _(x1)_
+- "请输入邀请人邮箱" → "Enter the inviter email" _(x1)_
+- "密码" → "Password" _(x1)_
+- "如需修改密码请输入" → "Enter a new password to change it" _(x1)_
+- "流量" → "Traffic" _(x1)_
+- "请输入流量" → "Enter the traffic" _(x1)_
+- "设备数限制" → "Device Limit" _(x1)_
+- "到期时间" → "Expires At" _(x1)_
+- "长期有效" → "Never Expires" _(x1)_
+- "订阅计划" → "Subscription Plan" _(x1)_
+- "请选择用户订阅计划" → "Select the user subscription plan" _(x1)_
 - "无" → "None" _(x1)_
-- "账户状态" → "__TBD__" _(x1)_ `[TBD]`
-- "封禁" → "__TBD__" _(x1)_ `[TBD]`
-- "正常" → "__TBD__" _(x1)_ `[TBD]`
-- "推荐返利类型" → "__TBD__" _(x1)_ `[TBD]`
-- "跟随系统设置" → "__TBD__" _(x1)_ `[TBD]`
-- "循环返利" → "__TBD__" _(x1)_ `[TBD]`
-- "首次返利" → "__TBD__" _(x1)_ `[TBD]`
-- "推荐返利比例" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入推荐返利比例(为空则跟随站点设置返利比例)" → "__TBD__" _(x1)_ `[TBD]`
-- "专享折扣比例 " → "__TBD__" _(x1)_ `[TBD]`
-- "设置后该用户购买任何订阅将始终享受该折扣" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入专享折扣比例" → "__TBD__" _(x1)_ `[TBD]`
-- "限速" → "__TBD__" _(x1)_ `[TBD]`
-- "是否管理员" → "__TBD__" _(x1)_ `[TBD]`
-- "是否员工" → "__TBD__" _(x1)_ `[TBD]`
-- "备注" → "__TBD__" _(x1)_ `[TBD]`
-- "请在这里记录.." → "__TBD__" _(x1)_ `[TBD]`
+- "账户状态" → "Account Status" _(x1)_
+- "封禁" → "Banned" _(x1)_
+- "正常" → "Normal" _(x1)_
+- "推荐返利类型" → "Referral Commission Type" _(x1)_
+- "跟随系统设置" → "Follow System Settings" _(x1)_
+- "循环返利" → "Recurring Commission" _(x1)_
+- "首次返利" → "First-time Commission" _(x1)_
+- "推荐返利比例" → "Referral Commission Ratio" _(x1)_
+- "请输入推荐返利比例(为空则跟随站点设置返利比例)" → "Enter the referral commission ratio (empty follows the site rate)" _(x1)_
+- "专享折扣比例 " → "Exclusive Discount Ratio " _(x1)_
+- "设置后该用户购买任何订阅将始终享受该折扣" → "Once set, this user always gets this discount on any subscription purchase" _(x1)_
+- "请输入专享折扣比例" → "Enter the exclusive discount ratio" _(x1)_
+- "限速" → "Speed Limit" _(x1)_
+- "是否管理员" → "Is Admin" _(x1)_
+- "是否员工" → "Is Staff" _(x1)_
+- "备注" → "Remarks" _(x1)_
+- "请在这里记录.." → "Record notes here.." _(x1)_
 - "提交" → "Submit" _(x1)_
 
 ## `umi.js@ykC2` — 38 string(s)
@@ -866,73 +866,73 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 
 ## `umi.js@tI4l` — 34 string(s)
 
-- "简体中文" → "__TBD__" _(x1)_ `[TBD]`
-- "繁體中文" → "__TBD__" _(x1)_ `[TBD]`
-- "日本語" → "__TBD__" _(x1)_ `[TBD]`
-- "한국어" → "__TBD__" _(x1)_ `[TBD]`
-- "月付" → "__TBD__" _(x1)_ `[TBD]`
-- "季付" → "__TBD__" _(x1)_ `[TBD]`
-- "半年付" → "__TBD__" _(x1)_ `[TBD]`
-- "年付" → "__TBD__" _(x1)_ `[TBD]`
-- "两年付" → "__TBD__" _(x1)_ `[TBD]`
-- "三年付" → "__TBD__" _(x1)_ `[TBD]`
-- "一次性" → "__TBD__" _(x1)_ `[TBD]`
-- "流量重置包" → "__TBD__" _(x1)_ `[TBD]`
-- "路由器" → "__TBD__" _(x1)_ `[TBD]`
-- "待支付" → "__TBD__" _(x1)_ `[TBD]`
-- "开通中" → "__TBD__" _(x1)_ `[TBD]`
-- "已取消" → "__TBD__" _(x1)_ `[TBD]`
-- "已完成" → "__TBD__" _(x1)_ `[TBD]`
-- "已折抵" → "__TBD__" _(x1)_ `[TBD]`
-- "待确认" → "__TBD__" _(x1)_ `[TBD]`
-- "发放中" → "__TBD__" _(x1)_ `[TBD]`
-- "已发放" → "__TBD__" _(x1)_ `[TBD]`
-- "已驳回" → "__TBD__" _(x1)_ `[TBD]`
-- "开启" → "__TBD__" _(x1)_ `[TBD]`
-- "待回复" → "__TBD__" _(x1)_ `[TBD]`
-- "待答复" → "__TBD__" _(x1)_ `[TBD]`
+- "简体中文" → "Simplified Chinese" _(x1)_
+- "繁體中文" → "Traditional Chinese" _(x1)_
+- "日本語" → "Japanese" _(x1)_
+- "한국어" → "Korean" _(x1)_
+- "月付" → "One Month" _(x1)_
+- "季付" → "Three Months" _(x1)_
+- "半年付" → "Six Months" _(x1)_
+- "年付" → "One Year" _(x1)_
+- "两年付" → "Two Years" _(x1)_
+- "三年付" → "Three Years" _(x1)_
+- "一次性" → "One-time" _(x1)_
+- "流量重置包" → "Data Reset Package" _(x1)_
+- "路由器" → "Router" _(x1)_
+- "待支付" → "Pending Payment" _(x1)_
+- "开通中" → "Processing" _(x1)_
+- "已取消" → "Cancelled" _(x1)_
+- "已完成" → "Completed" _(x1)_
+- "已折抵" → "Applied" _(x1)_
+- "待确认" → "Pending Confirmation" _(x1)_
+- "发放中" → "Paying" _(x1)_
+- "已发放" → "Paid" _(x1)_
+- "已驳回" → "Rejected" _(x1)_
+- "开启" → "Open" _(x1)_
+- "待回复" → "Pending Reply" _(x1)_
+- "待答复" → "Pending Response" _(x1)_
 - "关闭" → "Off" _(x1)_
-- "禁止访问(域名目标)" → "__TBD__" _(x1)_ `[TBD]`
-- "禁止访问(IP目标)" → "__TBD__" _(x1)_ `[TBD]`
-- "禁止访问(端口目标)" → "__TBD__" _(x1)_ `[TBD]`
-- "禁止访问(协议)" → "__TBD__" _(x1)_ `[TBD]`
-- "指定DNS服务器进行解析" → "__TBD__" _(x1)_ `[TBD]`
-- "指定出站服务器(域名目标)" → "__TBD__" _(x1)_ `[TBD]`
-- "指定出站服务器(IP目标)" → "__TBD__" _(x1)_ `[TBD]`
-- "自定义默认出站" → "__TBD__" _(x1)_ `[TBD]`
+- "禁止访问(域名目标)" → "Block Access (domain target)" _(x1)_
+- "禁止访问(IP目标)" → "Block Access (IP target)" _(x1)_
+- "禁止访问(端口目标)" → "Block Access (port target)" _(x1)_
+- "禁止访问(协议)" → "Block Access (protocol)" _(x1)_
+- "指定DNS服务器进行解析" → "Resolve via a Specified DNS Server" _(x1)_
+- "指定出站服务器(域名目标)" → "Specify Outbound Server (domain target)" _(x1)_
+- "指定出站服务器(IP目标)" → "Specify Outbound Server (IP target)" _(x1)_
+- "自定义默认出站" → "Custom Default Outbound" _(x1)_
 
 ## `umi.js@eIZb` — 30 string(s)
 
 - "取消" → "Cancel" _(x2)_
-- "显示名称" → "__TBD__" _(x2)_ `[TBD]`
-- "在订单金额基础上附加手续费" → "__TBD__" _(x2)_ `[TBD]`
-- "编辑支付方式" → "__TBD__" _(x1)_ `[TBD]`
-- "添加支付方式" → "__TBD__" _(x1)_ `[TBD]`
-- "保存" → "__TBD__" _(x1)_ `[TBD]`
-- "添加" → "__TBD__" _(x1)_ `[TBD]`
-- "用于前端显示使用" → "__TBD__" _(x1)_ `[TBD]`
-- "图标URL(选填)" → "__TBD__" _(x1)_ `[TBD]`
-- "用于前端显示使用(https://x.com/icon.svg)" → "__TBD__" _(x1)_ `[TBD]`
-- "自定义通知域名(选填)" → "__TBD__" _(x1)_ `[TBD]`
-- "网关的通知将会发送到该域名(https://x.com)" → "__TBD__" _(x1)_ `[TBD]`
-- "百分比手续费(选填)" → "__TBD__" _(x1)_ `[TBD]`
-- "固定手续费(选填)" → "__TBD__" _(x1)_ `[TBD]`
-- "接口文件" → "__TBD__" _(x1)_ `[TBD]`
-- "客服TG" → "__TBD__" _(x1)_ `[TBD]`
-- "机器人" → "__TBD__" _(x1)_ `[TBD]`
-- "官方网站" → "__TBD__" _(x1)_ `[TBD]`
-- "启用" → "__TBD__" _(x1)_ `[TBD]`
-- "支付接口" → "__TBD__" _(x1)_ `[TBD]`
-- "通知地址 " → "__TBD__" _(x1)_ `[TBD]`
-- "支付网关将会把数据通知到本地址，请通过防火墙放行本地址。" → "__TBD__" _(x1)_ `[TBD]`
+- "显示名称" → "Display Name" _(x2)_
+- "在订单金额基础上附加手续费" → "Adds a handling fee on top of the order amount" _(x2)_
+- "编辑支付方式" → "Edit Payment Method" _(x1)_
+- "添加支付方式" → "Add Payment Method" _(x1)_
+- "保存" → "Save" _(x1)_
+- "添加" → "Add" _(x1)_
+- "用于前端显示使用" → "Used for display on the frontend" _(x1)_
+- "图标URL(选填)" → "Icon URL (optional)" _(x1)_
+- "用于前端显示使用(https://x.com/icon.svg)" → "Used for display on the frontend (https://x.com/icon.svg)" _(x1)_
+- "自定义通知域名(选填)" → "Custom Notification Domain (optional)" _(x1)_
+- "网关的通知将会发送到该域名(https://x.com)" → "The gateway notification is sent to this domain (https://x.com)" _(x1)_
+- "百分比手续费(选填)" → "Percentage Handling Fee (optional)" _(x1)_
+- "固定手续费(选填)" → "Fixed Handling Fee (optional)" _(x1)_
+- "接口文件" → "Interface File" _(x1)_
+- "客服TG" → "Support TG" _(x1)_
+- "机器人" → "Bot" _(x1)_
+- "官方网站" → "Official Website" _(x1)_
+- "启用" → "Enabled" _(x1)_
+- "支付接口" → "Payment Gateway" _(x1)_
+- "通知地址 " → "Notification URL " _(x1)_
+- "支付网关将会把数据通知到本地址，请通过防火墙放行本地址。" → "The payment gateway will notify this address. Please allow this address through the firewall." _(x1)_
 - "操作" → "Actions" _(x1)_
 - "编辑" → "Edit" _(x1)_
-- "警告" → "__TBD__" _(x1)_ `[TBD]`
-- "确定要删除该条项目吗？" → "__TBD__" _(x1)_ `[TBD]`
+- "警告" → "Warning" _(x1)_
+- "确定要删除该条项目吗？" → "Are you sure you want to delete this item?" _(x1)_
 - "确定" → "OK" _(x1)_
-- "删除" → "__TBD__" _(x1)_ `[TBD]`
-- "支付配置" → "__TBD__" _(x1)_ `[TBD]`
-- " 添加支付方式" → "__TBD__" _(x1)_ `[TBD]`
+- "删除" → "Delete" _(x1)_
+- "支付配置" → "Payment Config" _(x1)_
+- " 添加支付方式" → " Add Payment Method" _(x1)_
 
 ## `components.async.js@+Gva` — 30 string(s)
 
@@ -970,7 +970,7 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 ## `umi.js@H9LU` — 28 string(s)
 
 - "无" → "None" _(x2)_
-- "路径" → "__TBD__" _(x1)_ `[TBD]`
+- "路径" → "Path" _(x1)_
 - "编辑节点" → "Edit node" _(x1)_
 - "新建节点" → "New node" _(x1)_
 - "节点名称" → "Node name" _(x1)_
@@ -989,7 +989,7 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 - "服务端口" → "Service port" _(x1)_
 - "服务端开放端口" → "Server port" _(x1)_
 - "加密算法" → "Cipher" _(x1)_
-- "混淆" → "__TBD__" _(x1)_ `[TBD]`
+- "混淆" → "Obfuscation" _(x1)_
 - "父节点 " → "Parent node " _(x1)_
 - "https://docs.v2board.com/use/node.html#父节点与子节点关系" → "https://docs.v2board.com/use/node.html#%E7%88%B6%E8%8A%82%E7%82%B9%E4%B8%8E%E5%AD%90%E8%8A%82%E7%82%B9%E5%85%B3%E7%B3%BB" _(x1)_
 - "更多解答" → "More answers" _(x1)_
@@ -1058,317 +1058,317 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 ## `umi.js@jJ5y` — 24 string(s)
 
 - "标题" → "Heading" _(x2)_
-- "分类" → "__TBD__" _(x2)_ `[TBD]`
+- "分类" → "Category" _(x2)_
 - "取消" → "Cancel" _(x2)_
-- "保存成功" → "__TBD__" _(x1)_ `[TBD]`
-- "编辑知识" → "__TBD__" _(x1)_ `[TBD]`
-- "新增知识" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入知识标题" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入分类，分类将会自动归集" → "__TBD__" _(x1)_ `[TBD]`
-- "语言" → "__TBD__" _(x1)_ `[TBD]`
-- "请选择知识语言" → "__TBD__" _(x1)_ `[TBD]`
-- "内容" → "__TBD__" _(x1)_ `[TBD]`
+- "保存成功" → "Saved" _(x1)_
+- "编辑知识" → "Edit Article" _(x1)_
+- "新增知识" → "Add Article" _(x1)_
+- "请输入知识标题" → "Enter the article title" _(x1)_
+- "请输入分类，分类将会自动归集" → "Enter a category; items are grouped automatically" _(x1)_
+- "语言" → "Language" _(x1)_
+- "请选择知识语言" → "Select the article language" _(x1)_
+- "内容" → "Content" _(x1)_
 - "提交" → "Submit" _(x1)_
 - "排序" → "Sort" _(x1)_
-- "文章ID" → "__TBD__" _(x1)_ `[TBD]`
-- "显示" → "__TBD__" _(x1)_ `[TBD]`
-- "更新时间" → "__TBD__" _(x1)_ `[TBD]`
+- "文章ID" → "Article ID" _(x1)_
+- "显示" → "Show" _(x1)_
+- "更新时间" → "Updated At" _(x1)_
 - "操作" → "Actions" _(x1)_
 - "编辑" → "Edit" _(x1)_
-- "警告" → "__TBD__" _(x1)_ `[TBD]`
-- "确定要删除该条项目吗？" → "__TBD__" _(x1)_ `[TBD]`
+- "警告" → "Warning" _(x1)_
+- "确定要删除该条项目吗？" → "Are you sure you want to delete this item?" _(x1)_
 - "确定" → "OK" _(x1)_
-- "删除" → "__TBD__" _(x1)_ `[TBD]`
-- "知识库管理" → "__TBD__" _(x1)_ `[TBD]`
-- "新增" → "__TBD__" _(x1)_ `[TBD]`
+- "删除" → "Delete" _(x1)_
+- "知识库管理" → "Knowledge Base" _(x1)_
+- "新增" → "Add" _(x1)_
 
 ## `umi.js@wtkT` — 24 string(s)
 
-- "备注" → "__TBD__" _(x2)_ `[TBD]`
+- "备注" → "Remarks" _(x2)_
 - "填写参考" → "See reference" _(x2)_
-- "动作" → "__TBD__" _(x2)_ `[TBD]`
-- "编辑路由" → "__TBD__" _(x1)_ `[TBD]`
-- "创建路由" → "__TBD__" _(x1)_ `[TBD]`
+- "动作" → "Action" _(x2)_
+- "编辑路由" → "Edit Route" _(x1)_
+- "创建路由" → "Create Route" _(x1)_
 - "提交" → "Submit" _(x1)_
 - "取消" → "Cancel" _(x1)_
-- "请输入备注" → "__TBD__" _(x1)_ `[TBD]`
-- "匹配值" → "__TBD__" _(x1)_ `[TBD]`
-- "127.0.0.1(单一匹配)\n10.0.0.0/8(范围匹配)\ngeoip:cn(预定义列表匹配)" → "__TBD__" _(x1)_ `[TBD]`
-- "example.com(关键字匹配)\ndomain:example.com(子域名匹配)\ngeosite:netflix(预定义域名列表)" → "__TBD__" _(x1)_ `[TBD]`
-- "请选择动作" → "__TBD__" _(x1)_ `[TBD]`
-- "DNS服务器" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入用于解析的DNS服务器地址" → "__TBD__" _(x1)_ `[TBD]`
-- "Xray出站配置" → "__TBD__" _(x1)_ `[TBD]`
-- "匹配数量" → "__TBD__" _(x1)_ `[TBD]`
-- "无规则时默认" → "__TBD__" _(x1)_ `[TBD]`
-- "匹配 " → "__TBD__" _(x1)_ `[TBD]`
-- " 条规则" → "__TBD__" _(x1)_ `[TBD]`
+- "请输入备注" → "Enter remarks" _(x1)_
+- "匹配值" → "Match Value" _(x1)_
+- "127.0.0.1(单一匹配)\n10.0.0.0/8(范围匹配)\ngeoip:cn(预定义列表匹配)" → "127.0.0.1(single match)\n10.0.0.0/8(range match)\ngeoip:cn(predefined list match)" _(x1)_
+- "example.com(关键字匹配)\ndomain:example.com(子域名匹配)\ngeosite:netflix(预定义域名列表)" → "example.com(keyword match)\ndomain:example.com(subdomain match)\ngeosite:netflix(predefined domain list)" _(x1)_
+- "请选择动作" → "Select an action" _(x1)_
+- "DNS服务器" → "DNS Server" _(x1)_
+- "请输入用于解析的DNS服务器地址" → "Enter the DNS server address used for resolution" _(x1)_
+- "Xray出站配置" → "Xray Outbound Config" _(x1)_
+- "匹配数量" → "Match Count" _(x1)_
+- "无规则时默认" → "Default When No Rules" _(x1)_
+- "匹配 " → "Match " _(x1)_
+- " 条规则" → " rule(s)" _(x1)_
 - "操作" → "Actions" _(x1)_
 - "编辑" → "Edit" _(x1)_
-- "删除" → "__TBD__" _(x1)_ `[TBD]`
-- "路由管理" → "__TBD__" _(x1)_ `[TBD]`
-- " 添加路由" → "__TBD__" _(x1)_ `[TBD]`
+- "删除" → "Delete" _(x1)_
+- "路由管理" → "Route Management" _(x1)_
+- " 添加路由" → " Add Route" _(x1)_
 
 ## `umi.js@Bl7J` — 23 string(s)
 
-- "仪表盘" → "__TBD__" _(x1)_ `[TBD]`
-- "设置" → "__TBD__" _(x1)_ `[TBD]`
+- "仪表盘" → "Dashboard" _(x1)_
+- "设置" → "Settings" _(x1)_
 - "系统配置" → "System config" _(x1)_
-- "支付配置" → "__TBD__" _(x1)_ `[TBD]`
-- "主题配置" → "__TBD__" _(x1)_ `[TBD]`
-- "服务器" → "__TBD__" _(x1)_ `[TBD]`
+- "支付配置" → "Payment Config" _(x1)_
+- "主题配置" → "Theme Config" _(x1)_
+- "服务器" → "Servers" _(x1)_
 - "节点管理" → "Nodes" _(x1)_
-- "权限组管理" → "__TBD__" _(x1)_ `[TBD]`
-- "路由管理" → "__TBD__" _(x1)_ `[TBD]`
-- "财务" → "__TBD__" _(x1)_ `[TBD]`
-- "订阅管理" → "__TBD__" _(x1)_ `[TBD]`
-- "订单管理" → "__TBD__" _(x1)_ `[TBD]`
-- "优惠券管理" → "__TBD__" _(x1)_ `[TBD]`
-- "礼品卡管理" → "__TBD__" _(x1)_ `[TBD]`
-- "用户" → "__TBD__" _(x1)_ `[TBD]`
-- "用户管理" → "__TBD__" _(x1)_ `[TBD]`
-- "公告管理" → "__TBD__" _(x1)_ `[TBD]`
-- "工单管理" → "__TBD__" _(x1)_ `[TBD]`
-- "知识库管理" → "__TBD__" _(x1)_ `[TBD]`
-- "指标" → "__TBD__" _(x1)_ `[TBD]`
-- "队列监控" → "__TBD__" _(x1)_ `[TBD]`
-- "搜索" → "__TBD__" _(x1)_ `[TBD]`
-- "登出" → "__TBD__" _(x1)_ `[TBD]`
+- "权限组管理" → "Permission Groups" _(x1)_
+- "路由管理" → "Route Management" _(x1)_
+- "财务" → "Finance" _(x1)_
+- "订阅管理" → "Subscriptions" _(x1)_
+- "订单管理" → "Orders" _(x1)_
+- "优惠券管理" → "Coupons" _(x1)_
+- "礼品卡管理" → "Gift Cards" _(x1)_
+- "用户" → "Users" _(x1)_
+- "用户管理" → "User Management" _(x1)_
+- "公告管理" → "Announcements" _(x1)_
+- "工单管理" → "Tickets" _(x1)_
+- "知识库管理" → "Knowledge Base" _(x1)_
+- "指标" → "Metrics" _(x1)_
+- "队列监控" → "Queue Monitor" _(x1)_
+- "搜索" → "Search" _(x1)_
+- "登出" → "Sign Out" _(x1)_
 
 ## `umi.js@sFYk` — 21 string(s)
 
-- "有 " → "__TBD__" _(x2)_ `[TBD]`
-- "立即处理" → "__TBD__" _(x2)_ `[TBD]`
-- " 条工单等待处理 " → "__TBD__" _(x1)_ `[TBD]`
-- " 笔佣金等待确认 " → "__TBD__" _(x1)_ `[TBD]`
-- "仪表盘" → "__TBD__" _(x1)_ `[TBD]`
-- "当前队列服务运行异常，可能会导致业务无法使用。" → "__TBD__" _(x1)_ `[TBD]`
-- "系统设置" → "__TBD__" _(x1)_ `[TBD]`
-- "订单管理" → "__TBD__" _(x1)_ `[TBD]`
-- "订阅管理" → "__TBD__" _(x1)_ `[TBD]`
-- "用户管理" → "__TBD__" _(x1)_ `[TBD]`
-- "在线人数" → "__TBD__" _(x1)_ `[TBD]`
-- "今日收入" → "__TBD__" _(x1)_ `[TBD]`
-- "实时注册" → "__TBD__" _(x1)_ `[TBD]`
-- "本月收入" → "__TBD__" _(x1)_ `[TBD]`
-- "上月收入" → "__TBD__" _(x1)_ `[TBD]`
-- "上月佣金支出" → "__TBD__" _(x1)_ `[TBD]`
-- "本月新增用户" → "__TBD__" _(x1)_ `[TBD]`
-- "今日节点流量排行" → "__TBD__" _(x1)_ `[TBD]`
-- "昨日节点流量排行" → "__TBD__" _(x1)_ `[TBD]`
-- "今日用户流量排行" → "__TBD__" _(x1)_ `[TBD]`
-- "昨日用户流量排行" → "__TBD__" _(x1)_ `[TBD]`
+- "有 " → "There are " _(x2)_
+- "立即处理" → "Process Now" _(x2)_
+- " 条工单等待处理 " → " ticket(s) awaiting reply " _(x1)_
+- " 笔佣金等待确认 " → " commission(s) awaiting confirmation " _(x1)_
+- "仪表盘" → "Dashboard" _(x1)_
+- "当前队列服务运行异常，可能会导致业务无法使用。" → "The queue service is currently unhealthy and some features may be unavailable." _(x1)_
+- "系统设置" → "Settings" _(x1)_
+- "订单管理" → "Orders" _(x1)_
+- "订阅管理" → "Subscriptions" _(x1)_
+- "用户管理" → "User Management" _(x1)_
+- "在线人数" → "Online Users" _(x1)_
+- "今日收入" → "Today's Revenue" _(x1)_
+- "实时注册" → "Live Registrations" _(x1)_
+- "本月收入" → "This Month Revenue" _(x1)_
+- "上月收入" → "Last Month Revenue" _(x1)_
+- "上月佣金支出" → "Commission Paid Last Month" _(x1)_
+- "本月新增用户" → "New Users This Month" _(x1)_
+- "今日节点流量排行" → "Top Node Traffic Today" _(x1)_
+- "昨日节点流量排行" → "Top Node Traffic Yesterday" _(x1)_
+- "今日用户流量排行" → "Top User Traffic Today" _(x1)_
+- "昨日用户流量排行" → "Top User Traffic Yesterday" _(x1)_
 
 ## `umi.js@JZE9` — 19 string(s)
 
 - "标题" → "Heading" _(x2)_
-- "显示" → "__TBD__" _(x1)_ `[TBD]`
-- "创建时间" → "__TBD__" _(x1)_ `[TBD]`
+- "显示" → "Show" _(x1)_
+- "创建时间" → "Created At" _(x1)_
 - "操作" → "Actions" _(x1)_
 - "编辑" → "Edit" _(x1)_
-- "删除" → "__TBD__" _(x1)_ `[TBD]`
-- "公告管理" → "__TBD__" _(x1)_ `[TBD]`
-- " 添加公告" → "__TBD__" _(x1)_ `[TBD]`
-- "编辑公告" → "__TBD__" _(x1)_ `[TBD]`
-- "新建公告" → "__TBD__" _(x1)_ `[TBD]`
+- "删除" → "Delete" _(x1)_
+- "公告管理" → "Announcements" _(x1)_
+- " 添加公告" → " Add Announcement" _(x1)_
+- "编辑公告" → "Edit Announcement" _(x1)_
+- "新建公告" → "New Announcement" _(x1)_
 - "提交" → "Submit" _(x1)_
 - "取消" → "Cancel" _(x1)_
-- "请输入公告标题" → "__TBD__" _(x1)_ `[TBD]`
-- "公告内容" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入公告内容" → "__TBD__" _(x1)_ `[TBD]`
-- "公告标签" → "__TBD__" _(x1)_ `[TBD]`
+- "请输入公告标题" → "Enter the announcement title" _(x1)_
+- "公告内容" → "Announcement Content" _(x1)_
+- "请输入公告内容" → "Enter the announcement content" _(x1)_
+- "公告标签" → "Tag" _(x1)_
 - "输入后回车添加标签" → "Type and press Enter to add a tag" _(x1)_
-- "图片URL" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入图片URL" → "__TBD__" _(x1)_ `[TBD]`
+- "图片URL" → "Image URL" _(x1)_
+- "请输入图片URL" → "Enter the image URL" _(x1)_
 
 ## `umi.js@Jezz` — 19 string(s)
 
-- "队列监控" → "__TBD__" _(x1)_ `[TBD]`
-- "总览" → "__TBD__" _(x1)_ `[TBD]`
-- "当前作业量" → "__TBD__" _(x1)_ `[TBD]`
-- "近一小时处理量" → "__TBD__" _(x1)_ `[TBD]`
-- "7日内报错数量" → "__TBD__" _(x1)_ `[TBD]`
-- "状态" → "__TBD__" _(x1)_ `[TBD]`
-- "运行中" → "__TBD__" _(x1)_ `[TBD]`
-- "未启动" → "__TBD__" _(x1)_ `[TBD]`
-- "当前作业详情" → "__TBD__" _(x1)_ `[TBD]`
-- "队列名称" → "__TBD__" _(x1)_ `[TBD]`
-- "订单队列" → "__TBD__" _(x1)_ `[TBD]`
-- "邮件队列" → "__TBD__" _(x1)_ `[TBD]`
-- "邮件群发队列" → "__TBD__" _(x1)_ `[TBD]`
-- "Telegram消息队列" → "__TBD__" _(x1)_ `[TBD]`
-- "统计队列" → "__TBD__" _(x1)_ `[TBD]`
-- "流量消费队列" → "__TBD__" _(x1)_ `[TBD]`
-- "作业量" → "__TBD__" _(x1)_ `[TBD]`
-- "任务量" → "__TBD__" _(x1)_ `[TBD]`
-- "占用时间" → "__TBD__" _(x1)_ `[TBD]`
+- "队列监控" → "Queue Monitor" _(x1)_
+- "总览" → "Overview" _(x1)_
+- "当前作业量" → "Current Workers" _(x1)_
+- "近一小时处理量" → "Processed in Last Hour" _(x1)_
+- "7日内报错数量" → "Error Count in Last 7 Days" _(x1)_
+- "状态" → "Status" _(x1)_
+- "运行中" → "Running" _(x1)_
+- "未启动" → "Not Started" _(x1)_
+- "当前作业详情" → "Current Job Details" _(x1)_
+- "队列名称" → "Queue Name" _(x1)_
+- "订单队列" → "Order Queue" _(x1)_
+- "邮件队列" → "Mail Queue" _(x1)_
+- "邮件群发队列" → "Bulk Mail Queue" _(x1)_
+- "Telegram消息队列" → "Telegram Message Queue" _(x1)_
+- "统计队列" → "Statistics Queue" _(x1)_
+- "流量消费队列" → "Traffic Consumption Queue" _(x1)_
+- "作业量" → "Workers" _(x1)_
+- "任务量" → "Jobs" _(x1)_
+- "占用时间" → "Wait Time" _(x1)_
 
 ## `umi.js@RJTe` — 17 string(s)
 
-- "已回复" → "__TBD__" _(x2)_ `[TBD]`
-- "待回复" → "__TBD__" _(x2)_ `[TBD]`
-- "已关闭" → "__TBD__" _(x2)_ `[TBD]`
-- "低" → "__TBD__" _(x1)_ `[TBD]`
-- "中" → "__TBD__" _(x1)_ `[TBD]`
-- "高" → "__TBD__" _(x1)_ `[TBD]`
-- "主题" → "__TBD__" _(x1)_ `[TBD]`
-- "工单级别" → "__TBD__" _(x1)_ `[TBD]`
-- "工单状态" → "__TBD__" _(x1)_ `[TBD]`
-- "创建时间" → "__TBD__" _(x1)_ `[TBD]`
-- "最后回复" → "__TBD__" _(x1)_ `[TBD]`
+- "已回复" → "Replied" _(x2)_
+- "待回复" → "Pending Reply" _(x2)_
+- "已关闭" → "Closed" _(x2)_
+- "低" → "Low" _(x1)_
+- "中" → "Medium" _(x1)_
+- "高" → "High" _(x1)_
+- "主题" → "Theme" _(x1)_
+- "工单级别" → "Priority" _(x1)_
+- "工单状态" → "Ticket Status" _(x1)_
+- "创建时间" → "Created At" _(x1)_
+- "最后回复" → "Last Reply" _(x1)_
 - "操作" → "Actions" _(x1)_
-- "查看" → "__TBD__" _(x1)_ `[TBD]`
+- "查看" → "View" _(x1)_
 - "关闭" → "Off" _(x1)_
-- "工单管理" → "__TBD__" _(x1)_ `[TBD]`
-- "已开启" → "__TBD__" _(x1)_ `[TBD]`
-- "输入邮箱搜索" → "__TBD__" _(x1)_ `[TBD]`
+- "工单管理" → "Tickets" _(x1)_
+- "已开启" → "Enabled" _(x1)_
+- "输入邮箱搜索" → "Enter an email to search" _(x1)_
 
 ## `umi.js@Qg4q` — 15 string(s)
 
-- "创建用户" → "__TBD__" _(x1)_ `[TBD]`
+- "创建用户" → "Create User" _(x1)_
 - "取消" → "Cancel" _(x1)_
-- "生成" → "__TBD__" _(x1)_ `[TBD]`
-- "邮箱" → "__TBD__" _(x1)_ `[TBD]`
-- "账号（批量生成请留空）" → "__TBD__" _(x1)_ `[TBD]`
-- "域" → "__TBD__" _(x1)_ `[TBD]`
-- "密码" → "__TBD__" _(x1)_ `[TBD]`
-- "留空则密码与邮箱相同" → "__TBD__" _(x1)_ `[TBD]`
-- "到期时间" → "__TBD__" _(x1)_ `[TBD]`
-- "请选择用户到期日期，为空则不限制到期时间" → "__TBD__" _(x1)_ `[TBD]`
-- "订阅计划" → "__TBD__" _(x1)_ `[TBD]`
-- "请选择用户订阅计划" → "__TBD__" _(x1)_ `[TBD]`
+- "生成" → "Generate" _(x1)_
+- "邮箱" → "Email" _(x1)_
+- "账号（批量生成请留空）" → "Account (leave empty for batch generation)" _(x1)_
+- "域" → "Domain" _(x1)_
+- "密码" → "Password" _(x1)_
+- "留空则密码与邮箱相同" → "Leave empty to use the email as the password" _(x1)_
+- "到期时间" → "Expires At" _(x1)_
+- "请选择用户到期日期，为空则不限制到期时间" → "Select the user expiry date; empty means it never expires" _(x1)_
+- "订阅计划" → "Subscription Plan" _(x1)_
+- "请选择用户订阅计划" → "Select the user subscription plan" _(x1)_
 - "无" → "None" _(x1)_
-- "生成数量" → "__TBD__" _(x1)_ `[TBD]`
-- "如果为批量生成请输入生成数量" → "__TBD__" _(x1)_ `[TBD]`
+- "生成数量" → "Quantity" _(x1)_
+- "如果为批量生成请输入生成数量" → "For batch generation, enter the quantity" _(x1)_
 
 ## `umi.js@hVla` — 12 string(s)
 
-- "过滤器" → "__TBD__" _(x2)_ `[TBD]`
-- "条件" → "__TBD__" _(x2)_ `[TBD]`
-- "值不能为空" → "__TBD__" _(x1)_ `[TBD]`
-- "欲检索内容不能为空" → "__TBD__" _(x1)_ `[TBD]`
-- "字段名" → "__TBD__" _(x1)_ `[TBD]`
-- "欲检索内容" → "__TBD__" _(x1)_ `[TBD]`
-- "请选择值" → "__TBD__" _(x1)_ `[TBD]`
-- "值" → "__TBD__" _(x1)_ `[TBD]`
-- " 添加条件" → "__TBD__" _(x1)_ `[TBD]`
+- "过滤器" → "Filter" _(x2)_
+- "条件" → "Condition" _(x2)_
+- "值不能为空" → "The value cannot be empty" _(x1)_
+- "欲检索内容不能为空" → "The search term cannot be empty" _(x1)_
+- "字段名" → "Field" _(x1)_
+- "欲检索内容" → "Search term" _(x1)_
+- "请选择值" → "Select a value" _(x1)_
+- "值" → "Value" _(x1)_
+- " 添加条件" → " Add Condition" _(x1)_
 - "重置" → "Reset" _(x1)_
 - "取消" → "Cancel" _(x1)_
-- "检索" → "__TBD__" _(x1)_ `[TBD]`
+- "检索" → "Search" _(x1)_
 
 ## `umi.js@6lKK` — 10 string(s)
 
-- "保存成功" → "__TBD__" _(x1)_ `[TBD]`
-- "webhook 设置成功" → "__TBD__" _(x1)_ `[TBD]`
-- "发送失败" → "__TBD__" _(x1)_ `[TBD]`
-- "发送成功" → "__TBD__" _(x1)_ `[TBD]`
-- "失败原因:" → "__TBD__" _(x1)_ `[TBD]`
-- "收信地址:" → "__TBD__" _(x1)_ `[TBD]`
-- "发信服务器:" → "__TBD__" _(x1)_ `[TBD]`
-- "发信端口:" → "__TBD__" _(x1)_ `[TBD]`
-- "发信加密方式:" → "__TBD__" _(x1)_ `[TBD]`
-- "发信用户名:" → "__TBD__" _(x1)_ `[TBD]`
+- "保存成功" → "Saved" _(x1)_
+- "webhook 设置成功" → "webhook configured" _(x1)_
+- "发送失败" → "Failed to send" _(x1)_
+- "发送成功" → "Sent" _(x1)_
+- "失败原因:" → "Failure reason:" _(x1)_
+- "收信地址:" → "Recipient address:" _(x1)_
+- "发信服务器:" → "SMTP server:" _(x1)_
+- "发信端口:" → "SMTP port:" _(x1)_
+- "发信加密方式:" → "SMTP encryption:" _(x1)_
+- "发信用户名:" → "SMTP username:" _(x1)_
 
 ## `umi.js@N2Kk` — 10 string(s)
 
-- "条/页" → "__TBD__" _(x1)_ `[TBD]`
-- "跳至" → "__TBD__" _(x1)_ `[TBD]`
+- "条/页" → "/ page" _(x1)_
+- "跳至" → "Go to" _(x1)_
 - "确定" → "OK" _(x1)_
-- "页" → "__TBD__" _(x1)_ `[TBD]`
-- "上一页" → "__TBD__" _(x1)_ `[TBD]`
-- "下一页" → "__TBD__" _(x1)_ `[TBD]`
-- "向前 5 页" → "__TBD__" _(x1)_ `[TBD]`
-- "向后 5 页" → "__TBD__" _(x1)_ `[TBD]`
-- "向前 3 页" → "__TBD__" _(x1)_ `[TBD]`
-- "向后 3 页" → "__TBD__" _(x1)_ `[TBD]`
+- "页" → "Page" _(x1)_
+- "上一页" → "Previous Page" _(x1)_
+- "下一页" → "Next Page" _(x1)_
+- "向前 5 页" → "Previous 5 Pages" _(x1)_
+- "向后 5 页" → "Next 5 Pages" _(x1)_
+- "向前 3 页" → "Previous 3 Pages" _(x1)_
+- "向后 3 页" → "Next 3 Pages" _(x1)_
 
 ## `umi.js@11+Y` — 9 string(s)
 
-- "组ID" → "__TBD__" _(x1)_ `[TBD]`
-- "组名称" → "__TBD__" _(x1)_ `[TBD]`
-- "用户数量" → "__TBD__" _(x1)_ `[TBD]`
-- "节点数量" → "__TBD__" _(x1)_ `[TBD]`
+- "组ID" → "Group ID" _(x1)_
+- "组名称" → "Group Name" _(x1)_
+- "用户数量" → "User Count" _(x1)_
+- "节点数量" → "Node Count" _(x1)_
 - "操作" → "Actions" _(x1)_
 - "编辑" → "Edit" _(x1)_
-- "删除" → "__TBD__" _(x1)_ `[TBD]`
-- "权限组管理" → "__TBD__" _(x1)_ `[TBD]`
-- " 添加权限组" → "__TBD__" _(x1)_ `[TBD]`
+- "删除" → "Delete" _(x1)_
+- "权限组管理" → "Permission Groups" _(x1)_
+- " 添加权限组" → " Add Group" _(x1)_
 
 ## `umi.js@8drl` — 9 string(s)
 
-- "保存成功" → "__TBD__" _(x1)_ `[TBD]`
-- "配置" → "__TBD__" _(x1)_ `[TBD]`
-- "主题" → "__TBD__" _(x1)_ `[TBD]`
-- "主题配置" → "__TBD__" _(x1)_ `[TBD]`
-- "如果你采用前后分离的方式部署V2board，那么主题配置将不会生效。了解" → "__TBD__" _(x1)_ `[TBD]`
+- "保存成功" → "Saved" _(x1)_
+- "配置" → "Config" _(x1)_
+- "主题" → "Theme" _(x1)_
+- "主题配置" → "Theme Config" _(x1)_
+- "如果你采用前后分离的方式部署V2board，那么主题配置将不会生效。了解" → "If you deploy V2board with the frontend and backend separated, the theme settings will not take effect. Learn" _(x1)_
 - "前后分离" → "Decoupled" _(x1)_
-- "当前主题" → "__TBD__" _(x1)_ `[TBD]`
-- "激活主题" → "__TBD__" _(x1)_ `[TBD]`
-- "主题设置" → "__TBD__" _(x1)_ `[TBD]`
+- "当前主题" → "Current Theme" _(x1)_
+- "激活主题" → "Activate Theme" _(x1)_
+- "主题设置" → "Theme Settings" _(x1)_
 
 ## `umi.js@mCd/` — 9 string(s)
 
-- "请选择订阅" → "__TBD__" _(x2)_ `[TBD]`
-- "请选择周期" → "__TBD__" _(x2)_ `[TBD]`
-- "订单分配" → "__TBD__" _(x1)_ `[TBD]`
+- "请选择订阅" → "Select a subscription" _(x2)_
+- "请选择周期" → "Select a period" _(x2)_
+- "订单分配" → "Assign Order" _(x1)_
 - "确定" → "OK" _(x1)_
 - "取消" → "Cancel" _(x1)_
-- "用户邮箱" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入用户邮箱" → "__TBD__" _(x1)_ `[TBD]`
-- "支付金额" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入需要支付的金额" → "__TBD__" _(x1)_ `[TBD]`
+- "用户邮箱" → "User Email" _(x1)_
+- "请输入用户邮箱" → "Enter the user email" _(x1)_
+- "支付金额" → "Amount Paid" _(x1)_
+- "请输入需要支付的金额" → "Enter the amount to be paid" _(x1)_
 
 ## `umi.js@SGa5` — 8 string(s)
 
-- "忘记密码" → "__TBD__" _(x2)_ `[TBD]`
-- "登录到管理中心" → "__TBD__" _(x1)_ `[TBD]`
-- "邮箱" → "__TBD__" _(x1)_ `[TBD]`
-- "密码" → "__TBD__" _(x1)_ `[TBD]`
-- "登入" → "__TBD__" _(x1)_ `[TBD]`
-- "在站点目录下执行命令找回密码" → "__TBD__" _(x1)_ `[TBD]`
-- "php artisan reset:password 管理员邮箱" → "__TBD__" _(x1)_ `[TBD]`
-- "我知道了" → "__TBD__" _(x1)_ `[TBD]`
+- "忘记密码" → "Forgot Password" _(x2)_
+- "登录到管理中心" → "Sign in to the admin panel" _(x1)_
+- "邮箱" → "Email" _(x1)_
+- "密码" → "Password" _(x1)_
+- "登入" → "Sign In" _(x1)_
+- "在站点目录下执行命令找回密码" → "Run this command in the site directory to reset the password" _(x1)_
+- "php artisan reset:password 管理员邮箱" → "php artisan reset:password admin-email" _(x1)_
+- "我知道了" → "Got it" _(x1)_
 
 ## `umi.js@maVC` — 8 string(s)
 
-- "发送邮件" → "__TBD__" _(x1)_ `[TBD]`
-- "收件人" → "__TBD__" _(x1)_ `[TBD]`
-- "过滤用户" → "__TBD__" _(x1)_ `[TBD]`
-- "全部用户" → "__TBD__" _(x1)_ `[TBD]`
-- "主题" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入邮件主题" → "__TBD__" _(x1)_ `[TBD]`
-- "发送内容" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入邮件内容" → "__TBD__" _(x1)_ `[TBD]`
+- "发送邮件" → "Send Mail" _(x1)_
+- "收件人" → "Recipients" _(x1)_
+- "过滤用户" → "Filter Users" _(x1)_
+- "全部用户" → "All Users" _(x1)_
+- "主题" → "Theme" _(x1)_
+- "请输入邮件主题" → "Enter the email subject" _(x1)_
+- "发送内容" → "Message" _(x1)_
+- "请输入邮件内容" → "Enter the email content" _(x1)_
 
 ## `umi.js@8zNj` — 6 string(s)
 
-- "编辑组" → "__TBD__" _(x1)_ `[TBD]`
-- "创建组" → "__TBD__" _(x1)_ `[TBD]`
+- "编辑组" → "Edit Group" _(x1)_
+- "创建组" → "Create Group" _(x1)_
 - "提交" → "Submit" _(x1)_
 - "取消" → "Cancel" _(x1)_
-- "组名" → "__TBD__" _(x1)_ `[TBD]`
-- "请输入组名" → "__TBD__" _(x1)_ `[TBD]`
+- "组名" → "Group Name" _(x1)_
+- "请输入组名" → "Enter the group name" _(x1)_
 
 ## `umi.js@X0q5` — 5 string(s)
 
-- "日期" → "__TBD__" _(x1)_ `[TBD]`
-- "上行" → "__TBD__" _(x1)_ `[TBD]`
-- "下行" → "__TBD__" _(x1)_ `[TBD]`
+- "日期" → "Date" _(x1)_
+- "上行" → "Upstream" _(x1)_
+- "下行" → "Downstream" _(x1)_
 - "倍率" → "Rate" _(x1)_
-- "流量记录" → "__TBD__" _(x1)_ `[TBD]`
+- "流量记录" → "Traffic Records" _(x1)_
 
 ## `umi.js@hlQx` — 4 string(s)
 
-- "导出中" → "__TBD__" _(x1)_ `[TBD]`
-- "已加入队列执行" → "__TBD__" _(x1)_ `[TBD]`
-- "重置成功" → "__TBD__" _(x1)_ `[TBD]`
-- "删除成功" → "__TBD__" _(x1)_ `[TBD]`
+- "导出中" → "Exporting" _(x1)_
+- "已加入队列执行" → "Queued" _(x1)_
+- "重置成功" → "Reset" _(x1)_
+- "删除成功" → "Deleted" _(x1)_
 
 ## `umi.js@FPmv` — 3 string(s)
 
-- "用户管理" → "__TBD__" _(x1)_ `[TBD]`
-- "TA的流量记录" → "__TBD__" _(x1)_ `[TBD]`
-- "输入内容回复工单..." → "__TBD__" _(x1)_ `[TBD]`
+- "用户管理" → "User Management" _(x1)_
+- "TA的流量记录" → "Their Traffic Records" _(x1)_
+- "输入内容回复工单..." → "Type a reply to this ticket..." _(x1)_
 
 ## `umi.js@sRdV` — 3 string(s)
 
@@ -1381,7 +1381,10 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 
 ## `umi.js@+80P` — 1 string(s)
 
-- "(^|(?!_)(?:[><｜]|" → "__TBD__" _(x2)_ `[TBD]`
+> Allowlisted (not display text): regjsparser: second bundled copy of the fuzzy URL/email matcher regex source fragments.
+
+
+- "(^|(?!_)(?:[><｜]|" → "(kept)" _(x2)_ `[keep]`
 
 ## `umi.js@1AkM` — 1 string(s)
 
@@ -1406,7 +1409,7 @@ Author English in `admin-i18n/strings/parts/<file>.<module>.json`, then re-run
 
 ## `umi.js@e+9n` — 1 string(s)
 
-- "发送中" → "__TBD__" _(x1)_ `[TBD]`
+- "发送中" → "Sending" _(x1)_
 
 ## `umi.js@t3Un` — 1 string(s)
 

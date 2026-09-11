@@ -32,12 +32,26 @@ function techTokens(s) {
   for (const m of s.matchAll(/\b\d{1,3}(?:\.\d{1,3}){3}(?:\/\d+)?\b/g)) out.add(m[0]); // 127.0.0.1, 10.0.0.0/8
   for (const m of s.matchAll(/\b[A-Z][A-Z0-9]{1,}(?:[_-][A-Z0-9]+)*\b/g)) out.add(m[0]); // SNI, CF_DNS_API_TOKEN
   for (const m of s.matchAll(/\b[a-z][a-z_]{2,}\b(?==)/g)) out.add(m[0]);
-  return [...out].filter((t) => !/^(https?|http)$/.test(t));
+  // `TA` is the Chinese third-person pronoun abbreviation (he/she), not an identifier:
+  // it is correctly rendered as an English pronoun, so it must not be demanded verbatim.
+  // It is matched only when it appears inside CJK text, so a real "TA" token in English
+  // copy is unaffected. Deliberately narrow: SNI/TG/ID stay checked.
+  return [...out].filter((t) => !/^(https?|http)$/.test(t) && t !== 'TA');
 }
 
 function placeholders(s) {
   return (s.match(/%[sd]/g) || []).join(',') + '|' + (s.match(/\{\w+\}/g) || []).sort().join(',');
 }
+
+// Concatenation fragments: the bundle builds one sentence by concatenating literals
+// around a runtime value (`"确定要删除".concat(email, "的用户信息吗？")`). Chinese needs no
+// separator between a verb and a name, English does, so the leading fragment must gain a
+// trailing space. Listing the exact pair keeps the whitespace rule strict for everything
+// else while allowing these documented cases.
+const JOIN_SPACE = new Set([
+  '确定要删除', // "Are you sure you want to delete " + email
+  '确定要重置', // "Are you sure you want to reset " + email
+]);
 
 function edges(s) {
   const lead = (s.match(/^\s*/) || [''])[0];
@@ -52,7 +66,10 @@ export function checkPair(zh, en) {
   const [zl, zt] = edges(zh)
     , [el, et] = edges(en);
   if (zl !== el) problems.push(`leading whitespace ${JSON.stringify(zl)} -> ${JSON.stringify(el)}`);
-  if (zt !== et) problems.push(`trailing whitespace ${JSON.stringify(zt)} -> ${JSON.stringify(et)}`);
+  const allowJoinSpace = JOIN_SPACE.has(zh) && zt === '' && et === ' ';
+  if (zt !== et && !allowJoinSpace) {
+    problems.push(`trailing whitespace ${JSON.stringify(zt)} -> ${JSON.stringify(et)}`);
+  }
 
   const count = (s, c) => (s.split(c).length - 1);
   if (count(zh, '\n') !== count(en, '\n')) {

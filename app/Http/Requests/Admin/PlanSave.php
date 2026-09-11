@@ -36,24 +36,24 @@ class PlanSave extends FormRequest
     public function messages()
     {
         return [
-            'name.required' => '套餐名称不能为空',
-            'type.required' => '套餐类型不能为空',
-            'type.in' => '套餐类型格式有误',
-            'group_id.required' => '权限组不能为空',
-            'transfer_enable.required' => '流量不能为空',
-            'device_limit.integer' => '设备数限制格式有误',
-            'month_price.integer' => '月付金额格式有误',
-            'quarter_price.integer' => '季付金额格式有误',
-            'half_year_price.integer' => '半年付金额格式有误',
-            'year_price.integer' => '年付金额格式有误',
-            'two_year_price.integer' => '两年付金额格式有误',
-            'three_year_price.integer' => '三年付金额格式有误',
-            'onetime_price.integer' => '一次性金额有误',
-            'reset_price.integer' => '流量重置包金额有误',
-            'reset_traffic_method.integer' => '流量重置方式格式有误',
-            'reset_traffic_method.in' => '流量重置方式格式有误',
-            'capacity_limit.integer' => '容纳用户量限制格式有误',
-            'speed_limit.integer' => '限速格式有误'
+            'name.required' => __('The plan name cannot be empty'),
+            'type.required' => __('The plan type cannot be empty'),
+            'type.in' => __('The plan type is invalid'),
+            'group_id.required' => __('The permission group cannot be empty'),
+            'transfer_enable.required' => __('The traffic cannot be empty'),
+            'device_limit.integer' => __('The device limit format is invalid'),
+            'month_price.integer' => __('The monthly billing amount is invalid'),
+            'quarter_price.integer' => __('The quarterly billing amount is invalid'),
+            'half_year_price.integer' => __('The semi-annual billing amount is invalid'),
+            'year_price.integer' => __('The annual billing amount is invalid'),
+            'two_year_price.integer' => __('The two-year billing amount is invalid'),
+            'three_year_price.integer' => __('The three-year billing amount is invalid'),
+            'onetime_price.integer' => __('The one-time amount is invalid'),
+            'reset_price.integer' => __('The data reset package amount is invalid'),
+            'reset_traffic_method.integer' => __('The traffic reset method is invalid'),
+            'reset_traffic_method.in' => __('The traffic reset method is invalid'),
+            'capacity_limit.integer' => __('The user capacity limit is invalid'),
+            'speed_limit.integer' => __('The speed limit format is invalid')
         ];
     }
 }

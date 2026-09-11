@@ -120,7 +120,7 @@ class ConfigSave extends FormRequest
                     if($tier == '') {
                         continue;
                     }
-                    $fail('充值奖励格式不正确，必须为充值金额:奖励金额');
+                    $fail(__('The top-up reward is invalid, it must be in the format top-up amount:reward amount'));
                 }
             }
         };
@@ -131,15 +131,15 @@ class ConfigSave extends FormRequest
     {
         // illiteracy prompt
         return [
-            'app_url.url' => '站点URL格式不正确，必须携带http(s)://',
-            'subscribe_url.url' => '订阅URL格式不正确，必须携带http(s)://',
-            'subscribe_path.regex' => '订阅路径必须以/开头',
-            'server_token.min' => '通讯密钥长度必须大于16位',
-            'tos_url.url' => '服务条款URL格式不正确，必须携带http(s)://',
-            'telegram_discuss_link.url' => 'Telegram群组地址必须为URL格式，必须携带http(s)://',
-            'logo.url' => 'LOGO URL格式不正确，必须携带https(s)://',
-            'secure_path.min' => '后台路径长度最小为8位',
-            'secure_path.regex' => '后台路径只能为字母或数字',
+            'app_url.url' => __('The site URL is invalid, it must start with http(s)://'),
+            'subscribe_url.url' => __('The subscription URL is invalid, it must start with http(s)://'),
+            'subscribe_path.regex' => __('The subscription path must start with /'),
+            'server_token.min' => __('The communication secret must be longer than 16 characters'),
+            'tos_url.url' => __('The terms of service URL is invalid, it must start with http(s)://'),
+            'telegram_discuss_link.url' => __('The Telegram group address must be a URL starting with http(s)://'),
+            'logo.url' => __('The LOGO URL is invalid, it must start with http(s)://'),
+            'secure_path.min' => __('The admin path must be at least 8 characters'),
+            'secure_path.regex' => __('The admin path may only contain letters or digits'),
         ];
     }
 }

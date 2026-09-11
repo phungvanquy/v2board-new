@@ -24,22 +24,22 @@ class EPayQrcode
         return [
             'url' => [
                 'label' => 'URL',
-                'description' => '支付站点根地址，例如：https://pay.xxxxxx.com',
+                'description' => __('Payment site root URL, e.g. https://pay.xxxxxx.com'),
                 'type' => 'input',
             ],
             'pid' => [
                 'label' => 'PID',
-                'description' => '商户 ID',
+                'description' => __('Merchant ID'),
                 'type' => 'input',
             ],
             'key' => [
                 'label' => 'KEY',
-                'description' => '商户密钥',
+                'description' => __('Merchant secret'),
                 'type' => 'input',
             ],
             'type' => [
                 'label' => 'TYPE',
-                'description' => '必填：alipay 或 wxpay；MAPI 不允许留空',
+                'description' => __('Required: alipay or wxpay; MAPI does not allow it to be empty'),
                 'type' => 'input',
             ],
         ];
@@ -78,11 +78,11 @@ class EPayQrcode
 
         if (!$result) {
             $curl->close();
-            abort(500, '支付接口网络异常或返回内容无法解析');
+            abort(500, __('The payment gateway network error or its response could not be parsed'));
         }
 
         if ($curl->error || !isset($result->code) || (int) $result->code !== 1) {
-            $message = isset($result->msg) ? (string) $result->msg : 'API 下单失败';
+            $message = isset($result->msg) ? (string) $result->msg : __('API order creation failed');
             $curl->close();
             abort(500, $message);
         }
@@ -97,7 +97,7 @@ class EPayQrcode
         }
 
         if ($paymentData === null) {
-            abort(500, '接口下单成功，但没有返回 qrcode、urlscheme 或 payurl');
+            abort(500, __('The order was created, but no qrcode, urlscheme or payurl was returned'));
         }
 
         return [
@@ -166,12 +166,12 @@ class EPayQrcode
     {
         foreach (['url', 'pid', 'key', 'type'] as $key) {
             if (!isset($this->config[$key]) || trim((string) $this->config[$key]) === '') {
-                abort(500, 'EPay 配置不完整：' . $key);
+                abort(500, sprintf(__('The EPay configuration is incomplete: %s'), $key));
             }
         }
 
         if (!filter_var($this->mapiUrl(), FILTER_VALIDATE_URL)) {
-            abort(500, 'EPay URL 格式错误');
+            abort(500, __('The EPay URL format is invalid'));
         }
     }
 

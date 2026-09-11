@@ -25,22 +25,22 @@ class PaytaroQR
         return [
             'pid' => [
                 'label' => 'App ID',
-                'description' => 'Paytaro 应用的 App ID；',
+                'description' => __('The App ID of the Paytaro application;'),
                 'type' => 'input',
             ],
             'key' => [
                 'label' => 'App Secret',
-                'description' => 'Paytaro 应用的 App Secret；',
+                'description' => __('The App Secret of the Paytaro application;'),
                 'type' => 'input',
             ],
             'method_uuid' => [
-                'label' => '支付方式 UUID',
-                'description' => 'Paytaro 商户后台 → 应用管理 → 应用 → 付款方式 → 复制对应支付方式的 UUID（每个支付方式添加一条支付配置）',
+                'label' => __('Payment method UUID'),
+                'description' => __('Paytaro merchant dashboard -> App Management -> Application -> Payment Methods -> copy the UUID of the payment method (add one payment config per method)'),
                 'type' => 'input',
             ],
             'alert1' => [
                 'type' => 'alert',
-                'content' => '弹窗显码模式：用户在本站页面内直接扫码 / 转账付款，不经过 Paytaro 收银台。开户与开通支付方式请联系 <a href="https://t.me/paytaro" target="_blank">@paytaro</a>',
+                'content' => __('QR-in-dialog mode: the customer scans or transfers directly on this page instead of at the Paytaro checkout. To open an account or enable a payment method, contact <a href="https://t.me/paytaro" target="_blank">@paytaro</a>'),
             ],
         ];
     }
@@ -59,7 +59,7 @@ class PaytaroQR
     {
         $methodUuid = trim((string) ($this->config['method_uuid'] ?? ''));
         if ($methodUuid === '') {
-            abort(500, 'Paytaro：请在支付配置中填写支付方式 UUID');
+            abort(500, __('Paytaro: please enter the payment method UUID in the payment config'));
         }
         $payload = [
             'merchant_no' => (string) $order['trade_no'],
@@ -74,7 +74,7 @@ class PaytaroQR
         $res = $this->request('/v1/invoice/pay', $payload);
         $payment = isset($res['payment']) && is_array($res['payment']) ? $res['payment'] : null;
         if ($payment === null || empty($payment['data']) || empty($res['uuid'])) {
-            abort(500, 'Paytaro 返回数据不完整');
+            abort(500, __('The Paytaro response is incomplete'));
         }
 
         $linkType = strtolower((string) ($payment['link_type'] ?? ''));
@@ -149,14 +149,14 @@ class PaytaroQR
         $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         if ($errno || $body === false) {
-            abort(500, 'Paytaro 网络异常，请稍后重试');
+            abort(500, __('A Paytaro network error occurred, please try again later'));
         }
         $data = json_decode($body, true);
         if (!is_array($data)) {
-            abort(500, 'Paytaro 响应异常（HTTP ' . $status . '）');
+            abort(500, sprintf(__('Paytaro responded abnormally (HTTP %s)'), $status));
         }
         if ($status < 200 || $status >= 300) {
-            abort(500, 'Paytaro：' . (string) ($data['error'] ?? $data['message'] ?? ('HTTP ' . $status)));
+            abort(500, sprintf(__('Paytaro: %s'), (string) ($data['error'] ?? $data['message'] ?? ('HTTP ' . $status))));
         }
         return $data;
     }

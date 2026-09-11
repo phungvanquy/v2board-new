@@ -23,17 +23,17 @@ class Paytaro
         return [
             'pid' => [
                 'label' => 'App ID',
-                'description' => 'Paytaro 应用的 App ID；',
+                'description' => __('The App ID of the Paytaro application;'),
                 'type' => 'input',
             ],
             'key' => [
                 'label' => 'App Secret',
-                'description' => 'Paytaro 应用的 App Secret；',
+                'description' => __('The App Secret of the Paytaro application;'),
                 'type' => 'input',
             ],
             'alert1' => [
                 'type' => 'alert',
-                'content' => '开户 / 开通支付方式请联系：<a href="https://t.me/smogate" target="_blank">@smogate</a>',
+                'content' => __('To open an account or enable a payment method, contact <a href="https://t.me/smogate" target="_blank">@smogate</a>'),
             ],
         ];
     }

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Tasks 3.1, 3.2 and 5.1 — apply admin-i18n/strings/admin-ui.en-US.json to the
+// Tasks 5.1 and 5.2 — apply admin-i18n/strings/admin-ui.en-US.json to the
 // compiled admin bundles.
 //
 //   node admin-i18n/translate.mjs             verify, then publish
@@ -15,6 +15,9 @@
 // Safety properties, enforced rather than assumed:
 //   * Rewrites happen only at acorn token spans, so regex sources, identifiers and
 //     template syntax are structurally out of reach.
+//   * Literals whose text is also a value the backend compares (the `模糊` filter
+//     condition) are allowlisted as wire values and copied through — translating one
+//     side alone breaks the feature. See admin-ui.wire.json and lib/wire-check.mjs.
 //   * Every staged bundle is re-parsed; an unparseable result aborts before anything
 //     is published.
 //   * Untranslated or CJK-still-present literals abort the run instead of shipping a
@@ -32,8 +35,6 @@ const ROOT = path.resolve(HERE, '..');
 const STRINGS = path.join(HERE, 'strings', 'admin-ui.en-US.json');
 const STAGE = path.join(HERE, 'build');
 const ORIG = path.join(HERE, 'orig');
-const SHIM = path.join(HERE, 'locale.js');
-const SHIM_DEST = 'locale.js';
 
 const argv = process.argv.slice(2);
 const DRY = argv.includes('--dry-run');
@@ -116,8 +117,6 @@ if (DRY) {
 fs.rmSync(STAGE, { recursive: true, force: true });
 fs.mkdirSync(STAGE, { recursive: true });
 for (const p of plan) fs.writeFileSync(path.join(STAGE, p.file), p.out);
-if (fs.existsSync(SHIM)) fs.copyFileSync(SHIM, path.join(STAGE, SHIM_DEST));
-else console.warn(`warning: ${path.relative(ROOT, SHIM)} not found — chart/date labels will stay Chinese`);
 
 // ------------------------------------------------------- assert the staged ---
 // Re-scan each staged bundle: it must parse, and no literal may remain that the
@@ -162,7 +161,6 @@ fs.mkdirSync(ORIG, { recursive: true });
 for (const p of plan) {
   const archive = path.join(ORIG, p.file);
   if (fs.existsSync(archive)) continue;
-  if (!hasCJK(p.src)) continue; // already translated; nothing pristine to save
   fs.copyFileSync(p.srcPath, archive);
   console.log(`backed up untranslated original: ${path.relative(ROOT, archive)}`);
 }
@@ -170,9 +168,5 @@ for (const p of plan) {
 // ----------------------------------------------------------------- publish ---
 for (const p of plan) {
   fs.writeFileSync(path.join(ROOT, BUNDLE_DIR, p.file), p.out);
-}
-if (fs.existsSync(path.join(STAGE, SHIM_DEST))) {
-  fs.writeFileSync(path.join(ROOT, BUNDLE_DIR, SHIM_DEST), fs.readFileSync(path.join(STAGE, SHIM_DEST)));
-  console.log(`published ${BUNDLE_DIR}/${SHIM_DEST}`);
 }
 console.log('\npublished. Run `node admin-i18n/guard.mjs` to assert the tree is clean.');

@@ -1,0 +1,9 @@
+{
+  "_comment": "Chinese literals that travel between the admin bundle and the backend as a VALUE, not as text. The bundle sends or compares one and the server compares the same literal, so translating only one side breaks the feature while the UI still looks fine — the worst kind of failure. server-messages.mjs refuses to rewrite them on the PHP side; wire-keep.mjs marks them __KEEP__ on the bundle side, in every module that carries one. The other side of each pair is listed so the coupling is auditable without re-deriving it.",
+
+  "模糊": {
+    "why": "Filter condition token. The admin bundle sends filter[].condition=\"模糊\"; Admin/UserFetch and Admin/OrderFetch validate it with `required|in:>,<,=,>=,<=,模糊,!=`; the controller then maps it to SQL `like`. All three sites must agree, so it stays Chinese on both. Never rendered: it appears only inside a <select> option value and its label is a separate literal.",
+    "bundle": "umi.js@d1ca, umi.js@pi3A (condition option lists)",
+    "backend": "app/Http/Requests/Admin/UserFetch.php:18, OrderFetch.php:18, app/Http/Controllers/V1/Admin/UserController.php:41, OrderController.php:31"
+  }
+}

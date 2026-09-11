@@ -91,7 +91,7 @@ class V2nodeController extends Controller
                     "curve_name" => "prime256v1"
                 ]);
                 if ($key === false) {
-                    abort(500, '创建失败');
+                    abort(500, __('Failed to create'));
                 }
 
                 $csr = openssl_csr_new([
@@ -101,7 +101,7 @@ class V2nodeController extends Controller
                 ]);
 
                 if ($csr === false) {
-                    abort(500, '创建失败');
+                    abort(500, __('Failed to create'));
                 }
 
                 $cert = openssl_csr_sign(
@@ -115,15 +115,15 @@ class V2nodeController extends Controller
                 );
 
                 if ($cert === false) {
-                    abort(500, '创建失败');
+                    abort(500, __('Failed to create'));
                 }
 
                 if (!openssl_pkey_export($key, $tlsKey)) {
-                    abort(500, '创建失败');
+                    abort(500, __('Failed to create'));
                 }
 
                 if (!openssl_x509_export($cert, $tlsCert)) {
-                    abort(500, '创建失败');
+                    abort(500, __('Failed to create'));
                 }
 
                 $certDer = base64_decode(
@@ -136,7 +136,7 @@ class V2nodeController extends Controller
                 );
 
                 if ($certDer === false) {
-                    abort(500, '创建失败');
+                    abort(500, __('Failed to create'));
                 }
 
                 $tlsPin = hash('sha256', $certDer);
@@ -235,12 +235,12 @@ class V2nodeController extends Controller
         if ($request->input('id')) {
             $server = ServerV2node::find($request->input('id'));
             if (!$server) {
-                abort(500, '服务器不存在');
+                abort(500, __('Server does not exist'));
             }
             try {
                 $server->update($params);
             } catch (\Exception $e) {
-                abort(500, '保存失败');
+                abort(500, __('Save failed'));
             }
             return response([
                 'data' => true
@@ -248,7 +248,7 @@ class V2nodeController extends Controller
         }
 
         if (!ServerV2node::create($params)) {
-            abort(500, '创建失败');
+            abort(500, __('Failed to create'));
         }
         return response([
             'data' => true
@@ -260,7 +260,7 @@ class V2nodeController extends Controller
         if ($request->input('id')) {
             $server = ServerV2node::find($request->input('id'));
             if (!$server) {
-                abort(500, '节点ID不存在');
+                abort(500, __('Node ID does not exist'));
             }
         }
         return response([
@@ -277,12 +277,12 @@ class V2nodeController extends Controller
         $server = ServerV2node::find($request->input('id'));
 
         if (!$server) {
-            abort(500, '该服务器不存在');
+            abort(500, __('This server does not exist'));
         }
         try {
             $server->update($params);
         } catch (\Exception $e) {
-            abort(500, '保存失败');
+            abort(500, __('Save failed'));
         }
         return response([
             'data' => true
@@ -294,10 +294,10 @@ class V2nodeController extends Controller
         $server = ServerV2node::find($request->input('id'));
         $server->show = 0;
         if (!$server) {
-            abort(500, '服务器不存在');
+            abort(500, __('Server does not exist'));
         }
         if (!ServerV2node::create($server->toArray())) {
-            abort(500, '复制失败');
+            abort(500, __('Failed to copy'));
         }
 
         return response([

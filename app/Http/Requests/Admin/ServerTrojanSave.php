@@ -34,18 +34,18 @@ class ServerTrojanSave extends FormRequest
     public function messages()
     {
         return [
-            'name.required' => '节点名称不能为空',
-            'group_id.required' => '权限组不能为空',
-            'group_id.array' => '权限组格式不正确',
-            'route_id.array' => '路由组格式不正确',
-            'parent_id.integer' => '父节点格式不正确',
-            'host.required' => '节点地址不能为空',
-            'port.required' => '连接端口不能为空',
-            'server_port.required' => '后端服务端口不能为空',
-            'allow_insecure.in' => '允许不安全格式不正确',
-            'tags.array' => '标签格式不正确',
-            'rate.required' => '倍率不能为空',
-            'rate.numeric' => '倍率格式不正确'
+            'name.required' => __('The node name cannot be empty'),
+            'group_id.required' => __('The permission group cannot be empty'),
+            'group_id.array' => __('The permission group is invalid'),
+            'route_id.array' => __('The route group is invalid'),
+            'parent_id.integer' => __('The parent node is invalid'),
+            'host.required' => __('The node address cannot be empty'),
+            'port.required' => __('The connection port cannot be empty'),
+            'server_port.required' => __('The backend service port cannot be empty'),
+            'allow_insecure.in' => __('The allow insecure setting is invalid'),
+            'tags.array' => __('The tag is invalid'),
+            'rate.required' => __('The rate cannot be empty'),
+            'rate.numeric' => __('The rate is invalid')
         ];
     }
 }

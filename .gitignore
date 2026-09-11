@@ -19,7 +19,8 @@ yarn-error.log
 composer.phar
 composer.lock
 yarn.lock
-docker-compose.yml
+# Keep docker-compose.yml tracked — use docker-compose.override.yml for local overrides
+docker-compose.override.yml
 .DS_Store
 public/clients/*
 workerman.webman.php.pid

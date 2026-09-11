@@ -31,15 +31,15 @@ class CouponController extends Controller
     public function show(Request $request)
     {
         if (empty($request->input('id'))) {
-            abort(500, '参数有误');
+            abort(500, __('Invalid parameter'));
         }
         $coupon = Coupon::find($request->input('id'));
         if (!$coupon) {
-            abort(500, '优惠券不存在');
+            abort(500, __('Coupon does not exist'));
         }
         $coupon->show = $coupon->show ? 0 : 1;
         if (!$coupon->save()) {
-            abort(500, '保存失败');
+            abort(500, __('Save failed'));
         }
 
         return response([
@@ -60,13 +60,13 @@ class CouponController extends Controller
                 $params['code'] = Helper::randomChar(8);
             }
             if (!Coupon::create($params)) {
-                abort(500, '创建失败');
+                abort(500, __('Failed to create'));
             }
         } else {
             try {
                 Coupon::find($request->input('id'))->update($params);
             } catch (\Exception $e) {
-                abort(500, '保存失败');
+                abort(500, __('Save failed'));
             }
         }
 
@@ -98,7 +98,7 @@ class CouponController extends Controller
             return $item;
         }, $coupons))) {
             DB::rollBack();
-            abort(500, '生成失败');
+            abort(500, __('Failed to generate'));
         }
         DB::commit();
         $data = "名称,类型,金额或比例,开始时间,结束时间,可用次数,可用于订阅,券码,生成时间\r\n";
@@ -118,14 +118,14 @@ class CouponController extends Controller
     public function drop(Request $request)
     {
         if (empty($request->input('id'))) {
-            abort(500, '参数有误');
+            abort(500, __('Invalid parameter'));
         }
         $coupon = Coupon::find($request->input('id'));
         if (!$coupon) {
-            abort(500, '优惠券不存在');
+            abort(500, __('Coupon does not exist'));
         }
         if (!$coupon->delete()) {
-            abort(500, '删除失败');
+            abort(500, __('Delete failed'));
         }
 
         return response([

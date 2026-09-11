@@ -37,25 +37,25 @@ class ServerVmessSave extends FormRequest
     public function messages()
     {
         return [
-            'name.required' => '节点名称不能为空',
-            'group_id.required' => '权限组不能为空',
-            'group_id.array' => '权限组格式不正确',
-            'route_id.array' => '路由组格式不正确',
-            'parent_id.integer' => '父ID格式不正确',
-            'host.required' => '节点地址不能为空',
-            'port.required' => '连接端口不能为空',
-            'server_port.required' => '后端服务端口不能为空',
-            'tls.required' => 'TLS不能为空',
-            'tags.array' => '标签格式不正确',
-            'rate.required' => '倍率不能为空',
-            'rate.numeric' => '倍率格式不正确',
-            'network.required' => '传输协议不能为空',
-            'network.in' => '传输协议格式不正确',
-            'networkSettings.array' => '传输协议配置有误',
-            'networkSettings.security.in' => 'vmess加密类型只能是: auto, aes-128-gcm, chacha20-poly1305, none',
-            'ruleSettings.array' => '规则配置有误',
-            'tlsSettings.array' => 'tls配置有误',
-            'dnsSettings.array' => 'dns配置有误'
+            'name.required' => __('The node name cannot be empty'),
+            'group_id.required' => __('The permission group cannot be empty'),
+            'group_id.array' => __('The permission group is invalid'),
+            'route_id.array' => __('The route group is invalid'),
+            'parent_id.integer' => __('The parent ID is invalid'),
+            'host.required' => __('The node address cannot be empty'),
+            'port.required' => __('The connection port cannot be empty'),
+            'server_port.required' => __('The backend service port cannot be empty'),
+            'tls.required' => __('TLS cannot be empty'),
+            'tags.array' => __('The tag is invalid'),
+            'rate.required' => __('The rate cannot be empty'),
+            'rate.numeric' => __('The rate is invalid'),
+            'network.required' => __('The transport protocol cannot be empty'),
+            'network.in' => __('The transport protocol is invalid'),
+            'networkSettings.array' => __('The transport protocol configuration is invalid'),
+            'networkSettings.security.in' => __('The vmess encryption type must be one of: auto, aes-128-gcm, chacha20-poly1305, none'),
+            'ruleSettings.array' => __('The rule configuration is invalid'),
+            'tlsSettings.array' => __('The TLS configuration is invalid'),
+            'dnsSettings.array' => __('The DNS configuration is invalid')
         ];
     }
 }

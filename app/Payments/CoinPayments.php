@@ -12,17 +12,17 @@ class CoinPayments {
         return [
             'coinpayments_merchant_id' => [
                 'label' => 'Merchant ID',
-                'description' => '商户 ID，填写您在 Account Settings 中得到的 ID',
+                'description' => __('Merchant ID — enter the ID from your Account Settings'),
                 'type' => 'input',
             ],
             'coinpayments_ipn_secret' => [
                 'label' => 'IPN Secret',
-                'description' => '通知密钥，填写您在 Merchant Settings 中自行设置的值',
+                'description' => __('Notification secret — enter the value you set in Merchant Settings'),
                 'type' => 'input',
             ],
             'coinpayments_currency' => [
-                'label' => '货币代码',
-                'description' => '填写您的货币代码（大写），建议与 Merchant Settings 中的值相同',
+                'label' => __('Currency code'),
+                'description' => __('Enter your currency code in uppercase; it should match the value in Merchant Settings'),
                 'type' => 'input',
             ]
         ];

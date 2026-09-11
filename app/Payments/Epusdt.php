@@ -17,33 +17,33 @@ class Epusdt
     {
         return [
             'epusdt_url' => [
-                'label' => 'API 地址',
-                'description' => 'Epusdt API 接口地址(例如: https://xxx.com)',
+                'label' => __('API address'),
+                'description' => __('Epusdt API endpoint (e.g. https://xxx.com)'),
                 'type' => 'input',
             ],
             'epusdt_pid' => [
                 'label' => 'PID',
-                'description' => 'Epusdt 后台的 pid',
+                'description' => __('The pid from the Epusdt dashboard'),
                 'type' => 'input',
             ],
             'epusdt_token' => [
                 'label' => 'Token',
-                'description' => 'Epusdt 后台的 secret_key',
+                'description' => __('The secret_key from the Epusdt dashboard'),
                 'type' => 'input',
             ],
             'epusdt_currency' => [
-                'label' => '法币',
-                'description' => '默认 cny',
+                'label' => __('Fiat currency'),
+                'description' => __('Defaults to cny'),
                 'type' => 'input',
             ],
             'epusdt_asset' => [
-                'label' => '代币',
-                'description' => '默认 usdt',
+                'label' => __('Token'),
+                'description' => __('Defaults to usdt'),
                 'type' => 'input',
             ],
             'epusdt_network' => [
-                'label' => '网络',
-                'description' => '留空时进入 GMPay 选择链路界面，填写时按该网络直接发起订单',
+                'label' => __('Network'),
+                'description' => __('Leave empty to let the user choose a GMPay network, or enter one to place the order on that network directly'),
                 'type' => 'input',
             ],
         ];

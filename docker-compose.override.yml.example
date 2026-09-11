@@ -1,0 +1,39 @@
+# Development override — live code reload without rebuilding the image.
+#
+# Usage:
+#   cp docker-compose.override.yml.example docker-compose.override.yml
+#   docker compose up -d
+#
+# Compose merges this file automatically (docker-compose.yml + this file).
+# Remove/rename it to return to production mode (COPY-baked image, no bind mount).
+#
+# What it does:
+#   - Bind-mounts the repo root into both `app` and `horizon` so PHP edits on
+#     the host are reflected immediately (vendor/ is still the image's built
+#     vendor — delete the override's vendor mount if you want host vendor).
+#   - Excludes storage/bootstrap/cache from the bind mount so named volumes
+#     keep working.
+#
+# Without this file `docker compose config` uses the image's COPY'd source
+# (production fidelity). With it, `docker compose config` shows the bind mount.
+
+services:
+  app:
+    volumes:
+      # Live code — host repo → container /var/www
+      - .:/var/www
+      # Keep these as volumes so they don't get shadowed by the bind mount
+      - app_storage:/var/www/storage
+      - app_bootstrap_cache:/var/www/bootstrap/cache
+      - app_config:/var/www/config
+      # Do not overwrite the built vendor with a possibly stale host vendor
+      - /var/www/vendor
+      - /var/www/node_modules
+
+  horizon:
+    volumes:
+      - .:/var/www:ro
+      - app_storage:/var/www/storage
+      - app_bootstrap_cache:/var/www/bootstrap/cache
+      - app_config:/var/www/config:ro
+      - /var/www/vendor

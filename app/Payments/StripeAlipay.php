@@ -18,7 +18,7 @@ class StripeAlipay {
     {
         return [
             'currency' => [
-                'label' => '货币单位',
+                'label' => __('Currency'),
                 'description' => '',
                 'type' => 'input',
             ],
@@ -28,7 +28,7 @@ class StripeAlipay {
                 'type' => 'input',
             ],
             'stripe_webhook_key' => [
-                'label' => 'WebHook密钥签名',
+                'label' => __('WebHook secret signature'),
                 'description' => '',
                 'type' => 'input',
             ]

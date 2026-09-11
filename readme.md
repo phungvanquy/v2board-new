@@ -32,6 +32,23 @@
 - Redis
 - Laravel
 
+## Docker Compose
+
+Run the whole stack (app + nginx + MySQL + Redis + Horizon) with one command —
+no PHP, MySQL, or Redis needed on the host:
+
+```bash
+cp .env.docker.example .env    # then edit the secrets
+docker compose up -d --build
+```
+
+Site: <http://localhost:8080>. First boot imports `database/install.sql` and
+creates the admin when `ADMIN_EMAIL` / `ADMIN_PASSWORD` are set in `.env`.
+
+Full guide — service layout, environment, first boot vs. existing data, updates,
+backup/restore, the optional `webman` profile, live-reload override and
+troubleshooting: [docs/docker.md](docs/docker.md).
+
 ## Demo
 [Demo_user](https://v2bdemo.v-50.me/)
 [Demo_admin](https://v2bdemo.v-50.me/admindashboard)
