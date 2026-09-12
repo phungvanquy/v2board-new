@@ -199,7 +199,7 @@ class ConfigController extends Controller
                 $config[$k] = $data[$k];
             }
         }
-        $data = var_export($config, 1);
+        $data = var_export($config, true);
         if (!File::put(base_path() . '/config/v2board.php', "<?php\n return $data ;")) {
             abort(500, __('Update failed'));
         }

@@ -86,7 +86,7 @@ class ThemeController extends Controller
 
         File::ensureDirectoryExists(base_path() . '/config/theme/');
 
-        $data = var_export($config, 1);
+        $data = var_export($config, true);
         if (!File::put(base_path() . "/config/theme/{$payload['name']}.php", "<?php\n return $data ;")) {
             abort(500, __('Update failed'));
         }

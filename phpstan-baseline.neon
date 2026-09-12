@@ -356,11 +356,6 @@ parameters:
 			path: app/Http/Controllers/V1/Admin/ConfigController.php
 
 		-
-			message: "#^Parameter \\#2 \\$return of function var_export expects bool, int given\\.$#"
-			count: 1
-			path: app/Http/Controllers/V1/Admin/ConfigController.php
-
-		-
 			message: "#^Result of method App\\\\Jobs\\\\SendEmailJob\\:\\:handle\\(\\) \\(void\\) is used\\.$#"
 			count: 1
 			path: app/Http/Controllers/V1/Admin/ConfigController.php
@@ -845,11 +840,6 @@ parameters:
 			message: "#^Call to an undefined static method App\\\\Models\\\\Log\\:\\:orderBy\\(\\)\\.$#"
 			count: 1
 			path: app/Http/Controllers/V1/Admin/SystemController.php
-
-		-
-			message: "#^Parameter \\#2 \\$return of function var_export expects bool, int given\\.$#"
-			count: 1
-			path: app/Http/Controllers/V1/Admin/ThemeController.php
 
 		-
 			message: "#^Access to an undefined property Illuminate\\\\Http\\\\Request\\:\\:\\$user\\.$#"
@@ -2455,11 +2445,6 @@ parameters:
 			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
 			count: 1
 			path: app/Services/TelegramService.php
-
-		-
-			message: "#^Parameter \\#2 \\$return of function var_export expects bool, int given\\.$#"
-			count: 1
-			path: app/Services/ThemeService.php
 
 		-
 			message: "#^Access to an undefined property App\\\\Models\\\\Ticket\\:\\:\\$subject\\.$#"
