@@ -62,6 +62,18 @@ rules:
   - DOMAIN-SUFFIX,services.googleapis.cn,$app_name
   - DOMAIN-SUFFIX,xn--ngstr-lra8j.com,$app_name
 
+  # 俄罗斯网站 - 直连，不使用代理 (GEOSITE 需要 mihomo 内核 + 支持 category-ru 的 GeoSite.dat)
+  - GEOSITE,category-ru,DIRECT
+  - DOMAIN-SUFFIX,ru,DIRECT
+  - DOMAIN-SUFFIX,su,DIRECT
+  - DOMAIN-SUFFIX,xn--p1ai,DIRECT
+  - DOMAIN-SUFFIX,moscow,DIRECT
+  - DOMAIN-SUFFIX,tatar,DIRECT
+  - DOMAIN-SUFFIX,vk.com,DIRECT
+  - DOMAIN-SUFFIX,yandex.com,DIRECT
+  - DOMAIN-SUFFIX,yandex.net,DIRECT
+  - DOMAIN-SUFFIX,kaspersky.com,DIRECT
+
   # Apple
   - DOMAIN,safebrowsing.urlsec.qq.com,DIRECT # 如果您并不信任此服务提供商或防止其下载消耗过多带宽资源，可以进入 Safari 设置，关闭 Fraudulent Website Warning 功能，并使用 REJECT 策略。
   - DOMAIN,safebrowsing.googleapis.com,DIRECT # 如果您并不信任此服务提供商或防止其下载消耗过多带宽资源，可以进入 Safari 设置，关闭 Fraudulent Website Warning 功能，并使用 REJECT 策略。
@@ -592,5 +604,6 @@ rules:
   - DOMAIN-KEYWORD,-cn,DIRECT
 
   # 最终规则
+  - GEOIP,RU,DIRECT
   - GEOIP,CN,DIRECT
   - MATCH,$app_name
