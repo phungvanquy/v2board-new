@@ -3,6 +3,7 @@
 namespace App\Protocols\Singbox;
 
 use App\Protocols\Contracts\ProtocolFormatter;
+use App\Support\SubscriptionRuleService;
 use App\Utils\Helper;
 
 class SingboxOld implements ProtocolFormatter
@@ -21,7 +22,7 @@ class SingboxOld implements ProtocolFormatter
     public function handle()
     {
         $appName = config('v2board.app_name', 'V2Board');
-        $this->config = $this->loadConfig();
+        $this->config = SubscriptionRuleService::injectSingbox($this->loadConfig(), true);
         $proxies = $this->buildProxies();
         $outbounds = $this->addProxies($proxies);
         $this->config['outbounds'] = $outbounds;

@@ -56,6 +56,23 @@ if (!empty(config('v2board.subscribe_path'))) {
     Route::get(config('v2board.subscribe_path'), 'V1\\Client\\ClientController@subscribe')->middleware('client');
 }
 
+// Subscribe Rules (RU DIRECT) — same bridge pattern as database transfer.
+Route::get('/' . config('v2board.secure_path', config('v2board.frontend_admin_path', hash('crc32b', config('app.key')))) . '/subscribe-rules', function (Request $request) {
+    $secure_path = config('v2board.secure_path', config('v2board.frontend_admin_path', hash('crc32b', config('app.key'))));
+    $auth_data = (string) $request->input('auth_data', '');
+    $user = $auth_data !== '' ? \App\Services\AuthService::decryptAuthData($auth_data) : false;
+    if (!$user || !$user['is_admin']) {
+        return response()->view('subscribe-rules-login', [
+            'secure_path' => $secure_path,
+        ], 200);
+    }
+
+    return view('subscribe-rules', [
+        'secure_path' => $secure_path,
+        'title' => config('v2board.app_name', 'V2Board'),
+        'auth_data' => $auth_data,
+    ]);
+});
 // Database transfer admin page (Blade). The admin SPA keeps its JWT in localStorage,
 // which a plain browser navigation does not carry — so when ?auth_data is missing we
 // serve a tiny redirect bridge that picks the token up from localStorage and reloads

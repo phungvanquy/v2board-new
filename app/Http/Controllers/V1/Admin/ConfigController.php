@@ -120,6 +120,8 @@ class ConfigController extends Controller
                 'show_info_to_server_enable' => (int) config('v2board.show_info_to_server_enable', 0),
                 'show_subscribe_method' => (int) config('v2board.show_subscribe_method', 0),
                 'show_subscribe_expire' => (int) config('v2board.show_subscribe_expire', 5),
+                'subscribe_ru_direct_enable' => (int) config('v2board.subscribe_ru_direct_enable', 1),
+                'subscribe_ru_direct_domains' => (string) config('v2board.subscribe_ru_direct_domains', ''),
             ],
             'frontend' => [
                 'frontend_theme' => config('v2board.frontend_theme', 'v2board'),

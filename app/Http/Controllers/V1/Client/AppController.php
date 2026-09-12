@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\V1\Client;
 
 use App\Http\Controllers\Controller;
+use App\Support\SubscriptionRuleService;
 use App\Services\ServerService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -27,6 +28,7 @@ class AppController extends Controller
         } else {
             $config = Yaml::parseFile($defaultConfig);
         }
+        $config = SubscriptionRuleService::injectClash($config, false);
         $proxy = [];
         $proxies = [];
 

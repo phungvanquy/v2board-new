@@ -3,6 +3,7 @@
 namespace App\Protocols;
 
 use App\Protocols\Contracts\ProtocolFormatter;
+use App\Support\SubscriptionRuleService;
 use App\Utils\Helper;
 
 class Surge implements ProtocolFormatter
@@ -67,6 +68,8 @@ class Surge implements ProtocolFormatter
         } else {
             $config = file_get_contents("$defaultConfig");
         }
+
+        $config = SubscriptionRuleService::injectText($config);
 
         // Subscription link
         $subsURL = Helper::getSubscribeUrl($user['token']);

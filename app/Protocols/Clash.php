@@ -3,7 +3,7 @@
 namespace App\Protocols;
 
 use App\Protocols\Contracts\ProtocolFormatter;
-
+use App\Support\SubscriptionRuleService;
 use Symfony\Component\Yaml\Yaml;
 
 class Clash implements ProtocolFormatter
@@ -34,6 +34,7 @@ class Clash implements ProtocolFormatter
         } else {
             $config = Yaml::parseFile($defaultConfig);
         }
+        $config = SubscriptionRuleService::injectClash($config, false);
         $proxy = [];
         $proxies = [];
 

@@ -177,6 +177,9 @@ class AdminRoute
             $router->get('/database/status/{id}', 'V1\\Admin\\DatabaseTransferController@status');
             $router->get('/database/history', 'V1\\Admin\\DatabaseTransferController@history');
             $router->get('/database/download/{id}', 'V1\\Admin\\DatabaseTransferController@download');
+            // Subscribe rules (RU direct / VPN bypass)
+            $router->get('/subscribe-rules/fetch', 'V1\\Admin\\SubscribeRuleController@fetch');
+            $router->post('/subscribe-rules/save', 'V1\\Admin\\SubscribeRuleController@save');
             // Theme
             $router->get('/theme/getThemes', 'V1\\Admin\\ThemeController@getThemes');
             $router->post('/theme/saveThemeConfig', 'V1\\Admin\\ThemeController@saveThemeConfig');
