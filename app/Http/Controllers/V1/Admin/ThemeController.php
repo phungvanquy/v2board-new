@@ -30,7 +30,7 @@ class ThemeController extends Controller
                 continue;
             }
             $themeConfig = json_decode(File::get($themeConfigFile), true);
-            if (!isset($themeConfig['configs']) || !is_array($themeConfig)) {
+            if (!isset($themeConfig['configs']) || !is_array($themeConfig['configs'])) {
                 continue;
             }
             $themeConfigs[$theme] = $themeConfig;
@@ -75,7 +75,7 @@ class ThemeController extends Controller
             abort(500, __('Theme does not exist'));
         }
         $themeConfig = json_decode(File::get($themeConfigFile), true);
-        if (!isset($themeConfig['configs']) || !is_array($themeConfig)) {
+        if (!isset($themeConfig['configs']) || !is_array($themeConfig['configs'])) {
             abort(500, __('Theme configuration file is invalid'));
         }
         $validateFields = array_column($themeConfig['configs'], 'field_name');

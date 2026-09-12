@@ -12,19 +12,22 @@ class ThemeService
 
     public function __construct($theme)
     {
+        if (!preg_match('/^[a-zA-Z0-9_-]+$/', (string) $theme)) {
+            abort(500, 'Invalid theme name');
+        }
         $this->theme = $theme;
-        $this->path = $path = public_path('theme/');
+        $this->path = public_path('theme/');
     }
 
     public function init()
     {
         $themeConfigFile = $this->path . "{$this->theme}/config.json";
         if (!File::exists($themeConfigFile)) {
-            abort(500, "{$this->theme}主题不存在");
+            abort(500, "Theme [{$this->theme}] does not exist");
         }
         $themeConfig = json_decode(File::get($themeConfigFile), true);
-        if (!isset($themeConfig['configs']) || !is_array($themeConfig)) {
-            abort(500, "{$this->theme}主题配置文件有误");
+        if (!isset($themeConfig['configs']) || !is_array($themeConfig['configs'])) {
+            abort(500, "Theme [{$this->theme}] has an invalid config.json");
         }
         $configs = $themeConfig['configs'];
         $data = [];
@@ -32,13 +35,13 @@ class ThemeService
             $data[$config['field_name']] = isset($config['default_value']) ? $config['default_value'] : '';
         }
 
-        $data = var_export($data, 1);
+        $data = var_export($data, true);
         try {
             if (!File::put(base_path() . "/config/theme/{$this->theme}.php", "<?php\n return $data ;")) {
-                abort(500, "{$this->theme}初始化失败");
+                abort(500, "Failed to initialize theme [{$this->theme}]");
             }
         } catch (\Exception $e) {
-            abort(500, '请检查V2Board目录权限');
+            abort(500, 'Please check the permissions of the V2Board directory');
         }
 
         try {
@@ -49,7 +52,7 @@ class ThemeService
                 }
             }
         } catch (\Exception $e) {
-            abort(500, "{$this->theme}初始化失败");
+            abort(500, "Failed to initialize theme [{$this->theme}]");
         }
     }
 }
