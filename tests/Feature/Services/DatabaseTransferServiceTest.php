@@ -73,6 +73,15 @@ class DatabaseTransferServiceTest extends TestCase
 
     public function testBuildDumpCommandUsesEscapedArgs(): void
     {
+        // CI has no .env, so pin the mysql connection tokens to known values.
+        config([
+            'database.connections.mysql.host' => 'db',
+            'database.connections.mysql.port' => '3306',
+            'database.connections.mysql.database' => 'v2board',
+            'database.connections.mysql.username' => 'v2board',
+            'database.connections.mysql.password' => 'secret',
+        ]);
+
         $dump = $this->service->buildDumpCommand(null);
         $cmd = $dump['cmd'];
 
@@ -84,12 +93,25 @@ class DatabaseTransferServiceTest extends TestCase
         $this->assertStringContainsString('--no-tablespaces', $cmd);
         // Should NOT contain --set-gtid-purged=OFF (MariaDB compat)
         $this->assertStringNotContainsString('--set-gtid-purged', $cmd);
+        // The password must not leak into the command line.
+        $this->assertStringNotContainsString('secret', $cmd);
     }
 
     public function testBuildDumpCommandIncludesPasswordInEnv(): void
     {
+        config(['database.connections.mysql.password' => 'secret']);
+
         $dump = $this->service->buildDumpCommand(null);
         $this->assertArrayHasKey('MYSQL_PWD', $dump['env']);
+        $this->assertSame('secret', $dump['env']['MYSQL_PWD']);
+    }
+
+    public function testBuildDumpCommandOmitsPasswordWhenEmpty(): void
+    {
+        config(['database.connections.mysql.password' => '']);
+
+        $dump = $this->service->buildDumpCommand(null);
+        $this->assertArrayNotHasKey('MYSQL_PWD', $dump['env']);
     }
 
     public function testDumpNeverCarriesAuditTableData(): void
