@@ -19,6 +19,13 @@
         "rules": [
             {
                 "rule_set": [
+                    "geosite-ru"
+                ],
+                "action": "route",
+                "server": "local"
+            },
+            {
+                "rule_set": [
                     "geosite-cn"
                 ],
                 "action": "route",
@@ -121,6 +128,13 @@
                 ],
                 "action": "route",
                 "outbound": "DIRECT"
+            },
+            {
+                "rule_set": [
+                    "geosite-ru","geoip-ru"
+                ],
+                "action": "route",
+                "outbound": "DIRECT"
             }
         ],
         "auto_detect_interface": true,
@@ -148,6 +162,20 @@
                 "type": "remote",
                 "format": "binary",
                 "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-cn.srs",
+                "download_detour": "节点选择"
+            },
+            {
+                "tag": "geoip-ru",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/Loyalsoldier/geoip/release/srs/ru.srs",
+                "download_detour": "节点选择"
+            },
+            {
+                "tag": "geosite-ru",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-ru.srs",
                 "download_detour": "节点选择"
             },
             {
