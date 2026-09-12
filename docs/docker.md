@@ -94,7 +94,51 @@ docker compose down -v                # destroys db_data + redis_data + app_* vo
 
 `docker compose build app && docker compose up -d` **preserves** `db_data` — verified (see Verification below). Only `down -v` drops volumes. The documented update (`php artisan v2board:update` inside the container) runs idempotently; it does not drop tables.
 
-### Backup and restore
+### Database backup & restore (in-panel)
+
+Admins can export and import the whole V2Board MySQL database from the browser — no shell, no `mysqldump` over SSH. This is the self-serve path for **server migration** and **point-in-time restore**.
+
+- **Page:** `http://<host>:<port>/<secure_path>/database` (same admin auth as the rest of the panel; a browser navigation carries the admin `auth_data`).
+- **API (all admin-gated, under `/{secure_path}/database`):** `GET /export?format=full|gz|sql`, `POST /import` (multipart: `file` + `confirm=RESTORE`), `GET /status/{id}`, `GET /history`, `GET /download/{id}`.
+
+**Export** produces a `mysqldump` of every table (schema + data), streamed to the browser with no PHP-memory buffering. Three formats:
+
+- `full` (default, recommended): `v2board_<db>_<ts>_full.tar.gz` — the dump **plus** the admin-UI config that lives outside the database (`config/v2board.php`, `config/theme/*.php`). Importing it gives an exact clone.
+- `gz`: `v2board_<db>_<ts>.sql.gz` — database only, gzipped.
+- `sql`: `v2board_<db>_<ts>.sql` — database only, plain.
+
+Each successful export also keeps a server-side copy under `storage/app/database-backups/exports/` (`0600`, last `export_retention` kept, default 5), so **History gets a Download link for every retained record** — you can re-fetch an old backup without re-dumping. Disable with `DB_TRANSFER_KEEP_EXPORTS=false`. The transfer-history table `v2_database_transfer_log` is deliberately excluded from every dump's *data* (structure only), so restoring can never erase the log that records the restore.
+
+**Import / restore** validates the upload first (extension, gzip integrity, size, SQL sanity; bundles additionally must contain `dump.sql` + `manifest.json`), then — before touching the database — takes a timestamped **pre-restore safety backup** into `storage/app/database-backups/pre-restore/` (last 3 kept, and Downloadable from the import's History row for one-click rollback). If that backup cannot be written (disk low, `mysqldump` missing), the restore is **blocked** unless the admin re-submits with the "skip safety backup" acknowledgement. Dumps larger than `async_threshold` run as a queued Horizon job with status polling; smaller ones run inline. Only one restore runs at a time (a second concurrent import gets `409`). Every export/import is written to the `v2_database_transfer_log` audit table (actor, file, size, outcome).
+
+Server migration procedure:
+
+```text
+1. Old server → /database → Export (Full recommended). The download completes.
+2. New server → deploy the app (empty or fresh DB), /database → Import the file.
+3. Confirm by typing RESTORE. The safety backup runs first, then the dump is applied
+   (a Full import also restores System config & theme and refreshes config:cache).
+4. If it is the wrong file, click Download on the import's History row to fetch the
+   pre-restore safety dump, then Import it to roll back.
+```
+
+> MySQL DDL is not transactional: a dump that fails **mid-apply** can leave a partial schema. That is exactly what the pre-restore safety backup covers — re-import it to get back to the pre-restore state. For point-in-time recovery beyond this, keep the volume tarball backups below.
+
+Tunable via `.env` (all optional; defaults shown):
+
+```ini
+DB_TRANSFER_MAX_UPLOAD_MB=512      # app-level upload cap (also see nginx/PHP below)
+DB_TRANSFER_ASYNC_THRESHOLD_MB=20  # above this, the restore is queued
+DB_TRANSFER_SAFETY_RETENTION=3     # pre-restore dumps kept
+DB_TRANSFER_AUDIT_RETENTION_DAYS=7 # audit rows kept (0 = forever)
+DB_TRANSFER_SAFETY_BACKUP=true     # take a safety dump before restore
+DB_TRANSFER_KEEP_EXPORTS=true      # keep a downloadable server-side copy of exports
+DB_TRANSFER_EXPORT_RETENTION=5     # retained export copies kept (0 = keep all)
+```
+
+Uploads are additionally capped by `client_max_body_size` (nginx) and `upload_max_filesize` / `post_max_size` (`.docker/php/php.ini`, shipped at `520M`/`560M` to match the 512 MB default). If you raise `DB_TRANSFER_MAX_UPLOAD_MB`, raise those two together or the web server rejects the file first. `mysqldump` / `mysql` come from `mariadb-client`, already installed in the runtime image (`Dockerfile`); no extra setup needed.
+
+### Backup and restore (volumes)
 
 ```bash
 # Volumes on this host

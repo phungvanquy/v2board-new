@@ -385,6 +385,22 @@ parameters:
 			count: 1
 			path: app/Http/Controllers/V1/Admin/CouponController.php
 
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\DatabaseTransferLog\\:\\:count\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/DatabaseTransferController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\DatabaseTransferLog\\:\\:find\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/V1/Admin/DatabaseTransferController.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\DatabaseTransferLog\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/DatabaseTransferController.php
+
 		-
 			message: "#^Call to an undefined static method App\\\\Models\\\\Giftcard\\:\\:create\\(\\)\\.$#"
 			count: 1
@@ -1616,6 +1632,11 @@ parameters:
 			path: app/Http/Routes/V2/ServerRoute.php
 
 		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\DatabaseTransferLog\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Jobs/DatabaseImportJob.php
+
+		-
 			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
 			count: 1
 			path: app/Jobs/OrderHandleJob.php
@@ -2054,6 +2075,21 @@ parameters:
 			message: "#^Call to an undefined static method App\\\\Models\\\\Order\\:\\:where\\(\\)\\.$#"
 			count: 1
 			path: app/Services/CouponService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\DatabaseTransferLog\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: app/Services/DatabaseTransferService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\DatabaseTransferLog\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Services/DatabaseTransferService.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\DatabaseTransferLog\\:\\:where\\(\\)\\.$#"
+			count: 4
+			path: app/Services/DatabaseTransferService.php
 
 		-
 			message: "#^Access to an undefined property App\\\\Models\\\\User\\:\\:\\$d\\.$#"

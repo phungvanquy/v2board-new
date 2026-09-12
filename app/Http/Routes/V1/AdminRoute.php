@@ -168,6 +168,15 @@ class AdminRoute
             $router->get('/system/getQueueWorkload', 'V1\\Admin\\SystemController@getQueueWorkload');
             $router->get('/system/getQueueMasters', '\\Laravel\\Horizon\\Http\\Controllers\\MasterSupervisorController@index');
             $router->get('/system/getSystemLog', 'V1\\Admin\\SystemController@getSystemLog');
+            // Database transfer (backup & migration)
+            $router->get('/database/export', 'V1\\Admin\\DatabaseTransferController@export');
+            $router->post(
+                '/database/import',
+                'V1\\Admin\\DatabaseTransferController@import'
+            )->middleware('throttle:' . config('database-transfer.rate_limit_max_attempts') . ',' . config('database-transfer.rate_limit_decay_minutes'));
+            $router->get('/database/status/{id}', 'V1\\Admin\\DatabaseTransferController@status');
+            $router->get('/database/history', 'V1\\Admin\\DatabaseTransferController@history');
+            $router->get('/database/download/{id}', 'V1\\Admin\\DatabaseTransferController@download');
             // Theme
             $router->get('/theme/getThemes', 'V1\\Admin\\ThemeController@getThemes');
             $router->post('/theme/saveThemeConfig', 'V1\\Admin\\ThemeController@saveThemeConfig');

@@ -859,3 +859,17 @@ CHANGE `action_value` `action_value` text NULL AFTER `action`;
 
 ALTER TABLE `v2_server_v2node`
 ADD `trusted_x_forwarded_for` varchar(255) COLLATE 'utf8mb4_general_ci' NULL COMMENT '信任的x-forwarded-for头部' AFTER `network_settings`;
+
+CREATE TABLE `v2_database_transfer_log` (
+                            `id` int(11) NOT NULL AUTO_INCREMENT,
+                            `user_id` int(11) DEFAULT NULL COMMENT 'admin who triggered the transfer',
+                            `action` varchar(16) NOT NULL COMMENT 'export|import',
+                            `file_name` varchar(255) DEFAULT NULL,
+                            `file_size` bigint(20) UNSIGNED DEFAULT NULL,
+                            `stored_path` varchar(512) DEFAULT NULL COMMENT 'retained file for re-download',
+                            `status` varchar(16) NOT NULL COMMENT 'pending|success|failed',
+                            `message` text,
+                            `created_at` int(11) DEFAULT NULL,
+                            `updated_at` int(11) DEFAULT NULL,
+                            PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

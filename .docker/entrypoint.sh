@@ -32,7 +32,8 @@ artisan() { as_app php artisan "$@" 2>&1 | sed 's/^/[artisan] /' || true; }
 # ── 0. Writable dirs (needs root for fresh named volumes / bind-mounts)
 mkdir -p "$ROOT/storage/framework/cache" "$ROOT/storage/framework/sessions" \
          "$ROOT/storage/framework/views" "$ROOT/storage/logs" \
-         "$ROOT/storage/app/public" "$ROOT/bootstrap/cache" 2>/dev/null || true
+         "$ROOT/storage/app/public" "$ROOT/storage/app/database-backups/tmp" \
+         "$ROOT/storage/app/database-backups/pre-restore" "$ROOT/bootstrap/cache" 2>/dev/null || true
 if is_root; then
   chown -R www-data:www-data "$ROOT/storage" "$ROOT/bootstrap/cache" 2>/dev/null || true
   # ThemeService writes config/theme/<theme>.php and ConfigController writes

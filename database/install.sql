@@ -587,3 +587,18 @@ CREATE TABLE `v2_user` (
 
 
 -- 2025-09-12 10:05:00
+
+DROP TABLE IF EXISTS `v2_database_transfer_log`;
+CREATE TABLE `v2_database_transfer_log` (
+                            `id` int(11) NOT NULL AUTO_INCREMENT,
+                            `user_id` int(11) DEFAULT NULL COMMENT 'admin who triggered the transfer',
+                            `action` varchar(16) NOT NULL COMMENT 'export|import',
+                            `file_name` varchar(255) DEFAULT NULL,
+                            `file_size` bigint(20) UNSIGNED DEFAULT NULL,
+                            `stored_path` varchar(512) DEFAULT NULL COMMENT 'retained file for re-download',
+                            `status` varchar(16) NOT NULL COMMENT 'pending|success|failed',
+                            `message` text,
+                            `created_at` int(11) DEFAULT NULL,
+                            `updated_at` int(11) DEFAULT NULL,
+                            PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

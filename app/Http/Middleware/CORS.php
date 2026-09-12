@@ -16,11 +16,12 @@ class CORS
             }
         }
         $response = $next($request);
-        $response->header('Access-Control-Allow-Origin', trim($origin, '/'));
-        $response->header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,HEAD');
-        $response->header('Access-Control-Allow-Headers', 'Origin,Content-Type,Accept,Authorization,X-Request-With');
-        $response->header('Access-Control-Allow-Credentials', 'true');
-        $response->header('Access-Control-Max-Age', 10080);
+        $headers = $response->headers;
+        $headers->set('Access-Control-Allow-Origin', trim((string) $origin, '/'));
+        $headers->set('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,HEAD');
+        $headers->set('Access-Control-Allow-Headers', 'Origin,Content-Type,Accept,Authorization,X-Request-With');
+        $headers->set('Access-Control-Allow-Credentials', 'true');
+        $headers->set('Access-Control-Max-Age', '10080');
 
         return $response;
     }
