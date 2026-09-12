@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\ApiException;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 
@@ -13,7 +14,7 @@ class ThemeService
     public function __construct($theme)
     {
         if (!preg_match('/^[a-zA-Z0-9_-]+$/', (string) $theme)) {
-            abort(500, 'Invalid theme name');
+            throw ApiException::fail('Invalid theme name');
         }
         $this->theme = $theme;
         $this->path = public_path('theme/');
@@ -23,11 +24,11 @@ class ThemeService
     {
         $themeConfigFile = $this->path . "{$this->theme}/config.json";
         if (!File::exists($themeConfigFile)) {
-            abort(500, "Theme [{$this->theme}] does not exist");
+            throw ApiException::fail("Theme [{$this->theme}] does not exist");
         }
         $themeConfig = json_decode(File::get($themeConfigFile), true);
         if (!isset($themeConfig['configs']) || !is_array($themeConfig['configs'])) {
-            abort(500, "Theme [{$this->theme}] has an invalid config.json");
+            throw ApiException::fail("Theme [{$this->theme}] has an invalid config.json");
         }
         $configs = $themeConfig['configs'];
         $data = [];
@@ -38,10 +39,12 @@ class ThemeService
         $data = var_export($data, true);
         try {
             if (!File::put(base_path() . "/config/theme/{$this->theme}.php", "<?php\n return $data ;")) {
-                abort(500, "Failed to initialize theme [{$this->theme}]");
+                throw ApiException::fail("Failed to initialize theme [{$this->theme}]");
             }
+        } catch (ApiException $e) {
+            throw $e;
         } catch (\Exception $e) {
-            abort(500, 'Please check the permissions of the V2Board directory');
+            throw ApiException::fail('Please check the permissions of the V2Board directory');
         }
 
         try {
@@ -52,7 +55,7 @@ class ThemeService
                 }
             }
         } catch (\Exception $e) {
-            abort(500, "Failed to initialize theme [{$this->theme}]");
+            throw ApiException::fail("Failed to initialize theme [{$this->theme}]");
         }
     }
 }
