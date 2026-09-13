@@ -80,14 +80,24 @@ class ClientController extends Controller
         // Response object. Those headers are queued globally and would be
         // sent alongside the Response's headers (duplicate subscription-
         // userinfo etc., and Clash's `expire=` is empty for never-expire
-        // instead of 0). Remove the raw ones so the Response carries the
-        // single, correct set. Safe under webman (isWEBMAN) too — it's a
-        // no-op if nothing was queued or headers were already sent.
+        // instead of 0). Capture a protocol-set content-disposition first
+        // (Surge/Surfboard emit "<appName>.conf" as the download filename —
+        // Symfony sends Response headers with replace=false, so the queued
+        // raw one would otherwise survive as a conflicting duplicate), then
+        // remove the raw ones so the Response carries the single set below.
+        // Safe under webman (isWEBMAN) too — it's a no-op if nothing was
+        // queued or headers were already sent.
+        $rawDisposition = null;
         if (function_exists('header_remove') && !headers_sent()) {
-            // Surge/Surfboard emit "<appName>.conf" as the download filename.
-            // Preserve a protocol-set content-disposition (incl. its .conf
-            // extension); only the other metadata headers are normalized below.
-            foreach (['subscription-userinfo', 'profile-update-interval', 'profile-title', 'profile-web-page-url', 'support-url'] as $h) {
+            if (function_exists('headers_list')) {
+                foreach (@headers_list() as $h) {
+                    if (stripos($h, 'content-disposition:') === 0) {
+                        $rawDisposition = trim(substr($h, strlen('content-disposition:')));
+                        break;
+                    }
+                }
+            }
+            foreach (['subscription-userinfo', 'profile-update-interval', 'content-disposition', 'profile-title', 'profile-web-page-url', 'support-url'] as $h) {
                 @header_remove($h);
             }
         }
@@ -108,11 +118,11 @@ class ClientController extends Controller
             $headers->set('profile-title', 'base64:' . base64_encode($appName));
         }
         if (!$headers->has('content-disposition')) {
-            // Kept in sync with the raw-header cleanup above: protocols that
+            // Kept in sync with the raw-header capture above: protocols that
             // set their own filename (e.g. Surge/Surfboard "<appName>.conf")
-            // are preserved via headers_sent-safe raw headers; only set the
-            // default when nothing else did.
-            $headers->set('content-disposition', 'attachment;filename*=UTF-8\'\'' . rawurlencode($appName));
+            // win over the default; only set the default when nothing did.
+            $headers->set('content-disposition', $rawDisposition
+                ?? 'attachment;filename*=UTF-8\'\'' . rawurlencode($appName));
         }
         $appUrl = (string) config('v2board.app_url');
         if ($appUrl !== '' && !$headers->has('profile-web-page-url')) {

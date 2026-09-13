@@ -281,7 +281,7 @@ document.getElementById('encryptBtn').addEventListener('click', function() {
         setConvertResult('', '');
         document.getElementById('convertPreview').textContent = '—';
         showMsg('convertAlert', e.message || 'Encrypt failed.', 'error');
-    }).finally(()=>{ if (myReq === convertSeq) btn.disabled=false; });
+    }).finally(()=>{ btn.disabled=false; });
 });
 document.getElementById('clearBtn').addEventListener('click', function() {
     convertSeq++;
@@ -309,7 +309,7 @@ document.getElementById('lookupBtn').addEventListener('click', function() {
     }).catch(e=>{
         if (myReq !== convertSeq) return;
         showMsg('convertAlert', e.message || 'Lookup failed.', 'error');
-    }).finally(()=>{ if (myReq === convertSeq) btn.disabled=false; });
+    }).finally(()=>{ btn.disabled=false; });
 });
 document.getElementById('copyBtn').addEventListener('click', function() {
     if (!lastHapp) return;

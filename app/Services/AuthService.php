@@ -54,9 +54,11 @@ class AuthService
                     // forgets this snapshot) — but snapshots written before that
                     // fix, or raced with it, must still be rejected. The snapshot
                     // carries its session guid, so membership is verified first
-                    // (no DB hit); role/ban drift is re-checked after.
-                    if (isset($cached['_session'])
-                        && !self::checkSession($cached['id'] ?? null, $cached['_session'])) {
+                    // (no DB hit); role/ban drift is re-checked after. Snapshots
+                    // without a guid predate this format — treat them as stale
+                    // and fall through to full re-validation.
+                    if (!isset($cached['_session'])
+                        || !self::checkSession($cached['id'] ?? null, $cached['_session'])) {
                         Cache::forget($jwt);
                         $cached = null;
                     } else {

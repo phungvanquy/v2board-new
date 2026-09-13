@@ -269,14 +269,20 @@ PEM;
     }
 
     /**
-     * True only for real encrypted links (happ://crypt4/… or happ://crypt5/…),
-     * not for other happ:// deep links (e.g. happ://add/…) that would expose
-     * the plain URL. Bare "happ://" or empty payloads never qualify.
+     * True only for real encrypted links (happ://crypt4/… or happ://crypt5/…)
+     * with a non-empty payload — not for other happ:// deep links (e.g.
+     * happ://add/…) that would expose the plain URL. Bare prefixes or empty
+     * payloads never qualify.
      */
     private static function isEncryptedLink(string $link): bool
     {
-        return str_starts_with($link, self::PREFIX_CRYPT4)
-            || str_starts_with($link, 'happ://crypt5/');
+        foreach ([self::PREFIX_CRYPT4, 'happ://crypt5/'] as $prefix) {
+            if (str_starts_with($link, $prefix) && strlen($link) > strlen($prefix)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
