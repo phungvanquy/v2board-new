@@ -56,6 +56,24 @@ if (!empty(config('v2board.subscribe_path'))) {
     Route::get(config('v2board.subscribe_path'), 'V1\\Client\\ClientController@subscribe')->middleware('client');
 }
 
+// Advanced Admin hub (Blade) — small entry page that links to every
+// out-of-panel admin tool. Exact same localStorage auth_data bridge as
+// /subscribe-rules and /database; two views: the bridge and the hub.
+Route::get('/' . config('v2board.secure_path', config('v2board.frontend_admin_path', hash('crc32b', config('app.key')))) . '/advanced', function (Request $request) {
+    $secure_path = config('v2board.secure_path', config('v2board.frontend_admin_path', hash('crc32b', config('app.key'))));
+    $auth_data = (string) $request->input('auth_data', '');
+    $user = $auth_data !== '' ? \App\Services\AuthService::decryptAuthData($auth_data) : false;
+    if (!$user || !$user['is_admin']) {
+        return response()->view('admin-advanced-login', [
+            'secure_path' => $secure_path,
+        ], 200);
+    }
+
+    return view('admin-advanced', [
+        'secure_path' => $secure_path,
+    ]);
+});
+
 // Subscribe Rules (RU DIRECT) — same bridge pattern as database transfer.
 Route::get('/' . config('v2board.secure_path', config('v2board.frontend_admin_path', hash('crc32b', config('app.key')))) . '/subscribe-rules', function (Request $request) {
     $secure_path = config('v2board.secure_path', config('v2board.frontend_admin_path', hash('crc32b', config('app.key'))));
