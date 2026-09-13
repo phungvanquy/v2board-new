@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\V1\Client;
 
 use App\Http\Controllers\Controller;
-use App\Support\SubscriptionRuleService;
 use App\Services\ServerService;
 use App\Services\UserService;
+use App\Support\SubscriptionRuleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Yaml\Yaml;
