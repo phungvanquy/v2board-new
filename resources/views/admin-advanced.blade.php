@@ -37,6 +37,13 @@
                 </div>
                 <div class="tile-desc">{{ __('Manage VPN-bypass (DIRECT) rules pushed with subscriptions — Russia sites, extra domains.') }}</div>
             </a>
+            <a class="tile" href="{{ url('/' . $secure_path . '/happ-crypto') }}">
+                <div class="tile-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1677ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    {{ __('Happ Encrypted Link') }}
+                </div>
+                <div class="tile-desc">{{ __('Convert a user’s subscription URL into an encrypted happ:// deep link (local RSA-4096 crypt4, or remote crypt5).') }}</div>
+            </a>
             <a class="tile" href="{{ url('/' . $secure_path . '/database') }}">
                 <div class="tile-title">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1677ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>

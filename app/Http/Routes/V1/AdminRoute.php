@@ -180,6 +180,11 @@ class AdminRoute
             // Subscribe rules (RU direct / VPN bypass)
             $router->get('/subscribe-rules/fetch', 'V1\\Admin\\SubscribeRuleController@fetch');
             $router->post('/subscribe-rules/save', 'V1\\Admin\\SubscribeRuleController@save');
+            // Happ encrypted link (admin converter, crypt4/crypt5)
+            $router->get('/happ-crypto/fetch', 'V1\\Admin\\HappCryptoController@fetch');
+            $router->post('/happ-crypto/save', 'V1\\Admin\\HappCryptoController@save');
+            $router->post('/happ-crypto/encrypt', 'V1\\Admin\\HappCryptoController@encrypt');
+            $router->get('/happ-crypto/lookup', 'V1\\Admin\\HappCryptoController@lookup');
             // Theme
             $router->get('/theme/getThemes', 'V1\\Admin\\ThemeController@getThemes');
             $router->post('/theme/saveThemeConfig', 'V1\\Admin\\ThemeController@saveThemeConfig');
