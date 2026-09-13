@@ -2555,3 +2555,8 @@ parameters:
 			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
 			count: 1
 			path: app/Support/SubscriptionHelper.php
+
+		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/V1/Admin/HappCryptoController.php
