@@ -11,6 +11,7 @@
         .card { background: #fff; border-radius: 8px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
         .muted { color: #888; font-size: 13px; }
         a { color: #1677ff; }
+        .btn { display: inline-block; padding: 8px 16px; border-radius: 6px; background: #1677ff; color: #fff; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -23,20 +24,39 @@
 <script>
 (function () {
     const SECURE = @json($secure_path);
+    const EXPIRED = @json((bool) ($expired ?? false));
+    const QUERY_TOKEN = @json((string) ($token ?? ''));
     function getAuth() {
         try { const v = localStorage.getItem('authorization') || ''; if (v) return v; } catch(e) {}
         const m = document.cookie.match(/(?:^|;\s*)auth_data=([^;]*)/);
         return m ? decodeURIComponent(m[1]) : '';
     }
-    const auth = getAuth();
     const target = '/' + SECURE + '/advanced';
+    const admin = '/' + SECURE;
     const msg = document.getElementById('bridgeMsg');
+
+    // Server already rejected ?auth_data (expired session, logout, banned, demoted).
+    // Do NOT retry that same token — it would loop forever.
+    if (EXPIRED) {
+        // Best-effort: drop the stale JWT so the SPA also sees logged-out state.
+        try {
+            const cur = getAuth();
+            if (cur && cur === QUERY_TOKEN) localStorage.removeItem('authorization');
+        } catch(e) {}
+        msg.innerHTML =
+            '<span style="color:#cf1322;">' + 'Session expired — please log in again.' + '</span><br>' +
+            '<a class="btn" href="' + admin + '" style="margin-top:10px;">Go to login</a> ' +
+            '<span class="muted">Redirecting…</span>';
+        setTimeout(function () { window.location.replace(admin); }, 1800);
+        return;
+    }
+
+    const auth = getAuth();
     if (auth) {
         window.location.replace(target + '?auth_data=' + encodeURIComponent(auth));
         msg.textContent = 'Auth found — reloading…';
         return;
     }
-    const admin = '/' + SECURE;
     msg.innerHTML =
         '<span style="color:#cf1322;">Not logged in in this browser.</span><br>' +
         'Open <a href="' + admin + '">' + admin + '</a> in <strong>this same browser</strong> first, log in, ' +

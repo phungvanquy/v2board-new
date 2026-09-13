@@ -2022,6 +2022,11 @@ parameters:
 			path: app/Protocols/v2RayTun.php
 
 		-
+			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: app/Services/AuthService.php
+
+		-
 			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:select\\(\\)\\.$#"
 			count: 1
 			path: app/Services/AuthService.php

@@ -123,6 +123,16 @@ function getAuth() {
     return m ? decodeURIComponent(m[1]) : '';
 }
 
+// 401|403 from any admin API means the session is gone (expiry / logout / ban /
+// demotion) — drop the stale JWT so the next navigation doesn't retry it forever,
+// and send the admin back to the SPA login. QUERY_AUTH pages (loadHistory/auth
+// Data) are rendered with a baked-in token; they don't loop on getAuth, so
+// redirecting is safe.
+function authExpiredRedirect() {
+    try { localStorage.removeItem('authorization'); } catch(e) {}
+    window.location.replace('/' + SECURE_PATH);
+}
+
 function api(path, opts = {}) {
     const auth = getAuth();
     const headers = opts.headers || {};
@@ -133,7 +143,10 @@ function api(path, opts = {}) {
     if (auth && opts.method === 'GET' && path.indexOf('auth_data=') === -1) {
         path += (path.indexOf('?') === -1 ? '?' : '&') + 'auth_data=' + encodeURIComponent(auth);
     }
-    return fetch(path, Object.assign({}, opts, { headers: headers }));
+    return fetch(path, Object.assign({}, opts, { headers: headers })).then(function (r) {
+        if (r.status === 401 || r.status === 403) { authExpiredRedirect(); }
+        return r;
+    });
 }
 
 function showMsg(elId, html, cls) {
@@ -205,6 +218,7 @@ function doImport() {
 
     fetch('/api/v1/' + SECURE_PATH + '/database/import', { method: 'POST', body: fd, headers: headers })
         .then(function (r) {
+            if (r.status === 401 || r.status === 403) { authExpiredRedirect(); }
             return r.json().catch(function () { return {}; }).then(function (j) { return { r: r, j: j }; });
         })
         .then(function (pair) {

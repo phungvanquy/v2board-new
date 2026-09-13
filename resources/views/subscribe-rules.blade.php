@@ -74,6 +74,12 @@ function getAuth() {
     const m = document.cookie.match(/(?:^|;\s*)auth_data=([^;]*)/);
     return m ? decodeURIComponent(m[1]) : '';
 }
+// Session gone (expired / logged out / demoted / banned): 401|403 from the admin
+// API => drop the stale JWT and send the admin to the SPA login to re-authenticate.
+function authExpiredRedirect() {
+    try { localStorage.removeItem('authorization'); } catch(e) {}
+    window.location.replace('/' + SECURE);
+}
 function showMsg(id, text, kind) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -89,7 +95,10 @@ function api(path, opts) {
     // also append ?auth_data for routes that read it from query
     const sep = path.indexOf('?') === -1 ? '?' : '&';
     const url = '/api/v1/' + SECURE + path + (auth ? sep + 'auth_data=' + encodeURIComponent(auth) : '');
-    return fetch(url, opts);
+    return fetch(url, opts).then(function (r) {
+        if (r.status === 401 || r.status === 403) { authExpiredRedirect(); }
+        return r;
+    });
 }
 const BASE_SUFFIXES = ['ru','su','xn--p1ai','moscow','tatar'];
 const BASE_DOMAINS = ['vk.com','yandex.com','yandex.net','kaspersky.com'];

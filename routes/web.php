@@ -59,6 +59,9 @@ if (!empty(config('v2board.subscribe_path'))) {
 // Advanced Admin hub (Blade) — small entry page that links to every
 // out-of-panel admin tool. Exact same localStorage auth_data bridge as
 // /subscribe-rules and /database; two views: the bridge and the hub.
+// The bridge MUST NOT retry a token that the server already rejected
+// (?auth_data present + invalid => render it with $expired=true), otherwise
+// it would redirect that same token back here forever (infinite reload).
 Route::get('/' . config('v2board.secure_path', config('v2board.frontend_admin_path', hash('crc32b', config('app.key')))) . '/advanced', function (Request $request) {
     $secure_path = config('v2board.secure_path', config('v2board.frontend_admin_path', hash('crc32b', config('app.key'))));
     $auth_data = (string) $request->input('auth_data', '');
@@ -66,6 +69,8 @@ Route::get('/' . config('v2board.secure_path', config('v2board.frontend_admin_pa
     if (!$user || !$user['is_admin']) {
         return response()->view('admin-advanced-login', [
             'secure_path' => $secure_path,
+            'token' => $auth_data,
+            'expired' => $auth_data !== '',
         ], 200);
     }
 
@@ -82,6 +87,8 @@ Route::get('/' . config('v2board.secure_path', config('v2board.frontend_admin_pa
     if (!$user || !$user['is_admin']) {
         return response()->view('subscribe-rules-login', [
             'secure_path' => $secure_path,
+            'token' => $auth_data,
+            'expired' => $auth_data !== '',
         ], 200);
     }
 
@@ -100,6 +107,8 @@ Route::get('/' . config('v2board.secure_path', config('v2board.frontend_admin_pa
     if (!$user || !$user['is_admin']) {
         return response()->view('happ-crypto-login', [
             'secure_path' => $secure_path,
+            'token' => $auth_data,
+            'expired' => $auth_data !== '',
         ], 200);
     }
 
@@ -120,6 +129,8 @@ Route::get('/' . config('v2board.secure_path', config('v2board.frontend_admin_pa
     if (!$user || !$user['is_admin']) {
         return response()->view('database-transfer-login', [
             'secure_path' => $secure_path,
+            'token' => $auth_data,
+            'expired' => $auth_data !== '',
         ], 200);
     }
 

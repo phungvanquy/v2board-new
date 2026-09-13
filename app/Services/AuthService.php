@@ -43,23 +43,41 @@ class AuthService
     public static function decryptAuthData($jwt)
     {
         try {
-            if (!Cache::has($jwt)) {
-                $data = (array) JWT::decode($jwt, new Key(config('app.key'), 'HS256'));
-                if (!self::checkSession($data['id'], $data['session'])) {
-                    return false;
+            $cached = Cache::get($jwt);
+            if ($cached !== null) {
+                // The snapshot lives 3600s. Bans are revoked eagerly (admin/user
+                // controllers call removeAllSession(), which forgets these keys), but
+                // an is_admin/is_staff *demotion* does NOT wipe sessions — so without
+                // this re-check a freshly-demoted admin keeps panel access for the rest
+                // of the TTL. One indexed PK lookup detects the change; on drift we drop
+                // the snapshot and fall through to a full re-validate below.
+                $fresh = User::find($cached['id'], ['is_admin', 'is_staff', 'banned']);
+                if (!$fresh
+                    || (int) $cached['is_admin'] !== (int) $fresh->is_admin
+                    || (int) $cached['is_staff'] !== (int) $fresh->is_staff
+                    || (int) $fresh->banned === 1) {
+                    Cache::forget($jwt);
+                    $cached = null;
+                } else {
+                    return $cached;
                 }
-                $user = User::select([
-                    'id',
-                    'email',
-                    'is_admin',
-                    'is_staff',
-                ])
-                    ->find($data['id']);
-                if (!$user) {
-                    return false;
-                }
-                Cache::put($jwt, $user->toArray(), 3600);
             }
+            $data = (array) JWT::decode($jwt, new Key(config('app.key'), 'HS256'));
+            if (!self::checkSession($data['id'], $data['session'])) {
+                return false;
+            }
+            $user = User::select([
+                'id',
+                'email',
+                'is_admin',
+                'is_staff',
+                'banned',
+            ])
+                ->find($data['id']);
+            if (!$user || (int) $user->banned === 1) {
+                return false;
+            }
+            Cache::put($jwt, $user->toArray(), 3600);
 
             return Cache::get($jwt);
         } catch (\Exception $e) {

@@ -138,6 +138,13 @@ function getAuth() {
     const m = document.cookie.match(/(?:^|;\s*)auth_data=([^;]*)/);
     return m ? decodeURIComponent(m[1]) : '';
 }
+// A 401/403 from the admin API means the session is gone (expired, logged out
+// elsewhere, demoted, or banned). Don't leave the page dead on "Failed to load" —
+// drop the stale JWT and send the admin back to the SPA login to re-authenticate.
+function authExpiredRedirect() {
+    try { localStorage.removeItem('authorization'); } catch(e) {}
+    window.location.replace('/' + SECURE);
+}
 function showMsg(id, text, kind) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -151,7 +158,10 @@ function api(path, opts) {
     if (auth) { opts.headers['authorization'] = auth; opts.headers['Authorization'] = auth; }
     const sep = path.indexOf('?') === -1 ? '?' : '&';
     const url = '/api/v1/' + SECURE + path + (auth ? sep + 'auth_data=' + encodeURIComponent(auth) : '');
-    return fetch(url, opts);
+    return fetch(url, opts).then(function (r) {
+        if (r.status === 401 || r.status === 403) { authExpiredRedirect(); }
+        return r;
+    });
 }
 function bindSeg(containerId) {
     const box = document.getElementById(containerId);
