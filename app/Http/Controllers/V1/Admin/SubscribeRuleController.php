@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1\Admin;
 
+use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -51,10 +52,10 @@ class SubscribeRuleController extends Controller
         $exported = var_export($config, true);
         $path = base_path('config/v2board.php');
         if (\Illuminate\Support\Facades\File::put($path, "<?php\n return {$exported} ;") === false) {
-            abort(500, __('Update failed'));
+            throw ApiException::fail(__('Update failed'));
         }
         if (function_exists('opcache_reset') && opcache_reset() === false) {
-            abort(500, __('Failed to clear the cache, please uninstall or check the opcache configuration'));
+            throw ApiException::fail(__('Failed to clear the cache, please uninstall or check the opcache configuration'));
         }
         \Illuminate\Support\Facades\Artisan::call('config:cache');
 
