@@ -36,6 +36,9 @@
         .alert-success { background: #f6ffed; border: 1px solid #b7eb8f; color: #135200; }
         .alert-warn { background: #fffbe6; border: 1px solid #ffe58f; color: #614700; }
         .preview { background: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 10px 12px; font-size: 12px; font-family: ui-monospace, monospace; white-space: pre-wrap; word-break: break-all; max-height: 320px; overflow: auto; }
+        .qrbox { display: none; margin-top: 10px; width: 260px; height: 260px; padding: 8px; background: #fff; border: 1px solid #eee; border-radius: 6px; }
+        .qrbox.dense { width: 360px; height: 360px; }
+        .qrbox svg { width: 100%; height: 100%; display: block; }
         .tag { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11px; margin-left: 6px; }
         .tag-local { background: #e6f4ff; color: #1677ff; border: 1px solid #91caff; }
         .tag-remote { background: #fff7e6; color: #d46b08; border: 1px solid #ffd591; }
@@ -90,6 +93,7 @@
         <div class="form-row">
             <label>{{ __('Encrypted result') }}</label>
             <div class="preview" id="convertPreview" style="min-height:56px">—</div>
+            <div id="qrBox" class="qrbox" aria-hidden="true"></div>
             <span class="hint">{{ __('Paste this happ:// line into Happ (Add via link / clipboard). It hides the https:// address from the user.') }}</span>
         </div>
         <div class="row">
@@ -131,6 +135,7 @@
         <div id="settingsAlert"></div>
     </div>
 </div>
+<script src="{{ url('/happ-qr/qrcode.min.js') }}"></script>
 <script>
 const SECURE = @json($secure_path);
 function getAuth() {
@@ -176,6 +181,30 @@ const modeCtl = bindSeg('modeSeg');
 const defaultModeCtl = bindSeg('defaultModeSeg');
 let lastHapp = '';
 let defaultMode = 'local';
+function setQr(happ) {
+    const box = document.getElementById('qrBox');
+    if (!happ || typeof qrcode !== 'function') {
+        box.style.display = 'none';
+        box.classList.remove('dense');
+        box.innerHTML = '';
+        box.setAttribute('aria-hidden', 'true');
+        return;
+    }
+    try {
+        const q = qrcode(0, (happ.length > 360 ? 'L' : 'M'));
+        q.addData(happ);
+        q.make();
+        const dense = q.getModuleCount() > 70;
+        box.classList.toggle('dense', dense);
+        box.innerHTML = q.createSvgTag({ cellSize: 3, margin: 4, scalable: true });
+        box.style.display = 'block';
+        box.setAttribute('aria-hidden', 'false');
+    } catch (e) {
+        box.style.display = 'none';
+        box.innerHTML = '';
+        box.setAttribute('aria-hidden', 'true');
+    }
+}
 function setConvertResult(happ, mode) {
     lastHapp = happ || '';
     const el = document.getElementById('convertPreview');
@@ -189,9 +218,11 @@ function setConvertResult(happ, mode) {
         } else {
             tag.textContent = '';
         }
+        setQr(happ);
     } else {
         copyBtn.disabled = true;
         tag.textContent = '';
+        setQr('');
     }
 }
 function load() {
