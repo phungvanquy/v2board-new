@@ -129,9 +129,9 @@ PEM;
     /**
      * Invalidate all stored encrypted links (call after key/mode settings change).
      *
-     * Preferred over bumpCacheVersion(): callers that rotate settings through
-     * this method get collision-proof invalidation plus the config write, so
-     * concurrent saves can never reuse a cache version.
+     * Prefer ConfigWriter::save() with a fresh happ_crypto_cache_version, which
+     * does the config write plus invalidation atomically. Kept for callers that
+     * rotate settings through another write path.
      *
      * @return string the new cache version token
      */

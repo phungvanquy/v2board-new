@@ -31,21 +31,37 @@ class SubscriptionRuleService
     }
 
     /**
+     * Normalize an admin-entered domain list: strip empties, validate
+     * charset, lower-case, de-duplicate. Single home for the logic so the
+     * admin save path and the render path can never drift (e.g. different
+     * split regexes treating space-separated input differently).
+     *
+     * @return string[]
+     */
+    public static function normalizeDomainList(string $raw): array
+    {
+        $out = [];
+        foreach (preg_split('/[\r\n,;\s]+/', $raw) ?: [] as $domain) {
+            $domain = strtolower(ltrim(trim($domain), '.'));
+            if ($domain === '' || preg_match('/^[a-z0-9.\-]+$/', $domain) !== 1) {
+                continue;
+            }
+            if (!in_array($domain, $out, true)) {
+                $out[] = $domain;
+            }
+        }
+
+        return $out;
+    }
+
+    /**
      * Base set plus admin-entered extras (validated, lower-cased, de-duplicated).
      *
      * @return string[]
      */
     public static function suffixes(): array
     {
-        $extra = [];
-        $raw = (string) config('v2board.subscribe_ru_direct_domains', '');
-        foreach (preg_split('/[\r\n,;\s]+/', $raw) ?: [] as $domain) {
-            $domain = strtolower(ltrim(trim($domain), '.'));
-            if ($domain === '' || preg_match('/^[a-z0-9.\-]+$/', $domain) !== 1) {
-                continue;
-            }
-            $extra[] = $domain;
-        }
+        $extra = self::normalizeDomainList((string) config('v2board.subscribe_ru_direct_domains', ''));
 
         return array_values(array_unique(array_merge(self::BASE_SUFFIXES, self::BASE_DOMAINS, $extra)));
     }

@@ -13,6 +13,28 @@ use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
+    /** @var class-string[]|null cached reverse-alphabetical protocol list */
+    private static ?array $protocolClasses = null;
+
+    /**
+     * Protocol classes in the historical glob(reverse-alphabetical) order.
+     * Cached: the directory listing never changes at runtime, so scanning
+     * the filesystem on every subscribe request is pure overhead.
+     *
+     * @return class-string[]
+     */
+    private static function protocolClasses(): array
+    {
+        if (self::$protocolClasses === null) {
+            self::$protocolClasses = array_map(
+                fn ($file) => 'App\\Protocols\\' . basename($file, '.php'),
+                array_reverse(glob(app_path('Protocols') . '/*.php') ?: [])
+            );
+        }
+
+        return self::$protocolClasses;
+    }
+
     public function subscribe(Request $request)
     {
         $flag = $request->input('flag')
@@ -26,13 +48,12 @@ class ClientController extends Controller
             $servers = $serverService->getAvailableServers($user);
             $result = null;
             if ($flag) {
-                if (!strpos($flag, 'sing')) {
+                if (strpos($flag, 'sing') === false) {
                     $this->setSubscribeInfoToServers($servers, $user);
-                    foreach (array_reverse(glob(app_path('Protocols') . '/*.php')) as $file) {
-                        $file = 'App\\Protocols\\' . basename($file, '.php');
-                        $class = new $file($user, $servers);
-                        if (strpos($flag, $class->flag) !== false) {
-                            $result = $class->handle();
+                    foreach (self::protocolClasses() as $class) {
+                        $instance = new $class($user, $servers);
+                        if (strpos($flag, $instance->flag) !== false) {
+                            $result = $instance->handle();
                             break;
                         }
                     }

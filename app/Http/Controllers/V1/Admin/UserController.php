@@ -16,6 +16,7 @@ use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
 use App\Services\AuthService;
+use App\Support\SubscriptionHelper;
 use App\Utils\Helper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -104,7 +105,7 @@ class UserController extends Controller
             }
             $res[$i]['alive_ip'] = $countalive;
             $res[$i]['ips'] = implode(', ', $ips);
-            $res[$i]['subscribe_url'] = Helper::getSubscribeUrl($res[$i]['token']);
+            $res[$i]['subscribe_url'] = SubscriptionHelper::getSubscribeUrl($res[$i]['token'], (int) $res[$i]['id']);
         }
 
         return response([

@@ -9,7 +9,14 @@ use Illuminate\Support\Facades\Cache;
 
 class SubscriptionHelper
 {
-    public static function getSubscribeUrl(string $token): ?string
+    /**
+     * Build the plain subscription URL for a token.
+     *
+     * In method 2 (time-based HMAC) the user id is embedded in the token, so
+     * pass it when known (e.g. in a list loop) to avoid one User query per row.
+     * When omitted, it is resolved from the token; unknown tokens return null.
+     */
+    public static function getSubscribeUrl(string $token, ?int $userId = null): ?string
     {
         $submethod = (int) config('v2board.show_subscribe_method', 0);
         $path = config('v2board.subscribe_path', '/api/v1/client/subscribe');
@@ -48,8 +55,14 @@ class SubscriptionHelper
                 $counter = (int) floor(time() / $timestep);
                 $counterBytes = pack('N*', 0) . pack('N*', $counter);
                 $hash = hash_hmac('sha1', $counterBytes, $token, false);
-                $user = User::where('token', $token)->select('id')->first();
-                $newtoken = self::base64EncodeUrlSafe("{$user->id}:{$hash}");
+                if ($userId === null) {
+                    $user = User::where('token', $token)->select('id')->first();
+                    if ($user === null) {
+                        return null;
+                    }
+                    $userId = (int) $user->id;
+                }
+                $newtoken = self::base64EncodeUrlSafe("{$userId}:{$hash}");
                 $path = "{$path}?token={$newtoken}";
                 if ($subscribeUrl) {
                     return $subscribeUrl . $path;

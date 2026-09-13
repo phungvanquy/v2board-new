@@ -6,11 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ConfigSave;
 use App\Jobs\SendEmailJob;
 use App\Services\TelegramService;
+use App\Support\ConfigWriter;
 use App\Utils\Dict;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\File;
 
 class ConfigController extends Controller
 {
@@ -195,28 +193,16 @@ class ConfigController extends Controller
     public function save(ConfigSave $request)
     {
         $data = $request->validated();
-        $config = config('v2board');
+        $updates = [];
         foreach (ConfigSave::RULES as $k => $v) {
             if (array_key_exists($k, $data)) {
-                $config[$k] = $data[$k];
+                $updates[$k] = $data[$k];
             }
         }
-        $data = var_export($config, true);
-        if (!File::put(base_path() . '/config/v2board.php', "<?php\n return $data ;")) {
-            abort(500, __('Update failed'));
-        }
-        if (function_exists('opcache_reset')) {
-            if (opcache_reset() === false) {
-                abort(500, __('Failed to clear the cache, please uninstall or check the opcache configuration'));
-            }
-        }
-        Artisan::call('config:cache');
-        if (Cache::has('WEBMANPID')) {
-            $pid = Cache::get('WEBMANPID');
-            Cache::forget('WEBMANPID');
-
+        $result = ConfigWriter::save($updates);
+        if ($result['worker_reload'] !== null) {
             return response([
-                'data' => posix_kill($pid, 15),
+                'data' => $result['worker_reload'],
             ]);
         }
 

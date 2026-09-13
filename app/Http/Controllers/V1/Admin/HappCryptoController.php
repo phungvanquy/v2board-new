@@ -5,12 +5,10 @@ namespace App\Http\Controllers\V1\Admin;
 use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\ConfigWriter;
 use App\Support\HappCryptoService;
 use App\Support\SubscriptionHelper;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\File;
 
 class HappCryptoController extends Controller
 {
@@ -40,13 +38,17 @@ class HappCryptoController extends Controller
             throw ApiException::fail(__('The public key must be a PEM block containing "BEGIN PUBLIC KEY".'));
         }
         if ($pem !== '') {
-            if (!function_exists('openssl_pkey_get_public') || openssl_pkey_get_public($pem) === false) {
+            if (!function_exists('openssl_pkey_get_public')) {
+                throw ApiException::fail(__('The public key is not a valid RSA PEM.'));
+            }
+            $key = openssl_pkey_get_public($pem);
+            if ($key === false) {
                 throw ApiException::fail(__('The public key is not a valid RSA PEM.'));
             }
             // crypt4 is RSA-4096/PKCS#1 v1.5 specifically. openssl_pkey_get_public()
             // accepts EC and smaller RSA keys that cannot produce a valid crypt4
             // link (or silently produce a wrong-size ciphertext) — reject them.
-            $details = openssl_pkey_get_details(openssl_pkey_get_public($pem));
+            $details = openssl_pkey_get_details($key);
             if (!$details
                 || ($details['type'] ?? -1) !== OPENSSL_KEYTYPE_RSA
                 || (int) ($details['bits'] ?? 0) !== 4096) {
@@ -54,47 +56,22 @@ class HappCryptoController extends Controller
             }
         }
 
-        $config = config('v2board');
-        $config['happ_crypto_public_key'] = $pem;
-        $config['happ_crypto_use_remote'] = (int) $data['happ_crypto_use_remote'];
-        $config['happ_crypto_cache_ttl'] = (int) $data['happ_crypto_cache_ttl'];
         // Changing mode/key must not serve previously cached links. Random
         // version (not time()): two saves within the same second must not
         // share a version or old ciphertext keeps being served.
-        $config['happ_crypto_cache_version'] = bin2hex(random_bytes(8));
-
-        $exported = var_export($config, true);
-        $path = base_path('config/v2board.php');
-        if (File::put($path, "<?php\n return {$exported} ;") === false) {
-            throw ApiException::fail(__('Update failed'));
-        }
-        // Order matters: the rebuildable artifact is bootstrap/cache/config.php,
-        // so config:cache must run even if opcache_reset() reports failure
-        // (it returns false when opcache is installed but disabled). A failed
-        // opcache flush is cosmetic — surface it, don't abort half-saved.
-        $opcacheWarn = false;
-        if (function_exists('opcache_reset') && opcache_reset() === false) {
-            $opcacheWarn = true;
-        }
-        Artisan::call('config:cache');
-
-        // Webman boots the Laravel kernel once per worker and keeps config in
-        // memory; config:cache only updates what fresh processes read. Signal a
-        // reload like ConfigController@save does, or other workers keep serving
-        // the previous key/mode (and the remote/local default) until restart.
-        $reloaded = true;
-        if (Cache::has('WEBMANPID')) {
-            $pid = Cache::get('WEBMANPID');
-            Cache::forget('WEBMANPID');
-            $reloaded = (bool) posix_kill((int) $pid, 15);
-        }
+        $result = ConfigWriter::save([
+            'happ_crypto_public_key' => $pem,
+            'happ_crypto_use_remote' => (int) $data['happ_crypto_use_remote'],
+            'happ_crypto_cache_ttl' => (int) $data['happ_crypto_cache_ttl'],
+            'happ_crypto_cache_version' => bin2hex(random_bytes(8)),
+        ], strictOpcache: false);
 
         return response([
             'data' => [
                 'ok' => true,
                 'default_mode' => HappCryptoService::configuredMode(),
-                'opcache_warning' => $opcacheWarn,
-                'worker_reload' => $reloaded,
+                'opcache_warning' => $result['opcache_warning'],
+                'worker_reload' => $result['worker_reload'] ?? true,
             ],
         ]);
     }
@@ -114,17 +91,14 @@ class HappCryptoController extends Controller
         $plain = trim($data['url']);
         $mode = $data['mode'] ?? null;
 
-        if ($mode === null) {
-            $mode = HappCryptoService::configuredMode();
-        }
-
         if ($mode === HappCryptoService::MODE_LOCAL && strlen($plain) > HappCryptoService::MAX_LOCAL_PLAIN) {
             throw ApiException::fail(__('The URL is too long for local RSA (max 501 characters). Use the remote option instead.'));
         }
 
         $result = HappCryptoService::encrypt($plain, $mode);
         if ($result === null) {
-            throw ApiException::fail($mode === HappCryptoService::MODE_REMOTE
+            $effectiveMode = $mode ?? HappCryptoService::configuredMode();
+            throw ApiException::fail($effectiveMode === HappCryptoService::MODE_REMOTE
                 ? __('Remote encryption failed — crypto.happ.su is unreachable or refused the request.')
                 : __('Local encryption failed — check the RSA public key.'));
         }
