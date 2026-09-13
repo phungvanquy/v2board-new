@@ -24,6 +24,7 @@ class ClientController extends Controller
         if ($userService->isAvailable($user)) {
             $serverService = new ServerService();
             $servers = $serverService->getAvailableServers($user);
+            $result = null;
             if ($flag) {
                 if (!strpos($flag, 'sing')) {
                     $this->setSubscribeInfoToServers($servers, $user);
@@ -31,11 +32,12 @@ class ClientController extends Controller
                         $file = 'App\\Protocols\\' . basename($file, '.php');
                         $class = new $file($user, $servers);
                         if (strpos($flag, $class->flag) !== false) {
-                            return $class->handle();
+                            $result = $class->handle();
+                            break;
                         }
                     }
                 }
-                if (strpos($flag, 'sing') !== false) {
+                if (is_null($result) && strpos($flag, 'sing') !== false) {
                     $version = null;
                     if (preg_match('/sing-box\s+([0-9.]+)/i', $flag, $matches)) {
                         $version = $matches[1];
@@ -45,14 +47,72 @@ class ClientController extends Controller
                     } else {
                         $class = new SingboxOld($user, $servers);
                     }
-
-                    return $class->handle();
+                    $result = $class->handle();
                 }
             }
-            $class = new General($user, $servers);
+            if (is_null($result)) {
+                $class = new General($user, $servers);
+                $result = $class->handle();
+            }
 
-            return $class->handle();
+            // Every client (Happ, V2rayNG, Loon, …) that falls through to
+            // General, or returns a bare body, would otherwise get no
+            // subscription metadata at all: no expire time, no traffic, no
+            // profile title. Attach the standard headers to any response that
+            // does not already carry them (protocol classes that set their
+            // own — Clash*, Singbox, v2RayTun — win).
+            return $this->attachSubscriptionHeaders($result, $user);
         }
+    }
+
+    /**
+     * Ensure the subscription response advertises user metadata via the
+     * de-facto standard subscription headers. Existing headers are kept,
+     * so per-protocol formatting is never overwritten.
+     *
+     * @param string|\Symfony\Component\HttpFoundation\Response $result
+     * @param \App\Models\User $user
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response
+     */
+    private function attachSubscriptionHeaders($result, $user)
+    {
+        // Protocols like Clash/Stash/Surge use raw header() instead of a
+        // Response object. Those headers are queued globally and would be
+        // sent alongside the Response's headers (duplicate subscription-
+        // userinfo etc., and Clash's `expire=` is empty for never-expire
+        // instead of 0). Remove the raw ones so the Response carries the
+        // single, correct set. Safe under webman (isWEBMAN) too — it's a
+        // no-op if nothing was queued or headers were already sent.
+        if (function_exists('header_remove') && !headers_sent()) {
+            foreach (['subscription-userinfo', 'profile-update-interval', 'content-disposition', 'profile-title', 'profile-web-page-url', 'support-url'] as $h) {
+                @header_remove($h);
+            }
+        }
+        if (!($result instanceof \Symfony\Component\HttpFoundation\Response)) {
+            $result = response($result);
+        }
+        $headers = $result->headers;
+        if (!$headers->has('subscription-userinfo')) {
+            // upload/download/total are bytes, expire is a unix timestamp
+            // (0 = never expires, which some clients fail to parse as empty).
+            $headers->set('subscription-userinfo', "upload={$user['u']}; download={$user['d']}; total={$user['transfer_enable']}; expire=" . ((int) $user['expired_at'] ?: 0));
+        }
+        if (!$headers->has('profile-update-interval')) {
+            $headers->set('profile-update-interval', '24');
+        }
+        $appName = config('v2board.app_name', 'V2Board');
+        if (!$headers->has('profile-title')) {
+            $headers->set('profile-title', 'base64:' . base64_encode($appName));
+        }
+        if (!$headers->has('content-disposition')) {
+            $headers->set('content-disposition', 'attachment;filename*=UTF-8\'\'' . rawurlencode($appName));
+        }
+        $appUrl = (string) config('v2board.app_url');
+        if ($appUrl !== '' && !$headers->has('profile-web-page-url')) {
+            $headers->set('profile-web-page-url', $appUrl);
+        }
+
+        return $result;
     }
 
     private function setSubscribeInfoToServers(&$servers, $user)
