@@ -45,21 +45,39 @@ class AuthService
         try {
             $cached = Cache::get($jwt);
             if ($cached !== null) {
-                // The snapshot lives 3600s. Bans are revoked eagerly (admin/user
-                // controllers call removeAllSession(), which forgets these keys), but
-                // an is_admin/is_staff *demotion* does NOT wipe sessions — so without
-                // this re-check a freshly-demoted admin keeps panel access for the rest
-                // of the TTL. One indexed PK lookup detects the change; on drift we drop
-                // the snapshot and fall through to a full re-validate below.
-                $fresh = User::find($cached['id'], ['is_admin', 'is_staff', 'banned']);
-                if (!$fresh
-                    || (int) $cached['is_admin'] !== (int) $fresh->is_admin
-                    || (int) $cached['is_staff'] !== (int) $fresh->is_staff
-                    || (int) $fresh->banned === 1) {
+                if (!is_array($cached)) {
                     Cache::forget($jwt);
                     $cached = null;
                 } else {
-                    return $cached;
+                    // The snapshot lives 3600s. A single-session revoke only
+                    // removes the session entry (see removeSession(), which also
+                    // forgets this snapshot) — but snapshots written before that
+                    // fix, or raced with it, must still be rejected. The snapshot
+                    // carries its session guid, so membership is verified first
+                    // (no DB hit); role/ban drift is re-checked after.
+                    if (isset($cached['_session'])
+                        && !self::checkSession($cached['id'] ?? null, $cached['_session'])) {
+                        Cache::forget($jwt);
+                        $cached = null;
+                    } else {
+                        // Bans are revoked eagerly (admin/user controllers call
+                        // removeAllSession(), which forgets these keys), but an
+                        // is_admin/is_staff *demotion* does NOT wipe sessions — so
+                        // without this re-check a freshly-demoted admin keeps panel
+                        // access for the rest of the TTL. One indexed PK lookup
+                        // detects the change; on drift we drop the snapshot and
+                        // fall through to a full re-validate below.
+                        $fresh = User::find($cached['id'], ['is_admin', 'is_staff', 'banned']);
+                        if (!$fresh
+                            || (int) $cached['is_admin'] !== (int) $fresh->is_admin
+                            || (int) $cached['is_staff'] !== (int) $fresh->is_staff
+                            || (int) $fresh->banned === 1) {
+                            Cache::forget($jwt);
+                            $cached = null;
+                        } else {
+                            return $cached;
+                        }
+                    }
                 }
             }
             $data = (array) JWT::decode($jwt, new Key(config('app.key'), 'HS256'));
@@ -77,10 +95,12 @@ class AuthService
             if (!$user || (int) $user->banned === 1) {
                 return false;
             }
-            Cache::put($jwt, $user->toArray(), 3600);
+            $snapshot = $user->toArray();
+            $snapshot['_session'] = $data['session'];
+            Cache::put($jwt, $snapshot, 3600);
 
             return Cache::get($jwt);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return false;
         }
     }
@@ -119,12 +139,18 @@ class AuthService
     {
         $cacheKey = CacheKey::get('USER_SESSIONS', $this->user->id);
         $sessions = (array) Cache::get($cacheKey, []);
+        $meta = $sessions[$sessionId] ?? null;
         unset($sessions[$sessionId]);
         if (!Cache::put(
             $cacheKey,
             $sessions
         )) {
             return false;
+        }
+        // The JWT snapshot cache (see decryptAuthData()) outlives the session
+        // entry — forget it too, or the revoked token stays valid until TTL.
+        if (is_array($meta) && isset($meta['auth_data'])) {
+            Cache::forget($meta['auth_data']);
         }
 
         return true;

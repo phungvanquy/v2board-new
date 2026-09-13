@@ -114,6 +114,7 @@ Route::get('/' . config('v2board.secure_path', config('v2board.frontend_admin_pa
 
     return view('happ-crypto', [
         'secure_path' => $secure_path,
+        'auth_data' => $auth_data,
     ]);
 });
 

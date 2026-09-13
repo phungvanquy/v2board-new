@@ -138,11 +138,24 @@
 <script src="{{ url('/happ-qr/qrcode.min.js') }}"></script>
 <script>
 const SECURE = @json($secure_path);
+const QUERY_AUTH = @json((string) ($auth_data ?? ''));
 function getAuth() {
+    if (QUERY_AUTH) return QUERY_AUTH;
     try { const v = localStorage.getItem('authorization') || ''; if (v) return v; } catch(e) {}
     const m = document.cookie.match(/(?:^|;\s*)auth_data=([^;]*)/);
     return m ? decodeURIComponent(m[1]) : '';
 }
+// Strip ?auth_data from the address bar once getAuth() can serve it without
+// the query string (stored login or baked-in query token): the JWT stays out
+// of history/logs/Referer from here on.
+try {
+    const q = new URLSearchParams(window.location.search);
+    if (q.has('auth_data') && getAuth()) {
+        q.delete('auth_data');
+        const qs = q.toString();
+        window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+    }
+} catch (e) {}
 // A 401/403 from the admin API means the session is gone (expired, logged out
 // elsewhere, demoted, or banned). Don't leave the page dead on "Failed to load" —
 // drop the stale JWT and send the admin back to the SPA login to re-authenticate.
@@ -160,9 +173,11 @@ function api(path, opts) {
     opts = opts || {};
     opts.headers = opts.headers || {};
     const auth = getAuth();
-    if (auth) { opts.headers['authorization'] = auth; opts.headers['Authorization'] = auth; }
-    const sep = path.indexOf('?') === -1 ? '?' : '&';
-    const url = '/api/v1/' + SECURE + path + (auth ? sep + 'auth_data=' + encodeURIComponent(auth) : '');
+    // Single Authorization header — no ?auth_data on API calls. The Admin
+    // middleware accepts the header; keeping the JWT out of URLs keeps it
+    // out of access logs, history, and Referer headers.
+    if (auth) { opts.headers['Authorization'] = auth; }
+    const url = '/api/v1/' + SECURE + path;
     return fetch(url, opts).then(function (r) {
         if (r.status === 401 || r.status === 403) { authExpiredRedirect(); }
         return r;
@@ -181,6 +196,7 @@ const modeCtl = bindSeg('modeSeg');
 const defaultModeCtl = bindSeg('defaultModeSeg');
 let lastHapp = '';
 let defaultMode = 'local';
+let convertSeq = 0;
 function setQr(happ) {
     const box = document.getElementById('qrBox');
     if (!happ || typeof qrcode !== 'function') {
@@ -242,7 +258,13 @@ document.getElementById('encryptBtn').addEventListener('click', function() {
     if (!/^https?:\/\//i.test(url)) { showMsg('convertAlert', 'URL must start with https:// or http://', 'error'); return; }
     const btn = this;
     btn.disabled = true;
+    // A request token invalidates anything in flight; a stale response must
+    // not overwrite a newer user or a newer lookup input.
+    const myReq = ++convertSeq;
     showMsg('convertAlert', '', '');
+    // Clear the previous user's result immediately: Copy/QR must never hand
+    // out a stale link while the new conversion is in flight.
+    setConvertResult('', '');
     document.getElementById('convertPreview').textContent = 'Encrypting…';
     const chosen = modeCtl.get();
     api('/happ-crypto/encrypt', {
@@ -250,16 +272,19 @@ document.getElementById('encryptBtn').addEventListener('click', function() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: url, mode: (chosen === 'auto' || !chosen) ? undefined : chosen })
     }).then(r=>r.json().then(j=>({r,j}))).then(({r,j})=>{
+        if (myReq !== convertSeq) return;
         if (!r.ok) throw new Error((j && j.message) || 'Encrypt failed ('+r.status+')');
         const d = (j && j.data) || {};
         setConvertResult(d.happ || '', d.mode || '');
     }).catch(e=>{
+        if (myReq !== convertSeq) return;
         setConvertResult('', '');
         document.getElementById('convertPreview').textContent = '—';
         showMsg('convertAlert', e.message || 'Encrypt failed.', 'error');
-    }).finally(()=>{ btn.disabled=false; });
+    }).finally(()=>{ if (myReq === convertSeq) btn.disabled=false; });
 });
 document.getElementById('clearBtn').addEventListener('click', function() {
+    convertSeq++;
     document.getElementById('urlInput').value = '';
     setConvertResult('', '');
     document.getElementById('convertPreview').textContent = '—';
@@ -270,8 +295,10 @@ document.getElementById('lookupBtn').addEventListener('click', function() {
     if (!email) { showMsg('convertAlert', 'Enter a user email first.', 'error'); return; }
     const btn = this;
     btn.disabled = true;
+    const myReq = ++convertSeq;
     showMsg('convertAlert', '', '');
     api('/happ-crypto/lookup?email=' + encodeURIComponent(email)).then(r=>r.json().then(j=>({r,j}))).then(({r,j})=>{
+        if (myReq !== convertSeq) return;
         if (!r.ok) throw new Error((j && j.message) || 'Lookup failed ('+r.status+')');
         const plain = (j && j.data && j.data.plain) || '';
         if (!plain) throw new Error('Empty subscription URL for that user.');
@@ -280,8 +307,9 @@ document.getElementById('lookupBtn').addEventListener('click', function() {
         document.getElementById('convertPreview').textContent = '—';
         showMsg('convertAlert', 'Loaded — press Encrypt to convert it.', 'success');
     }).catch(e=>{
+        if (myReq !== convertSeq) return;
         showMsg('convertAlert', e.message || 'Lookup failed.', 'error');
-    }).finally(()=>{ btn.disabled=false; });
+    }).finally(()=>{ if (myReq === convertSeq) btn.disabled=false; });
 });
 document.getElementById('copyBtn').addEventListener('click', function() {
     if (!lastHapp) return;

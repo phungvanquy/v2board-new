@@ -42,7 +42,7 @@ class ClientController extends Controller
                     if (preg_match('/sing-box\s+([0-9.]+)/i', $flag, $matches)) {
                         $version = $matches[1];
                     }
-                    if (!is_null($version) && $version >= '1.12.0') {
+                    if (!is_null($version) && version_compare($version, '1.12.0', '>=')) {
                         $class = new Singbox($user, $servers);
                     } else {
                         $class = new SingboxOld($user, $servers);
@@ -84,7 +84,10 @@ class ClientController extends Controller
         // single, correct set. Safe under webman (isWEBMAN) too — it's a
         // no-op if nothing was queued or headers were already sent.
         if (function_exists('header_remove') && !headers_sent()) {
-            foreach (['subscription-userinfo', 'profile-update-interval', 'content-disposition', 'profile-title', 'profile-web-page-url', 'support-url'] as $h) {
+            // Surge/Surfboard emit "<appName>.conf" as the download filename.
+            // Preserve a protocol-set content-disposition (incl. its .conf
+            // extension); only the other metadata headers are normalized below.
+            foreach (['subscription-userinfo', 'profile-update-interval', 'profile-title', 'profile-web-page-url', 'support-url'] as $h) {
                 @header_remove($h);
             }
         }
@@ -105,6 +108,10 @@ class ClientController extends Controller
             $headers->set('profile-title', 'base64:' . base64_encode($appName));
         }
         if (!$headers->has('content-disposition')) {
+            // Kept in sync with the raw-header cleanup above: protocols that
+            // set their own filename (e.g. Surge/Surfboard "<appName>.conf")
+            // are preserved via headers_sent-safe raw headers; only set the
+            // default when nothing else did.
             $headers->set('content-disposition', 'attachment;filename*=UTF-8\'\'' . rawurlencode($appName));
         }
         $appUrl = (string) config('v2board.app_url');

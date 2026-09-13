@@ -56,6 +56,9 @@ PEM;
         }
 
         $mode = $mode ?? self::configuredMode();
+        if ($mode !== self::MODE_LOCAL && $mode !== self::MODE_REMOTE) {
+            $mode = self::MODE_LOCAL;
+        }
         $cacheKey = self::cacheKey($plainUrl, $mode);
 
         $cached = Cache::get($cacheKey);
@@ -101,22 +104,42 @@ PEM;
         }
     }
 
+    /**
+     * Cache key for a (url, mode) pair — exposed for tests so key-format
+     * changes are caught by the suite instead of only by stale production
+     * caches. Do not call from application code; use encrypt()/forgetForUrl().
+     */
+    public static function cacheKeyFor(string $plainUrl, string $mode): string
+    {
+        return self::cacheKey(trim($plainUrl), $mode);
+    }
+
     private static function cacheKey(string $plainUrl, string $mode): string
     {
-        // Version component changes on every settings save (see bumpCacheVersion()),
-        // so stored links from a previous key/mode setup are never served stale.
-        $version = (int) config('v2board.happ_crypto_cache_version', 0);
+        // Invalidation binds the cache identity to the effective key/mode, so
+        // rotated settings can never serve stale links — even if two saves
+        // land in the same second (time() has 1s resolution). The version
+        // still bumps on every save so entries from older configs die by TTL.
+        $version = (string) config('v2board.happ_crypto_cache_version', 0);
+        $fingerprint = md5(self::pem() . "\0" . $mode);
 
-        return 'happ_crypt_' . $version . '_' . $mode . '_' . md5($plainUrl);
+        return 'happ_crypt_' . $version . '_' . $fingerprint . '_' . md5($plainUrl);
     }
 
     /**
      * Invalidate all stored encrypted links (call after key/mode settings change).
+     *
+     * Preferred over bumpCacheVersion(): callers that rotate settings through
+     * this method get collision-proof invalidation plus the config write, so
+     * concurrent saves can never reuse a cache version.
+     *
+     * @return string the new cache version token
      */
-    public static function bumpCacheVersion(): void
+    public static function bumpCacheVersion(): string
     {
+        $version = bin2hex(random_bytes(8));
         $config = config('v2board');
-        $config['happ_crypto_cache_version'] = time();
+        $config['happ_crypto_cache_version'] = $version;
         $exported = var_export($config, true);
         $path = base_path('config/v2board.php');
         if (\Illuminate\Support\Facades\File::put($path, "<?php\n return {$exported} ;") !== false) {
@@ -125,6 +148,8 @@ PEM;
             }
             \Illuminate\Support\Facades\Artisan::call('config:cache');
         }
+
+        return $version;
     }
 
     private static function ttl(): int
@@ -179,6 +204,10 @@ PEM;
     /**
      * POST to crypto.happ.su/api-v2.php → happ://crypt5/…
      * Sends the token-bearing URL to a third party; only used when explicitly selected.
+     *
+     * Accepts only a 2xx response carrying a real encrypted link
+     * (crypt4/crypt5 prefix). Anything else — HTTP errors, wrong prefixes like
+     * happ://add/…, empty bodies — is a failure and is never cached.
      */
     private static function encryptRemote(string $plainUrl): ?array
     {
@@ -193,6 +222,11 @@ PEM;
                 'content' => $payload,
                 'timeout' => 6,
                 'ignore_errors' => true,
+                // Stay on the fixed endpoint: the subscription URL in the body
+                // is token-bearing, so a provider-controlled redirect must not
+                // carry it to an arbitrary host.
+                'follow_location' => 0,
+                'max_redirects' => 0,
             ],
             'ssl' => ['verify_peer' => true, 'verify_peer_name' => true],
         ]);
@@ -200,11 +234,19 @@ PEM;
         if ($raw === false || $raw === '') {
             return null;
         }
+        if (!self::httpOk($http_response_header ?? [])) {
+            return null;
+        }
+        // Cap the body: an encrypted link is a few KB at most; a huge
+        // upstream body is never a valid result.
+        if (strlen($raw) > 65536) {
+            return null;
+        }
         $link = null;
         $decoded = json_decode($raw, true);
         if (is_array($decoded)) {
             foreach (['encrypted_link', 'result', 'link', 'url', 'data'] as $k) {
-                if (isset($decoded[$k]) && is_string($decoded[$k]) && str_starts_with($decoded[$k], 'happ://')) {
+                if (isset($decoded[$k]) && is_string($decoded[$k]) && self::isEncryptedLink($decoded[$k])) {
                     $link = $decoded[$k];
                     break;
                 }
@@ -212,7 +254,7 @@ PEM;
         }
         if ($link === null) {
             $trimmed = trim($raw);
-            if (str_starts_with($trimmed, 'happ://')) {
+            if (self::isEncryptedLink($trimmed)) {
                 $link = $trimmed;
             }
         }
@@ -224,5 +266,35 @@ PEM;
             'link' => $link,
             'mode' => self::MODE_REMOTE,
         ];
+    }
+
+    /**
+     * True only for real encrypted links (happ://crypt4/… or happ://crypt5/…),
+     * not for other happ:// deep links (e.g. happ://add/…) that would expose
+     * the plain URL. Bare "happ://" or empty payloads never qualify.
+     */
+    private static function isEncryptedLink(string $link): bool
+    {
+        return str_starts_with($link, self::PREFIX_CRYPT4)
+            || str_starts_with($link, 'happ://crypt5/');
+    }
+
+    /**
+     * True when the wrapper response headers describe a 2xx status.
+     *
+     * @param string[] $headers $http_response_header from file_get_contents()
+     */
+    private static function httpOk(array $headers): bool
+    {
+        foreach ($headers as $h) {
+            if (preg_match('#^HTTP/\S+\s+(\d{3})#i', (string) $h, $m)) {
+                $code = (int) $m[1];
+
+                return $code >= 200 && $code < 300;
+            }
+        }
+
+        // No status line (non-HTTP wrapper): refuse — status unknown.
+        return false;
     }
 }

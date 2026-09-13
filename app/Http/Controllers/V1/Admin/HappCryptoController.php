@@ -9,6 +9,7 @@ use App\Support\HappCryptoService;
 use App\Support\SubscriptionHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 
 class HappCryptoController extends Controller
@@ -38,31 +39,62 @@ class HappCryptoController extends Controller
         if ($pem !== '' && strpos($pem, 'BEGIN PUBLIC KEY') === false) {
             throw ApiException::fail(__('The public key must be a PEM block containing "BEGIN PUBLIC KEY".'));
         }
-        if ($pem !== '' && function_exists('openssl_pkey_get_public') && openssl_pkey_get_public($pem) === false) {
-            throw ApiException::fail(__('The public key is not a valid RSA PEM.'));
+        if ($pem !== '') {
+            if (!function_exists('openssl_pkey_get_public') || openssl_pkey_get_public($pem) === false) {
+                throw ApiException::fail(__('The public key is not a valid RSA PEM.'));
+            }
+            // crypt4 is RSA-4096/PKCS#1 v1.5 specifically. openssl_pkey_get_public()
+            // accepts EC and smaller RSA keys that cannot produce a valid crypt4
+            // link (or silently produce a wrong-size ciphertext) — reject them.
+            $details = openssl_pkey_get_details(openssl_pkey_get_public($pem));
+            if (!$details
+                || ($details['type'] ?? -1) !== OPENSSL_KEYTYPE_RSA
+                || (int) ($details['bits'] ?? 0) !== 4096) {
+                throw ApiException::fail(__('The public key must be a 4096-bit RSA key.'));
+            }
         }
 
         $config = config('v2board');
         $config['happ_crypto_public_key'] = $pem;
         $config['happ_crypto_use_remote'] = (int) $data['happ_crypto_use_remote'];
         $config['happ_crypto_cache_ttl'] = (int) $data['happ_crypto_cache_ttl'];
-        // Changing mode/key must not serve previously cached links.
-        $config['happ_crypto_cache_version'] = time();
+        // Changing mode/key must not serve previously cached links. Random
+        // version (not time()): two saves within the same second must not
+        // share a version or old ciphertext keeps being served.
+        $config['happ_crypto_cache_version'] = bin2hex(random_bytes(8));
 
         $exported = var_export($config, true);
         $path = base_path('config/v2board.php');
         if (File::put($path, "<?php\n return {$exported} ;") === false) {
             throw ApiException::fail(__('Update failed'));
         }
+        // Order matters: the rebuildable artifact is bootstrap/cache/config.php,
+        // so config:cache must run even if opcache_reset() reports failure
+        // (it returns false when opcache is installed but disabled). A failed
+        // opcache flush is cosmetic — surface it, don't abort half-saved.
+        $opcacheWarn = false;
         if (function_exists('opcache_reset') && opcache_reset() === false) {
-            throw ApiException::fail(__('Failed to clear the cache, please uninstall or check the opcache configuration'));
+            $opcacheWarn = true;
         }
         Artisan::call('config:cache');
+
+        // Webman boots the Laravel kernel once per worker and keeps config in
+        // memory; config:cache only updates what fresh processes read. Signal a
+        // reload like ConfigController@save does, or other workers keep serving
+        // the previous key/mode (and the remote/local default) until restart.
+        $reloaded = true;
+        if (Cache::has('WEBMANPID')) {
+            $pid = Cache::get('WEBMANPID');
+            Cache::forget('WEBMANPID');
+            $reloaded = (bool) posix_kill((int) $pid, 15);
+        }
 
         return response([
             'data' => [
                 'ok' => true,
                 'default_mode' => HappCryptoService::configuredMode(),
+                'opcache_warning' => $opcacheWarn,
+                'worker_reload' => $reloaded,
             ],
         ]);
     }
