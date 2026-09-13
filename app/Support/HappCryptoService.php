@@ -234,7 +234,8 @@ PEM;
         if ($raw === false || $raw === '') {
             return null;
         }
-        if (!self::httpOk($http_response_header ?? [])) {
+        // file_get_contents() succeeded, so $http_response_header is defined.
+        if (!self::httpOk($http_response_header)) {
             return null;
         }
         // Cap the body: an encrypted link is a few KB at most; a huge
