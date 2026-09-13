@@ -72,6 +72,7 @@ Sign in at the admin URL above with that email + password.
 4. **Nodes** — `Admin → Nodes` → **Add** a node group, then add nodes under it (grouped by protocol: Shadowsocks / VMess / VLESS / Trojan / Hysteria / TUIC). Each node needs a backing backend (V2bX / v2node) pointed at your panel via `server_api_url` + `server_token` (configured in **System → Server**). See the upstream docs at [v2board.com](https://v2board.com) for node wiring.
 5. **Test a user** — create or register a test user, assign a plan, copy its subscription URL and import it into a client (Clash / V2RayN / Shadowrocket / Quantumult X). Traffic should increment in **Users** → the user row.
 6. **Backups** — `Admin → Database` (or open `/<secure_path>/database`) exports a full `.sql.gz` dump and imports one back, with a typed `RESTORE` confirmation and an automatic pre-restore safety backup. This is the self-serve path for backing up and for **migrating to a new server** (export on the old, import on the new). `docker compose` keeps data in named volumes (`db_data`, `redis_data`, `app_storage`, `app_config`, `app_bootstrap_cache`); only `down -v` destroys them. See **Backup & restore** below and [docs/docker.md](docs/docker.md) for volume-level backups.
+7. **Advanced tools** — the admin sidebar's **Advanced Settings** entry (`/<secure_path>/advanced`) links to **Subscribe Rules** (Russia DIRECT bypass, extra domains; applies on next subscription update), **Happ Encrypted Link** (subscription URL → encrypted `happ://` link, local `crypt4` or remote `crypt5`, with QR code), and **Database** transfer. See [docs/docker.md](docs/docker.md) § Advanced admin tools.
 
 Full operator reference — service layout, environment variables, updates, backups, the optional `webman` profile, live-reload override and troubleshooting: [**docs/docker.md**](docs/docker.md).
 
@@ -188,6 +189,7 @@ docker compose up -d   # merges the override automatically
 ## This fork vs upstream
 
 - **Admin in English.** The panel's admin UI was rewritten from Chinese to English at the bundle level (`admin-i18n/` pipeline, locale table, `__()` PHP keys, guard/shape checks). No API or theme changes.
+- **Advanced admin tools.** The admin sidebar has an **Advanced Settings** hub (`/<secure_path>/advanced`) with out-of-panel pages: **Subscribe Rules** (Russia DIRECT / VPN-bypass rules injected into every subscription format, with admin-managed extra domains), **Happ Encrypted Link** converter (plain subscription URL → encrypted `happ://` deep link via local RSA-4096 `crypt4` or remote `crypt5`, with email lookup + QR code), and **Database Transfer** below.
 - **Docker-first.** The `Dockerfile` + `docker-compose.yml` + `.env.docker.example` path above does not exist upstream (their `.gitignore` hid `docker-compose.yml`). Host provisioning is no longer required.
 - Everything else (theme, user-facing site, node protocols, payments) tracks upstream `wyx2685/v2board`.
 

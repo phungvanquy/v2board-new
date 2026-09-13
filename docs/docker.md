@@ -138,6 +138,34 @@ DB_TRANSFER_EXPORT_RETENTION=5     # retained export copies kept (0 = keep all)
 
 Uploads are additionally capped by `client_max_body_size` (nginx) and `upload_max_filesize` / `post_max_size` (`.docker/php/php.ini`, shipped at `520M`/`560M` to match the 512 MB default). If you raise `DB_TRANSFER_MAX_UPLOAD_MB`, raise those two together or the web server rejects the file first. `mysqldump` / `mysql` come from `mariadb-client`, already installed in the runtime image (`Dockerfile`); no extra setup needed.
 
+### Advanced admin tools (out-of-panel Blade pages)
+
+The admin SPA's sidebar has an **Advanced Settings** entry (injected by `public/assets/admin/advanced.js`) that opens a small hub page linking to every out-of-panel admin tool. All of them live under the same `secure_path` prefix and reuse the admin JWT via a `?auth_data=` bridge (the page picks the token up from `localStorage` and reloads with it; every API call underneath is still gated by the `admin` middleware):
+
+| Tool | Page |
+|------|------|
+| Advanced hub | `http://<host>:<port>/<secure_path>/advanced` |
+| Subscribe Rules (RU DIRECT) | `http://<host>:<port>/<secure_path>/subscribe-rules` |
+| Happ Encrypted Link | `http://<host>:<port>/<secure_path>/happ-crypto` |
+| Database Transfer | `http://<host>:<port>/<secure_path>/database` |
+
+#### Subscribe Rules — Russia bypass VPN (DIRECT)
+
+When enabled (default **on**), Russian destinations are routed `DIRECT` (bypass VPN) in every subscription format — Clash, Stash (mihomo, with `GEOSITE,category-ru`), Surge, Surfboard, and sing-box/Hiddify (rule-sets + DNS rule). Base list: TLDs `ru / su / xn--p1ai (.рф) / moscow / tatar` plus `vk.com, yandex.com, yandex.net, kaspersky.com`, plus `GEOIP,RU` / `geosite-ru + geoip-ru` IP rules. Extra domain suffixes can be added from the page (one per line). Injection happens at subscription-render time, is idempotent (never duplicates lines already in a custom template), and applies on the next subscription update — no restart needed.
+
+Config keys (also settable via **System config**): `subscribe_ru_direct_enable` (`0/1`, default `1`), `subscribe_ru_direct_domains` (newline-separated extra suffixes). Turning the toggle off proxies RU traffic like any other destination.
+
+#### Happ Encrypted Link converter
+
+Converts any user's plain subscription URL into an encrypted `happ://` deep link to hand to that user. Paste the URL directly or look it up by user email (the page resolves the token to a subscription URL, then encrypts). Result can be copied or scanned as a QR code. Two modes:
+
+- **Local `crypt4` (default):** RSA-4096 encryption inside this app with Happ's public key — nothing leaves the server. URLs longer than 501 chars cannot fit RSA-4096/PKCS#1 and must use remote.
+- **Remote `crypt5`:** relays through Happ's official API (`crypto.happ.su`). Sends the token-bearing URL to a third party; use only when explicitly selected.
+
+Settings on the page: `happ_crypto_public_key` (override if Happ rotates the key; must be a 4096-bit RSA PEM), `happ_crypto_use_remote` (default mode), `happ_crypto_cache_ttl` (seconds, 60–86400). Encrypted links are cached per (URL, mode) and invalidated automatically on settings save. Admin API: `GET /happ-crypto/fetch`, `POST /happ-crypto/save`, `POST /happ-crypto/encrypt` (`url` + optional `mode`), `GET /happ-crypto/lookup?email=` — all under `/api/v1/<secure_path>/`, admin-gated.
+
+Admin API for Subscribe Rules (same prefix, admin-gated): `GET /subscribe-rules/fetch`, `POST /subscribe-rules/save`.
+
 ### Backup and restore (volumes)
 
 ```bash
