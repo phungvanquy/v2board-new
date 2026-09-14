@@ -41,6 +41,7 @@ curl -s http://127.0.0.1:8080/api/v1/guest/comm/config | jq .
 | `db`      | `mysql:8.0`          | `3306` (internal) | Volume `db_data`. `utf8mb4`, `mysql_native_password` for `pdo_mysql` compat. Healthcheck `mysqladmin ping`. |
 | `redis`   | `redis:7-alpine`     | `6379` (internal) | Volume `redis_data`. `--requirepass` only when `REDIS_PASSWORD` is set. |
 | `horizon` | same image as `app`  | — | `php artisan horizon`. `restart: unless-stopped`, `SKIP_DB_INIT=1` (DB import is `app`'s job). Logs to stdout. |
+| `scheduler` | same image as `app` | — | `php artisan schedule:work`. Runs scheduled tasks, including the Telegram backup due-time check, each minute. |
 | `webman`  | same image as `app`  | `${WEBMAN_PORT:-6600}:6600` | **Profile `webman` only** — `php -c cli-php.ini webman.php` (Workerman/Adapterman). See below. |
 
 Volumes: `db_data`, `redis_data`, `app_storage` (`storage/`), `app_bootstrap_cache`, `app_config` (`config/` — so `config/v2board.php` and `config/theme/*.php` survive restarts).
@@ -50,7 +51,7 @@ Volumes: `db_data`, `redis_data`, `app_storage` (`storage/`), `app_bootstrap_cac
 - Copy `.env.docker.example` → `.env` and edit secrets. Never commit `.env` (it is gitignored and excluded from the image via `.dockerignore`).
 - `docker-compose.yml` loads `.env` via `env_file` and forces `DB_HOST=db` / `REDIS_HOST=redis` via `environment:` so host-side `.env` values for other deploys do not break the compose network.
 - `PHP_VERSION` (default `8.2`) pins both the runtime image and Composer's `platform.php` (so a project without `composer.lock` does not resolve to packages that need PHP 8.4).
-- `APP_ENV` **must stay `local`** — `config/horizon.php` defines supervisors only under `environments.local`. With `APP_ENV=production` Horizon starts with zero supervisors and no jobs are processed.
+- Keep `APP_ENV=local` for the existing application queues, whose supervisor is defined under `environments.local`. The dedicated Telegram backup supervisor is available in every environment.
 - `APP_PORT` (default `8080`) controls the host mapping. Change it if `8080` collides: `APP_PORT=8081 docker compose up -d`.
 
 ## First boot vs. existing data
@@ -137,6 +138,40 @@ DB_TRANSFER_EXPORT_RETENTION=5     # retained export copies kept (0 = keep all)
 ```
 
 Uploads are additionally capped by `client_max_body_size` (nginx) and `upload_max_filesize` / `post_max_size` (`.docker/php/php.ini`, shipped at `520M`/`560M` to match the 512 MB default). If you raise `DB_TRANSFER_MAX_UPLOAD_MB`, raise those two together or the web server rejects the file first. `mysqldump` / `mysql` come from `mariadb-client`, already installed in the runtime image (`Dockerfile`); no extra setup needed.
+
+### Telegram full backups
+
+Open **Advanced Settings → Data Transfer → Telegram full backups**. Configure a dedicated bot token from `@BotFather`, a numeric private-chat or group ID (negative IDs are supported), and an interval of **1–168 hours**. Start the bot in your private chat, or add it to the group with permission to send files. Turn on the **Telegram backups** switch. The feature starts disabled; saving settings alone does not enable it.
+
+The first automatic backup is scheduled one interval after enabling. Changing settings while enabled resets that interval; saving unchanged settings leaves it alone. **Back up now** queues a backup without moving the next scheduled run. Only one Telegram backup may be queued or running at a time. Disabling or changing settings cancels queued work, and settings are checked again after the archive is built. An upload already in progress may finish.
+
+The archive uses the existing full `.tar.gz` format: database, `config/v2board.php`, and theme settings. It is restored through the normal **Import / Restore** flow. It does not include deployment `.env`, application source, or uploaded files. The dedicated bot settings are stored in the database, so the full archive carries them too. The token is never returned by the settings API; a blank token field preserves the saved token.
+
+Results appear as `telegram_backup` entries in **History**, with pending, running, success, or failed status. Successful delivery requires confirmation from Telegram. Failed attempts are not automatically retried (a connection failure can occur after Telegram received the file); the next scheduled interval or **Back up now** starts a new attempt. A restore in progress defers automatic dispatch. Local copies of completed archives, including failed uploads, follow the existing export retention and disk-space settings.
+
+The hosted [Telegram Bot API limits document uploads to 50 MB](https://core.telegram.org/bots/api#senddocument). Larger archives fail before upload with an explanation; download the full backup through Data Transfer instead. No public download URL is sent to Telegram.
+
+For an existing Docker installation, rebuild the application and nginx images, apply the new schema, and refresh the two worker configuration files in the persistent config volume. Preserve any local customizations to these files when updating them:
+
+```bash
+docker compose build app nginx
+docker compose up -d app nginx
+docker compose cp config/queue.php app:/var/www/config/queue.php
+docker compose cp config/horizon.php app:/var/www/config/horizon.php
+docker compose exec app php artisan migrate --force --path=database/migrations/2026_09_14_000000_create_telegram_backup_settings_table.php
+docker compose exec app php artisan config:cache
+docker compose up -d --force-recreate horizon scheduler
+```
+
+New installations receive the disabled settings row through `database/install.sql`; `v2board:update` also creates it without overwriting existing settings. The dedicated `telegram_backup` Redis connection has a 3,900-second reservation and a 3,600-second worker timeout. Deploy the matching `config/queue.php` and `config/horizon.php` together. This feature always uses the background Redis worker, including when the application's default queue is synchronous. Keep `CACHE_DRIVER=redis` (the supplied default) for locks shared between the app, scheduler, and workers.
+
+On bare-metal installations, run the migration above without the Docker prefix, restart Horizon after updating both configuration files, and ensure Laravel's scheduler runs once a minute under the application user:
+
+```cron
+* * * * * cd /path/to/v2board && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Docker Compose supplies a `scheduler` service, so no host cron entry is needed there. Use a single scheduler for an installation; remove an existing host cron entry if switching to this service.
 
 ### Advanced admin tools (out-of-panel Blade pages)
 
@@ -233,7 +268,7 @@ docker compose --profile webman config | grep -q webman && echo "included with -
 |---------|-------|-----|
 | `GET /` → `500 请检查V2Board目录权限` on first request only | `config/theme/default.php` not yet written | Fixed by the entrypoint pre-warm; if you built an old image, `docker compose build app && docker compose up -d` and retry. `docker compose exec app ls -la config/theme/` should show `default.php`. |
 | `500` with `Composer detected issues ... require PHP >= 8.4` | Vendor resolved to packages needing a newer PHP | Set `PHP_VERSION=8.2` (default) and rebuild: `docker compose build --no-cache app`. The Dockerfile pins `platform.php` to the target version. |
-| Horizon shows `Supervisors: None` and jobs stay queued | `APP_ENV=production` while `config/horizon.php` only defines `environments.local` | Set `APP_ENV=local` (the default in `.env.docker.example`). Horizon's supervisor is keyed by `APP_ENV`. |
+| Existing application jobs stay queued | `APP_ENV=production` while the application supervisor is defined under `environments.local` | Set `APP_ENV=local` (the default in `.env.docker.example`). The Telegram backup supervisor runs in all environments. |
 | `mysql: ERROR 2026 ... certificate is NOT trusted` | TLS cert mismatch inside the compose network | Fixed — entrypoint uses `mysql --skip-ssl`. Update the image: `docker compose build app`. |
 | `Horizon started successfully` but jobs never run | Job dispatched to `default` while Horizon watches `order_handle, traffic_fetch, stat, ...` | Dispatch to a watched queue: `dispatch((new MyJob)->onQueue('stat'))`. |
 | Port `8080` already in use | Host collision | `APP_PORT=8081 docker compose up -d` or set `APP_PORT` in `.env`. |

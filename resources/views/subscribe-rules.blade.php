@@ -98,7 +98,7 @@ function api(path, opts) {
     opts = opts || {};
     opts.headers = opts.headers || {};
     const auth = getAuth();
-    if (auth) { opts.headers['authorization'] = auth; opts.headers['Authorization'] = auth; }
+    if (auth) { opts.headers['Authorization'] = auth; }
     // also append ?auth_data for routes that read it from query
     const sep = path.indexOf('?') === -1 ? '?' : '&';
     const url = '/api/v1/' + SECURE + path + (auth ? sep + 'auth_data=' + encodeURIComponent(auth) : '');

@@ -177,6 +177,9 @@ class AdminRoute
             $router->get('/database/status/{id}', 'V1\\Admin\\DatabaseTransferController@status');
             $router->get('/database/history', 'V1\\Admin\\DatabaseTransferController@history');
             $router->get('/database/download/{id}', 'V1\\Admin\\DatabaseTransferController@download');
+            $router->get('/database/telegram', 'V1\\Admin\\TelegramBackupController@fetch');
+            $router->post('/database/telegram', 'V1\\Admin\\TelegramBackupController@save');
+            $router->post('/database/telegram/backup', 'V1\\Admin\\TelegramBackupController@backup')->middleware('throttle:5,1');
             // Subscribe rules (RU direct / VPN bypass)
             $router->get('/subscribe-rules/fetch', 'V1\\Admin\\SubscribeRuleController@fetch');
             $router->post('/subscribe-rules/save', 'V1\\Admin\\SubscribeRuleController@save');

@@ -153,6 +153,32 @@ services:
       start_period: 60s
     networks: [v2board]
 
+  # Laravel checks the configurable Telegram backup schedule every minute.
+  scheduler:
+    image: v2board-app:local
+    restart: unless-stopped
+    entrypoint: ["/sbin/su-exec", "www-data", "php", "artisan", "schedule:work"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DB_HOST: db
+      REDIS_HOST: redis
+    volumes:
+      - type: bind
+        source: ./.env
+        target: /var/www/.env
+        read_only: true
+      - app_storage:/var/www/storage
+      - app_bootstrap_cache:/var/www/bootstrap/cache
+      - app_config:/var/www/config:ro
+    depends_on:
+      app:
+        condition: service_healthy
+      horizon:
+        condition: service_healthy
+    networks: [v2board]
+
   # ── Webman (Adapterman/Workerman) — optional: --profile webman ────
   webman:
     build:

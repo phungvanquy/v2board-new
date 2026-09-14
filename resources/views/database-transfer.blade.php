@@ -17,7 +17,21 @@
         .btn-primary { background: #1677ff; color: #fff; }
         .btn-danger { background: #ff4d4f; color: #fff; }
         .btn:disabled { opacity: .5; cursor: not-allowed; }
-        select, input[type=file], input[type=text] { padding: 6px 8px; border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px; }
+        select, input[type=file], input[type=text], input[type=password], input[type=number] { padding: 6px 8px; border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px; max-width: 100%; }
+        .telegram-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 16px 0; }
+        .telegram-fields label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+        .telegram-fields small { font-weight: normal; line-height: 1.5; }
+        .toggle-control { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+        .toggle-control input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+        .toggle-track { position: relative; width: 46px; height: 26px; flex: 0 0 auto; border-radius: 999px; background: #bfbfbf; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); transition: background .2s ease; }
+        .toggle-track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.28); transition: transform .2s ease; }
+        .toggle-control input:checked + .toggle-track { background: #1677ff; }
+        .toggle-control input:checked + .toggle-track::after { transform: translateX(20px); }
+        .toggle-control input:focus-visible + .toggle-track { outline: 3px solid rgba(22,119,255,.25); outline-offset: 2px; }
+        .toggle-control:has(input:disabled) { opacity: .55; cursor: not-allowed; }
+        .toggle-copy { display: flex; flex-direction: column; line-height: 1.25; }
+        .toggle-copy strong { font-size: 14px; }
+        .toggle-copy small { color: #888; font-size: 12px; }
         input[type=text] { min-width: 160px; }
         .progress { height: 6px; background: #eee; border-radius: 3px; overflow: hidden; }
         .progress-bar { height: 100%; background: #1677ff; width: 0; transition: width .3s; }
@@ -62,6 +76,43 @@
         </div>
         <div id="exportMsg"></div>
         <p class="muted" id="lastExportMeta"></p>
+    </div>
+
+    <div class="card" id="telegramBackupCard">
+        <h2>{{ __('Telegram full backups') }}</h2>
+        <p class="muted">{{ __('Send a full archive of the database, admin settings, and theme settings to your Telegram chat or group. Configure a separate backup bot below, then enable backups.') }}</p>
+        <form id="telegramForm" onsubmit="saveTelegram(event)">
+            <div class="telegram-fields">
+                <label for="telegramToken">{{ __('Backup bot token') }}
+                    <input type="password" id="telegramToken" autocomplete="new-password" maxlength="200" placeholder="123456:ABC…" disabled>
+                    <small class="muted" id="telegramTokenHint">{{ __('Create a dedicated bot with @BotFather.') }}</small>
+                </label>
+                <label for="telegramChat">{{ __('Chat or group ID') }}
+                    <input type="text" id="telegramChat" autocomplete="off" maxlength="32" placeholder="123456789 or -1001234567890" disabled>
+                    <small class="muted">{{ __('Start the bot in your private chat, or add it to your group and allow it to send files.') }}</small>
+                </label>
+                <label for="telegramInterval">{{ __('Back up every (hours)') }}
+                    <input type="number" id="telegramInterval" min="1" max="168" step="1" value="24" required disabled>
+                    <small class="muted">{{ __('1–168 hours. The first automatic backup runs one interval after enabling. Back up now leaves the schedule unchanged.') }}</small>
+                </label>
+            </div>
+            <div class="row">
+                <button class="btn" id="telegramSave" type="submit" disabled>{{ __('Save settings') }}</button>
+                <label class="toggle-control" for="telegramToggle">
+                    <input type="checkbox" id="telegramToggle" role="switch" aria-label="{{ __('Telegram backups') }}" onchange="toggleTelegram(this.checked)" disabled>
+                    <span class="toggle-track" aria-hidden="true"></span>
+                    <span class="toggle-copy">
+                        <strong>{{ __('Telegram backups') }}</strong>
+                        <small id="telegramSwitchState">{{ __('Loading…') }}</small>
+                    </span>
+                </label>
+                <button class="btn btn-primary" id="telegramNow" type="button" onclick="backupTelegramNow()" disabled>{{ __('Back up now') }}</button>
+            </div>
+        </form>
+        <p class="muted" id="telegramNext"></p>
+        <p class="muted" id="telegramLast"></p>
+        <div id="telegramMsg" role="status" aria-live="polite"></div>
+        <p class="muted">{{ __('Telegram accepts archives up to 50 MB. Backup results appear in History. Archives contain private account data and settings; use a destination you control.') }}</p>
     </div>
 
     <div class="card">
@@ -137,7 +188,6 @@ function api(path, opts = {}) {
     const auth = getAuth();
     const headers = opts.headers || {};
     if (auth) {
-        headers['authorization'] = auth;
         headers['Authorization'] = auth;
     }
     if (auth && opts.method === 'GET' && path.indexOf('auth_data=') === -1) {
@@ -214,7 +264,7 @@ function doImport() {
     if (auth) fd.append('auth_data', auth);
 
     const headers = {};
-    if (auth) { headers['authorization'] = auth; headers['Authorization'] = auth; }
+    if (auth) { headers['Authorization'] = auth; }
 
     fetch('/api/v1/' + SECURE_PATH + '/database/import', { method: 'POST', body: fd, headers: headers })
         .then(function (r) {
@@ -326,6 +376,134 @@ function loadHistory() {
 }
 
 function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+let telegramSettings = null;
+let telegramBusy = false;
+let telegramDirty = false;
+let telegramPoll = null;
+const TELEGRAM_API = '/api/v1/' + SECURE_PATH + '/database/telegram';
+
+function telegramRequest(path, data) {
+    const opts = { method: data === undefined ? 'GET' : 'POST' };
+    if (data !== undefined) {
+        opts.headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+        opts.body = JSON.stringify(data);
+    }
+    return api(TELEGRAM_API + path, opts).then(async function (r) {
+        const j = await r.json();
+        if (!r.ok) {
+            const errors = j.errors ? Object.values(j.errors).flat().join(' ') : '';
+            throw new Error(errors || j.message || 'The Telegram backup request failed.');
+        }
+        return j.data;
+    });
+}
+
+function renderTelegram(fillFields) {
+    const d = telegramSettings;
+    if (!d) return;
+    if (fillFields) {
+        document.getElementById('telegramChat').value = d.chat_id;
+        document.getElementById('telegramInterval').value = d.interval_hours;
+        document.getElementById('telegramToken').value = '';
+        telegramDirty = false;
+    }
+    const running = d.last_backup && ['pending', 'running'].includes(d.last_backup.status);
+    const toggle = document.getElementById('telegramToggle');
+    toggle.checked = !!d.enabled;
+    toggle.setAttribute('aria-checked', d.enabled ? 'true' : 'false');
+    document.getElementById('telegramSwitchState').textContent = d.enabled ? 'Enabled' : 'Disabled';
+    document.getElementById('telegramTokenHint').textContent = d.bot_token_configured ? 'Token saved. Leave blank to keep it, or enter a replacement.' : 'Create a dedicated bot with @BotFather.';
+    toggle.disabled = telegramBusy;
+    document.getElementById('telegramSave').disabled = telegramBusy;
+    ['telegramToken', 'telegramChat', 'telegramInterval'].forEach(function (id) { document.getElementById(id).disabled = telegramBusy; });
+    document.getElementById('telegramNow').disabled = telegramBusy || !d.enabled || !!running || telegramDirty;
+    document.getElementById('telegramNext').textContent = d.enabled ? 'Next automatic backup: ' + toDisplayTime(d.next_run_at) + ' (your local time)' : 'Automatic and manual Telegram backups are disabled.';
+    document.getElementById('telegramLast').textContent = d.last_backup ? 'Last Telegram backup: #' + d.last_backup.id + ' — ' + d.last_backup.status + ' — ' + (d.last_backup.message || '') : 'No Telegram backups yet.';
+}
+
+function telegramFormData() {
+    return {
+        bot_token: document.getElementById('telegramToken').value.trim(),
+        chat_id: document.getElementById('telegramChat').value.trim(),
+        interval_hours: Number(document.getElementById('telegramInterval').value)
+    };
+}
+
+async function persistTelegram(data) {
+    telegramBusy = true;
+    renderTelegram(false);
+    try {
+        telegramSettings = await telegramRequest('', data);
+        renderTelegram(true);
+        showMsg('telegramMsg', 'Telegram backup settings saved.', 'success');
+    } catch (e) {
+        showMsg('telegramMsg', e.message, 'error');
+    } finally {
+        telegramBusy = false;
+        renderTelegram(false);
+    }
+}
+
+function saveTelegram(event) {
+    event.preventDefault();
+    if (telegramBusy || !telegramSettings) return;
+    persistTelegram(telegramFormData());
+}
+
+function toggleTelegram(enabled) {
+    if (telegramBusy || !telegramSettings) return;
+    if (!enabled) {
+        persistTelegram({ enabled: false });
+    } else if (document.getElementById('telegramForm').reportValidity()) {
+        persistTelegram(Object.assign(telegramFormData(), { enabled: true }));
+    } else {
+        renderTelegram(false);
+    }
+}
+
+async function backupTelegramNow() {
+    if (telegramBusy || telegramDirty || !telegramSettings || !telegramSettings.enabled) return;
+    telegramBusy = true;
+    renderTelegram(false);
+    try {
+        const d = await telegramRequest('/backup', {});
+        telegramSettings.last_backup = { id: d.id, status: d.status, message: 'Full backup queued.' };
+        showMsg('telegramMsg', 'Full backup queued. Delivery status will update below and in History.', 'success');
+        loadHistory();
+    } catch (e) {
+        showMsg('telegramMsg', e.message, 'error');
+    } finally {
+        telegramBusy = false;
+        renderTelegram(false);
+    }
+}
+
+async function loadTelegram(fillFields) {
+    if (telegramBusy) return;
+    try {
+        const d = await telegramRequest('');
+        if (telegramBusy) return;
+        const previous = telegramSettings && telegramSettings.last_backup;
+        const firstLoad = !telegramSettings;
+        const changed = d.last_backup && (!previous || previous.id !== d.last_backup.id || previous.status !== d.last_backup.status);
+        telegramSettings = d;
+        renderTelegram(fillFields || firstLoad || !telegramDirty);
+        if (changed) loadHistory();
+    } catch (e) {
+        showMsg('telegramMsg', 'Could not load Telegram backup settings. ' + e.message, 'error');
+    }
+}
+
+['telegramToken', 'telegramChat', 'telegramInterval'].forEach(function (id) {
+    document.getElementById(id).addEventListener('input', function () {
+        telegramDirty = true;
+        renderTelegram(false);
+    });
+});
+loadTelegram(true);
+telegramPoll = setInterval(function () { if (!document.hidden) loadTelegram(false); }, 5000);
+window.addEventListener('pagehide', function () { clearInterval(telegramPoll); });
 
 loadHistory();
 </script>

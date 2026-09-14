@@ -207,7 +207,7 @@ class DatabaseTransferController extends Controller
         }
 
         if ($this->service->isRestoreLocked()) {
-            throw new ApiException(409, __('Another restore is already in progress. Please wait.'));
+            throw new ApiException(409, __('Another database backup or restore is already in progress. Please wait.'));
         }
 
         if (!$request->hasFile('file')) {
@@ -274,7 +274,7 @@ class DatabaseTransferController extends Controller
 
         if (!$this->service->acquireRestoreLock()) {
             @unlink($storedPath);
-            throw new ApiException(409, __('Another restore is already in progress. Please wait.'));
+            throw new ApiException(409, __('Another database backup or restore is already in progress. Please wait.'));
         }
 
         // Best-effort GC of old audit rows — no extra cron required.

@@ -168,6 +168,17 @@ return [
     |
     */
 
+    'defaults' => [
+        'TelegramBackup' => [
+            'connection' => 'telegram_backup',
+            'queue' => ['telegram_backup'],
+            'balance' => false,
+            'processes' => 1,
+            'tries' => 1,
+            'timeout' => 3600,
+        ],
+    ],
+
     'environments' => [
         'local' => [
             'V2board' => [
@@ -190,5 +201,6 @@ return [
                 'balanceCooldown' => 3,
             ],
         ],
+        '*' => [],
     ],
 ];

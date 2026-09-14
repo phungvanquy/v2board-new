@@ -1166,7 +1166,7 @@ class DatabaseTransferService
             $cutoff = (int) time() - $staleAfter;
             // Never touch rows whose uploaded file could still be in flight: pending
             // imports are owned by a queue job protected by the restore lock.
-            DatabaseTransferLog::where('status', 'pending')
+            DatabaseTransferLog::query()->whereIn('status', ['pending', 'running'])
                 ->where('updated_at', '<', $cutoff)
                 ->update(['status' => 'failed', 'message' => 'Operation did not complete (stale).']);
         } catch (\Throwable $e) {

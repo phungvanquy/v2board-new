@@ -30,6 +30,15 @@ return [
 
     'connections' => [
 
+        // Long archive builds need a reservation longer than the worker timeout.
+        'telegram_backup' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+            'queue' => 'telegram_backup',
+            'retry_after' => 3900,
+            'block_for' => null,
+        ],
+
         'sync' => [
             'driver' => 'sync',
         ],

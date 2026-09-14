@@ -20,7 +20,7 @@ class MysqlLoggerHandler extends AbstractProcessingHandler
             if (isset($record['context']['exception']) && is_object($record['context']['exception'])) {
                 $record['context']['exception'] = (array) $record['context']['exception'];
             }
-            $record['request_data'] = request()->all() ?? [];
+            $record['request_data'] = request()->except(['bot_token']);
             $log = [
                 'title' => $record['message'],
                 'level' => $record['level_name'],

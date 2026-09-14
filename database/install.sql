@@ -588,6 +588,17 @@ CREATE TABLE `v2_user` (
 
 -- 2025-09-12 10:05:00
 
+CREATE TABLE IF NOT EXISTS `v2_telegram_backup_setting` (
+    `id` int UNSIGNED NOT NULL PRIMARY KEY,
+    `enabled` tinyint(1) NOT NULL DEFAULT 0,
+    `bot_token` varchar(200) NOT NULL DEFAULT '',
+    `chat_id` varchar(32) NOT NULL DEFAULT '',
+    `interval_hours` int UNSIGNED NOT NULL DEFAULT 24,
+    `next_run_at` bigint UNSIGNED DEFAULT NULL,
+    `revision` varchar(64) NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT IGNORE INTO `v2_telegram_backup_setting` (`id`) VALUES (1);
+
 DROP TABLE IF EXISTS `v2_database_transfer_log`;
 CREATE TABLE `v2_database_transfer_log` (
                             `id` int(11) NOT NULL AUTO_INCREMENT,
