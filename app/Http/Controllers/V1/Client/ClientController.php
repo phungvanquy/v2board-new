@@ -37,53 +37,66 @@ class ClientController extends Controller
 
     public function subscribe(Request $request)
     {
-        $flag = $request->input('flag')
-            ?? ($_SERVER['HTTP_USER_AGENT'] ?? '');
-        $flag = strtolower($flag);
         $user = $request->user;
         // account not expired and is not banned.
         $userService = new UserService();
         if ($userService->isAvailable($user)) {
             $serverService = new ServerService();
             $servers = $serverService->getAvailableServers($user);
-            $result = null;
-            if ($flag) {
-                if (strpos($flag, 'sing') === false) {
-                    $this->setSubscribeInfoToServers($servers, $user);
-                    foreach (self::protocolClasses() as $class) {
-                        $instance = new $class($user, $servers);
-                        if (strpos($flag, $instance->flag) !== false) {
-                            $result = $instance->handle();
-                            break;
-                        }
+
+            return $this->renderSubscription($request, $user, $servers);
+        }
+    }
+
+    private function renderSubscription(Request $request, $user, array $servers)
+    {
+        // Read the current request: PHP globals can be stale in a long-lived worker.
+        // An explicit format still wins over automatic app detection.
+        $flag = strtolower((string) ($request->input('flag') ?? $request->userAgent() ?? ''));
+        if (strpos($flag, 'happ') !== false) {
+            $flag = 'happ';
+        } elseif (strpos($flag, 'karing') !== false) {
+            $flag = 'clashmeta';
+        } elseif (preg_match('/hiddify(?:nextx?|[\/\s]|$)/', $flag)) {
+            $flag = 'sing-box ' . $flag;
+        }
+        $result = null;
+        if ($flag) {
+            if (strpos($flag, 'sing') === false) {
+                $this->setSubscribeInfoToServers($servers, $user);
+                foreach (self::protocolClasses() as $class) {
+                    $instance = new $class($user, $servers);
+                    if (strpos($flag, $instance->flag) !== false) {
+                        $result = $instance->handle();
+                        break;
                     }
-                }
-                if (is_null($result) && strpos($flag, 'sing') !== false) {
-                    $version = null;
-                    if (preg_match('/sing-box\s+([0-9.]+)/i', $flag, $matches)) {
-                        $version = $matches[1];
-                    }
-                    if (!is_null($version) && version_compare($version, '1.12.0', '>=')) {
-                        $class = new Singbox($user, $servers);
-                    } else {
-                        $class = new SingboxOld($user, $servers);
-                    }
-                    $result = $class->handle();
                 }
             }
-            if (is_null($result)) {
-                $class = new General($user, $servers);
+            if (is_null($result) && strpos($flag, 'sing') !== false) {
+                $version = null;
+                if (preg_match('/sing-box[\/\s]+(\d+\.\d+\.\d+(?:-[a-z0-9.-]+)?)/i', $flag, $matches)) {
+                    $version = $matches[1];
+                }
+                if (!is_null($version) && version_compare($version, '1.12.0', '>=')) {
+                    $class = new Singbox($user, $servers);
+                } else {
+                    $class = new SingboxOld($user, $servers);
+                }
                 $result = $class->handle();
             }
-
-            // Every client (Happ, V2rayNG, Loon, …) that falls through to
-            // General, or returns a bare body, would otherwise get no
-            // subscription metadata at all: no expire time, no traffic, no
-            // profile title. Attach the standard headers to any response that
-            // does not already carry them (protocol classes that set their
-            // own — Clash*, Singbox, v2RayTun — win).
-            return $this->attachSubscriptionHeaders($result, $user);
         }
+        if (is_null($result)) {
+            $class = new General($user, $servers);
+            $result = $class->handle();
+        }
+
+        // Every client (V2rayNG, Loon, …) that falls through to
+        // General, or returns a bare body, would otherwise get no
+        // subscription metadata at all: no expire time, no traffic, no
+        // profile title. Attach the standard headers to any response that
+        // does not already carry them (protocol classes that set their
+        // own — Clash*, Singbox, v2RayTun — win).
+        return $this->attachSubscriptionHeaders($result, $user);
     }
 
     /**

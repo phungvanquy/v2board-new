@@ -151,7 +151,25 @@ The admin SPA's sidebar has an **Advanced Settings** entry (injected by `public/
 
 #### Subscribe Rules — Russia bypass VPN (DIRECT)
 
-When enabled (default **on**), Russian destinations are routed `DIRECT` (bypass VPN) in every subscription format — Clash, Stash (mihomo, with `GEOSITE,category-ru`), Surge, Surfboard, and sing-box/Hiddify (rule-sets + DNS rule). Base list: TLDs `ru / su / xn--p1ai (.рф) / moscow / tatar` plus `vk.com, yandex.com, yandex.net, kaspersky.com`, plus `GEOIP,RU` / `geosite-ru + geoip-ru` IP rules. Extra domain suffixes can be added from the page (one per line). Injection happens at subscription-render time, is idempotent (never duplicates lines already in a custom template), and applies on the next subscription update — no restart needed.
+When enabled (default **on**), the panel includes bypass rules for TLDs `ru / su / xn--p1ai (.рф) / moscow / tatar`, `vk.com, yandex.com, yandex.net, kaspersky.com`, Russian IPs, and extra domain suffixes. Enter bare domains such as `2ip.io`, one per line, without URL paths or `DOMAIN-SUFFIX` syntax. Each suffix matches both the domain itself and its subdomains; internationalized names must use punycode. Extras are active only while the switch is on.
+
+The subscription format and the app's routing settings determine whether these rules take effect:
+
+| Client / format | Delivered policy | Required client behavior |
+| --- | --- | --- |
+| Clash family, Stash | Domain suffixes and RU GeoIP rules | Use rule mode and import the full configuration. |
+| Surge, Surfboard | Rules in the full INI configuration | Use rule mode. |
+| sing-box | All base and extra suffixes in route and local-DNS rules, plus RU rule-sets | Run the supplied configuration. Explicit global proxy modes can override the rules. |
+| Happ (`flag=happ` or Happ User-Agent) | Native `happ://routing/onadd/…` profile in the decoded node subscription | Refresh the subscription, check that its DIRECT profile is active, wait for geo files to finish downloading, and reconnect. Disabling the panel switch sends the same profile with the RU and extra bypass lists cleared. |
+| Karing (`flag=karing` or Karing User-Agent) | Clash Meta configuration containing DIRECT rules | Use rule mode and keep **Disable ISP diversion rules** off. |
+| Hiddify / HiddifyNext | sing-box configuration containing route and DNS rules | Hiddify can rebuild the configuration using its own routing settings and discard the supplied rules. Add DIRECT rules inside the app when this happens; automatic enforcement cannot be promised across versions. |
+| Other node-only formats (General, V2rayN/NG, Shadowrocket, Loon, Quantumult X, etc.) | Server entries only | Configure bypass rules in the client; these subscription outputs do not deliver a routing policy. |
+
+An explicit `flag` takes precedence over the User-Agent. Remove an old `flag=general` override or select the correct format when updating an existing app subscription. Both `sing-box 1.12.0` and `sing-box/1.12.0` identify the modern DNS schema; without a reported core version, the legacy schema is used.
+
+Changes are generated when the app fetches its subscription. **Save, refresh the subscription in the app, then disconnect and reconnect.** Existing connections can continue using their previous route. Check the app's connection log for the actual destination and DIRECT outbound. For an IP-check site such as `2ip.io`, compare the displayed address against the same site with the VPN disconnected on the same network. A site can use additional domains for APIs or assets; those need their own rules if they are outside the configured suffix. Domain matching also needs the client to know the hostname through DNS or protocol sniffing.
+
+Compatibility references: [Happ routing profiles](https://www.happ.su/main/dev-docs/routing), [Karing diversion settings](https://karing.app/en/app-manual/diversion-rule), [Karing Clash support](https://karing.app/en/clash), and [Hiddify's configuration builder](https://github.com/hiddify/hiddify-core/blob/main/v2/config/builder.go). The tests verify subscription output and rule precedence, not traffic on physical client devices.
 
 Config keys (also settable via **System config**): `subscribe_ru_direct_enable` (`0/1`, default `1`), `subscribe_ru_direct_domains` (newline-separated extra suffixes). Turning the toggle off proxies RU traffic like any other destination.
 

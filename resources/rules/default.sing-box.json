@@ -93,6 +93,16 @@
                 "action": "hijack-dns"
             },
             {
+                "clash_mode": "关闭代理",
+                "action": "route",
+                "outbound": "DIRECT"
+            },
+            {
+                "clash_mode": "全局代理",
+                "action": "route",
+                "outbound": "节点选择"
+            },
+            {
                 "rule_set": [
                     "category-ads-all"
                 ],
@@ -104,16 +114,6 @@
                 "ip_is_private": true,
                 "action": "route",
                 "outbound": "DIRECT"
-            },
-            {
-                "clash_mode": "关闭代理",
-                "action": "route",
-                "outbound": "DIRECT"
-            },
-            {
-                "clash_mode": "全局代理",
-                "action": "route",
-                "outbound": "节点选择"
             },
             {
                 "rule_set": [

@@ -67,6 +67,28 @@ class SubscriptionRuleService
     }
 
     /**
+     * Happ's native routing profile, imported alongside its node links.
+     * Send an empty bypass list when disabled to replace a previously imported
+     * profile with the same name; omitting it would leave stale rules active.
+     */
+    public static function happRoutingLink(): string
+    {
+        $profile = [
+            'Name' => config('v2board.app_name', 'V2Board') . ' DIRECT',
+            'GlobalProxy' => 'true',
+            'Geoipurl' => 'https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat',
+            'Geositeurl' => 'https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat',
+            'DirectSites' => self::enabled()
+                ? array_merge(array_map(fn ($suffix) => 'domain:' . $suffix, self::suffixes()), ['geosite:category-ru'])
+                : [],
+            'DirectIp' => self::enabled() ? ['geoip:private', 'geoip:ru'] : ['geoip:private'],
+            'DomainStrategy' => 'IPIfNonMatch',
+        ];
+
+        return 'happ://routing/onadd/' . base64_encode(json_encode($profile, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+    }
+
+    /**
      * Clash-family domain rule lines (no GEOIP line), in evaluation order.
      * $geosite is true only for mihomo-based clients (Stash), which support
      * GEOSITE; legacy Clash cores error on an unknown rule type.
@@ -164,7 +186,13 @@ class SubscriptionRuleService
         if ($directTag === null) {
             return $config;
         }
-        $detour = '节点选择';
+        $detour = $config['route']['final'] ?? $directTag;
+        foreach ($config['outbounds'] ?? [] as $outbound) {
+            if (($outbound['type'] ?? '') === 'selector' && !empty($outbound['tag'])) {
+                $detour = $outbound['tag'];
+                break;
+            }
+        }
         foreach ($config['route']['rule_set'] ?? [] as $rs) {
             if (!empty($rs['download_detour'])) {
                 $detour = $rs['download_detour'];
@@ -178,23 +206,22 @@ class SubscriptionRuleService
                 : $match + ['action' => 'route', 'outbound' => $directTag];
         };
 
-        // --- route.rules: after the geosite-cn direct rule when present, else at the end
+        // Explicit suffixes must work independently of the contents of geosite-ru.
+        $suffixRule = $makeRule(['domain_suffix' => self::suffixes()]);
+        // Keep preprocessing and explicit client modes before destination rules.
         $routeRules = is_array($config['route']['rules'] ?? null) ? $config['route']['rules'] : [];
         $routeRules = array_values(array_filter(
             $routeRules,
-            fn ($r) => empty(array_intersect(['geosite-ru', 'geoip-ru'], (array) ($r['rule_set'] ?? [])))
+            fn ($r) => $r !== $suffixRule && empty(array_intersect(['geosite-ru', 'geoip-ru'], (array) ($r['rule_set'] ?? [])))
         ));
-        $insert = [$makeRule(['rule_set' => ['geosite-ru', 'geoip-ru']])];
-        $extras = array_values(array_diff(self::suffixes(), self::BASE_SUFFIXES, self::BASE_DOMAINS));
-        if ($extras !== []) {
-            $insert[] = $makeRule(['domain_suffix' => $extras]);
-        }
-        $idx = count($routeRules);
+        $insert = [$suffixRule, $makeRule(['rule_set' => ['geosite-ru', 'geoip-ru']])];
+        $idx = 0;
         foreach ($routeRules as $i => $r) {
-            if (in_array('geosite-cn', (array) ($r['rule_set'] ?? []), true) && ($r['outbound'] ?? null) === $directTag) {
-                $idx = $i + 1;
+            if (!isset($r['clash_mode']) && !in_array($r['action'] ?? '', ['sniff', 'hijack-dns', 'resolve'], true)
+                && !in_array('dns', (array) ($r['protocol'] ?? []), true)) {
                 break;
             }
+            $idx = $i + 1;
         }
         array_splice($routeRules, $idx, 0, $insert);
         $config['route']['rules'] = $routeRules;
@@ -222,23 +249,36 @@ class SubscriptionRuleService
         }
         $config['route']['rule_set'] = $ruleSets;
 
-        // --- dns.rules: resolve RU domains with the local (client-network) resolver
+        // Custom templates may not define the local resolver used by these rules.
+        $dnsServers = $config['dns']['servers'] ?? [];
+        if (!in_array('local', array_column($dnsServers, 'tag'), true)) {
+            $dnsServers[] = $legacy
+                ? ['tag' => 'local', 'address' => 'local']
+                : ['tag' => 'local', 'type' => 'local'];
+            $config['dns']['servers'] = $dnsServers;
+        }
+
+        // Resolve every explicit suffix directly as well, including extras.
+        // Otherwise a fake-IP or remote-DNS catch-all can win before bypassing.
+        $dnsSuffixRule = ['domain_suffix' => self::suffixes()] + ($legacy
+            ? ['server' => 'local']
+            : ['action' => 'route', 'server' => 'local']);
         $dnsRules = is_array($config['dns']['rules'] ?? null) ? $config['dns']['rules'] : [];
         $dnsRules = array_values(array_filter(
             $dnsRules,
-            fn ($r) => empty(array_intersect(['geosite-ru'], (array) ($r['rule_set'] ?? [])))
+            fn ($r) => $r !== $dnsSuffixRule && empty(array_intersect(['geosite-ru'], (array) ($r['rule_set'] ?? [])))
         ));
         $dnsInsert = $legacy
             ? ['rule_set' => ['geosite-ru'], 'server' => 'local']
             : ['rule_set' => ['geosite-ru'], 'action' => 'route', 'server' => 'local'];
         $idx = 0;
         foreach ($dnsRules as $i => $r) {
-            if (in_array('geosite-cn', (array) ($r['rule_set'] ?? []), true)) {
-                $idx = $i;
+            if (!isset($r['clash_mode']) && !isset($r['outbound'])) {
                 break;
             }
+            $idx = $i + 1;
         }
-        array_splice($dnsRules, $idx, 0, [$dnsInsert]);
+        array_splice($dnsRules, $idx, 0, [$dnsSuffixRule, $dnsInsert]);
         $config['dns']['rules'] = $dnsRules;
 
         return $config;
