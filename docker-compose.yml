@@ -10,7 +10,7 @@ services:
       args:
         PHP_VERSION: ${PHP_VERSION:-8.2}
         WITH_WEBMAN: ${WITH_WEBMAN:-true}
-    image: v2board-app:local
+    image: ${APP_IMAGE:-v2board-app:local}
     restart: unless-stopped
     env_file:
       - path: .env
@@ -46,7 +46,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: nginx
-    image: v2board-nginx:local
+    image: ${NGINX_IMAGE:-v2board-nginx:local}
     restart: unless-stopped
     ports:
       - "${APP_PORT:-8080}:80"
@@ -120,7 +120,7 @@ services:
       args:
         PHP_VERSION: ${PHP_VERSION:-8.2}
         WITH_WEBMAN: ${WITH_WEBMAN:-true}
-    image: v2board-app:local
+    image: ${APP_IMAGE:-v2board-app:local}
     restart: unless-stopped
     command: ["php", "artisan", "horizon"]
     env_file:
@@ -155,7 +155,14 @@ services:
 
   # Laravel checks the configurable Telegram backup schedule every minute.
   scheduler:
-    image: v2board-app:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.2}
+        WITH_WEBMAN: ${WITH_WEBMAN:-true}
+    image: ${APP_IMAGE:-v2board-app:local}
     restart: unless-stopped
     entrypoint: ["/sbin/su-exec", "www-data", "php", "artisan", "schedule:work"]
     env_file:
@@ -188,7 +195,7 @@ services:
       args:
         PHP_VERSION: ${PHP_VERSION:-8.2}
         WITH_WEBMAN: "true"
-    image: v2board-app:local
+    image: ${APP_IMAGE:-v2board-app:local}
     profiles: ["webman"]
     restart: unless-stopped
     command: ["php", "-c", "cli-php.ini", "webman.php"]

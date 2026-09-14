@@ -70,6 +70,12 @@ COPY . .
 
 COPY --from=vendor /app/vendor ./vendor
 
+# Pristine copy of config/ for runtime sync: /var/www/config is shadowed by
+# the app_config volume, so the entrypoint diffs the volume against this
+# directory to deliver new framework config on upgrade (user-managed
+# config/v2board.php and config/theme/*.php are never overwritten).
+RUN cp -a config /opt/v2board-config-pristine
+
 RUN chmod +x .docker/entrypoint.sh \
     && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views \
                 storage/logs storage/app/public bootstrap/cache \

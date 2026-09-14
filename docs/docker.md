@@ -57,8 +57,9 @@ Volumes: `db_data`, `redis_data`, `app_storage` (`storage/`), `app_bootstrap_cac
 ## First boot vs. existing data
 
 - **First boot (empty `db_data`):** entrypoint imports `database/install.sql` (the full schema + `database` seeds) via `mysql --skip-ssl` and, when `ADMIN_EMAIL`/`ADMIN_PASSWORD` are set, creates the admin via `.docker/seed-admin.php`. A theme pre-warm writes `config/theme/default.php` and runs `config:cache` so the first HTTP request is already 200.
-- **Subsequent boots:** entrypoint probes `SHOW TABLES LIKE "v2_user"` — when the sentinel table exists it skips the import. `V2BOARD_AUTO_UPDATE=1` opts into running `php artisan v2board:update` automatically; otherwise run it manually (next section).
-- **Existing `.env`:** respected. The entrypoint only generates `APP_KEY` when the key is empty and only creates `.env` when the file is missing.
+- **Subsequent boots:** entrypoint probes `SHOW TABLES LIKE "v2_user"` — when the sentinel table exists it skips the import and runs `php artisan v2board:update` automatically (idempotent: the whole `database/update.sql` is attempted, per-statement errors mean "already applied"; guarded by a MySQL advisory lock so concurrent boots don't race). Set `V2BOARD_AUTO_UPDATE=0` to opt out and migrate manually instead.
+- **Existing `.env`:** respected. The entrypoint only generates `APP_KEY` when the key is empty, only creates `.env` when the file is missing, and appends any keys present in `.env.docker.example` but missing locally (existing values are never modified, secrets are never invented).
+- **Config volume:** `app_config` shadows the image's `config/`. On every `app` boot the entrypoint syncs framework `config/*.php` from the pristine copy baked into the image (`/opt/v2board-config-pristine`), so new/changed config arrives automatically. User-managed files are never touched: `config/v2board.php` (admin settings) and `config/theme/*.php` (theme settings) survive upgrades untouched.
 
 ## Common operations
 
@@ -72,11 +73,18 @@ docker compose exec app php artisan horizon:status
 docker compose exec app php artisan queue:failed
 docker compose exec app php artisan tinker
 
-# Apply an application update inside the container
-git pull
-docker compose build app nginx        # rebuild images (preserves db_data!)
-docker compose up -d
-docker compose exec app php artisan v2board:update   # or: apply database/update.sql manually
+# Apply an application update (schema, config, and env are handled automatically)
+sh deploy.sh
+
+# Variant A — published registry images (tagged releases):
+#   APP_IMAGE=ghcr.io/<owner>/v2board-app:v1.2.3 \
+#   NGINX_IMAGE=ghcr.io/<owner>/v2board-nginx:v1.2.3 sh deploy.sh
+# Variant B — track git directly:
+#   git pull
+#   docker compose build app nginx        # rebuild images (preserves db_data!)
+#   sh deploy.sh
+# With V2BOARD_AUTO_UPDATE=0, migrate manually after deploy:
+#   docker compose exec app php artisan v2board:update
 
 # Horizon control
 docker compose restart horizon
@@ -93,7 +101,19 @@ docker compose down -v                # destroys db_data + redis_data + app_* vo
 
 ### Updating without losing data
 
-`docker compose build app && docker compose up -d` **preserves** `db_data` — verified (see Verification below). Only `down -v` drops volumes. The documented update (`php artisan v2board:update` inside the container) runs idempotently; it does not drop tables.
+`sh deploy.sh` (pull/build + ordered `up`) **preserves** `db_data` — verified (see Verification below). Only `down -v` drops volumes. Schema migration (`php artisan v2board:update`) runs automatically on every `app` boot and is idempotent; it does not drop tables. `update.sql` is cumulative and records no applied version — re-runs rely on per-statement error tolerance, and report `applied N, already present M`.
+
+### Registry images (GHCR)
+
+Tagged releases (`v*`) publish `ghcr.io/<owner>/v2board-app:<tag>` + `:latest` (and `-nginx`) via `.github/workflows/docker.yml`. To deploy a release without building:
+
+```bash
+APP_IMAGE=ghcr.io/<owner>/v2board-app:v1.2.3 \
+NGINX_IMAGE=ghcr.io/<owner>/v2board-nginx:v1.2.3 \
+sh deploy.sh
+```
+
+Pin the tags in `.env` (`APP_IMAGE`/`NGINX_IMAGE`, see `.env.docker.example`) for repeatable deploys. Roll back by re-pinning the previous tag and re-running `sh deploy.sh` (schema downgrades are not automatic — restore a pre-upgrade backup if the new release migrated the DB forward).
 
 ### Database backup & restore (in-panel)
 
@@ -151,17 +171,7 @@ Results appear as `telegram_backup` entries in **History**, with pending, runnin
 
 The hosted [Telegram Bot API limits document uploads to 50 MB](https://core.telegram.org/bots/api#senddocument). Larger archives fail before upload with an explanation; download the full backup through Data Transfer instead. No public download URL is sent to Telegram.
 
-For an existing Docker installation, rebuild the application and nginx images, apply the new schema, and refresh the two worker configuration files in the persistent config volume. Preserve any local customizations to these files when updating them:
-
-```bash
-docker compose build app nginx
-docker compose up -d app nginx
-docker compose cp config/queue.php app:/var/www/config/queue.php
-docker compose cp config/horizon.php app:/var/www/config/horizon.php
-docker compose exec app php artisan migrate --force --path=database/migrations/2026_09_14_000000_create_telegram_backup_settings_table.php
-docker compose exec app php artisan config:cache
-docker compose up -d --force-recreate horizon scheduler
-```
+If you deployed this feature with the old manual `docker compose cp` instructions, one `sh deploy.sh` brings the config volume up to date (the entrypoint now syncs `config/queue.php` and `config/horizon.php` from the image automatically) and the automatic `v2board:update` applies the `v2_telegram_backup_setting` table (the statement is `IF NOT EXISTS` / `INSERT IGNORE`, so re-running is safe). Preserve any local customizations to these two files before deploying — the sync overwrites them with the image version.
 
 New installations receive the disabled settings row through `database/install.sql`; `v2board:update` also creates it without overwriting existing settings. The dedicated `telegram_backup` Redis connection has a 3,900-second reservation and a 3,600-second worker timeout. Deploy the matching `config/queue.php` and `config/horizon.php` together. This feature always uses the background Redis worker, including when the application's default queue is synchronous. Keep `CACHE_DRIVER=redis` (the supplied default) for locks shared between the app, scheduler, and workers.
 
