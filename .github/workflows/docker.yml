@@ -28,6 +28,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up QEMU (cross-arch emulation for arm64)
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -56,6 +59,7 @@ jobs:
         with:
           context: .
           target: app
+          platforms: linux/amd64,linux/arm64
           build-args: |
             PHP_VERSION=${{ env.PHP_VERSION }}
             WITH_WEBMAN=true
@@ -69,6 +73,7 @@ jobs:
         with:
           context: .
           target: nginx
+          platforms: linux/amd64,linux/arm64
           push: ${{ startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' }}
           tags: |
             ${{ steps.meta.outputs.nginx_image }}:${{ steps.meta.outputs.version || 'pr-check' }}
