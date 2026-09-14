@@ -87,16 +87,16 @@ CREATE TABLE `v2_invite_code` (
 DROP TABLE IF EXISTS `v2_knowledge`;
 CREATE TABLE `v2_knowledge` (
                                 `id` int(11) NOT NULL AUTO_INCREMENT,
-                                `language` char(5) NOT NULL COMMENT '語言',
-                                `category` varchar(255) NOT NULL COMMENT '分類名',
-                                `title` varchar(255) NOT NULL COMMENT '標題',
-                                `body` text NOT NULL COMMENT '內容',
-                                `sort` int(11) DEFAULT NULL COMMENT '排序',
-                                `show` tinyint(1) NOT NULL DEFAULT '0' COMMENT '顯示',
-                                `created_at` int(11) NOT NULL COMMENT '創建時間',
-                                `updated_at` int(11) NOT NULL COMMENT '更新時間',
+                                `language` char(5) NOT NULL COMMENT 'language',
+                                `category` varchar(255) NOT NULL COMMENT 'category name',
+                                `title` varchar(255) NOT NULL COMMENT 'title',
+                                `body` text NOT NULL COMMENT 'content',
+                                `sort` int(11) DEFAULT NULL COMMENT 'sort order',
+                                `show` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'visible',
+                                `created_at` int(11) NOT NULL COMMENT 'created at',
+                                `updated_at` int(11) NOT NULL COMMENT 'updated at',
                                 PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='知識庫';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='knowledge base';
 
 
 DROP TABLE IF EXISTS `v2_log`;
@@ -151,21 +151,21 @@ CREATE TABLE `v2_order` (
                             `plan_id` int(11) NOT NULL,
                             `coupon_id` int(11) DEFAULT NULL,
                             `payment_id` int(11) DEFAULT NULL,
-                            `type` int(11) NOT NULL COMMENT '1新购2续费3升级',
+                            `type` int(11) NOT NULL COMMENT '1=new purchase, 2=renewal, 3=upgrade',
                             `period` varchar(255) NOT NULL,
                             `trade_no` varchar(36) NOT NULL,
                             `callback_no` varchar(255) DEFAULT NULL,
                             `total_amount` int(11) NOT NULL,
                             `handling_amount` int(11) DEFAULT NULL,
                             `discount_amount` int(11) DEFAULT NULL,
-                            `surplus_amount` int(11) DEFAULT NULL COMMENT '剩余价值',
-                            `refund_amount` int(11) DEFAULT NULL COMMENT '退款金额',
-                            `balance_amount` int(11) DEFAULT NULL COMMENT '使用余额',
-                            `surplus_order_ids` text COMMENT '折抵订单',
-                            `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0待支付1开通中2已取消3已完成4已折抵',
-                            `commission_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0待确认1发放中2有效3无效',
+                            `surplus_amount` int(11) DEFAULT NULL COMMENT 'remaining value',
+                            `refund_amount` int(11) DEFAULT NULL COMMENT 'refund amount',
+                            `balance_amount` int(11) DEFAULT NULL COMMENT 'balance used',
+                            `surplus_order_ids` text COMMENT 'offset orders',
+                            `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0=pending payment, 1=activating, 2=cancelled, 3=completed, 4=offset',
+                            `commission_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0=pending confirmation, 1=issuing, 2=valid, 3=invalid',
                             `commission_balance` int(11) NOT NULL DEFAULT '0',
-                            `actual_commission_balance` int(11) DEFAULT NULL COMMENT '实际支付佣金',
+                            `actual_commission_balance` int(11) DEFAULT NULL COMMENT 'actual commission paid',
                             `paid_at` int(11) DEFAULT NULL,
                             `created_at` int(11) NOT NULL,
                             `updated_at` int(11) NOT NULL,
@@ -324,26 +324,26 @@ CREATE TABLE `v2_server_shadowsocks` (
 
 DROP TABLE IF EXISTS `v2_server_trojan`;
 CREATE TABLE `v2_server_trojan` (
-                                    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '节点ID',
-                                    `group_id` varchar(255) NOT NULL COMMENT '节点组',
+                                    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'node ID',
+                                    `group_id` varchar(255) NOT NULL COMMENT 'node group',
                                     `route_id` varchar(255) DEFAULT NULL,
-                                    `parent_id` int(11) DEFAULT NULL COMMENT '父节点',
-                                    `tags` varchar(255) DEFAULT NULL COMMENT '节点标签',
-                                    `name` varchar(255) NOT NULL COMMENT '节点名称',
-                                    `rate` varchar(11) NOT NULL COMMENT '倍率',
-                                    `host` varchar(255) NOT NULL COMMENT '主机名',
-                                    `port` varchar(11) NOT NULL COMMENT '连接端口',
-                                    `server_port` int(11) NOT NULL COMMENT '服务端口',
-                                    `network` varchar(11) DEFAULT NULL COMMENT '传输方式',
-                                    `network_settings` text COMMENT '传输配置',
-                                    `allow_insecure` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否允许不安全',
+                                    `parent_id` int(11) DEFAULT NULL COMMENT 'parent node',
+                                    `tags` varchar(255) DEFAULT NULL COMMENT 'node tags',
+                                    `name` varchar(255) NOT NULL COMMENT 'node name',
+                                    `rate` varchar(11) NOT NULL COMMENT 'rate multiplier',
+                                    `host` varchar(255) NOT NULL COMMENT 'hostname',
+                                    `port` varchar(11) NOT NULL COMMENT 'connection port',
+                                    `server_port` int(11) NOT NULL COMMENT 'service port',
+                                    `network` varchar(11) DEFAULT NULL COMMENT 'transport type',
+                                    `network_settings` text COMMENT 'transport settings',
+                                    `allow_insecure` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'allow insecure',
                                     `server_name` varchar(255) DEFAULT NULL,
-                                    `show` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否显示',
+                                    `show` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'visible',
                                     `sort` int(11) DEFAULT NULL,
                                     `created_at` int(11) NOT NULL,
                                     `updated_at` int(11) NOT NULL,
                                     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='trojan伺服器表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='trojan servers table';
 
 
 DROP TABLE IF EXISTS `v2_server_vless`;
@@ -436,25 +436,25 @@ CREATE TABLE `v2_server_v2node` (
                                     `rate` varchar(11) NOT NULL,
                                     `show` tinyint(1) NOT NULL DEFAULT '0',
                                     `sort` int(11) DEFAULT NULL,
-                                    `protocol` varchar(24) NOT NULL COMMENT '协议类型',
-                                    `tls` tinyint(1) NOT NULL COMMENT 'tls类型',
-                                    `tls_settings` text COMMENT 'tls配置',
-                                    `flow` varchar(64) DEFAULT NULL COMMENT 'vless流控',
-                                    `network` varchar(11) NOT NULL COMMENT '传输类型',
-                                    `network_settings` text COMMENT '传输配置',
-                                    `trusted_x_forwarded_for` varchar(255) DEFAULT NULL COMMENT '信任的x-forwarded-for头部',
-                                    `encryption` varchar(64) DEFAULT NULL COMMENT 'vless加密',
-                                    `encryption_settings` text COMMENT 'vless加密配置',
-                                    `disable_sni` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'tuic禁用sni',
-                                    `udp_relay_mode` varchar(64) DEFAULT NULL COMMENT 'tuic udp中继模式',
-                                    `zero_rtt_handshake` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'tuic 0rtt握手',
-                                    `congestion_control` varchar(64) DEFAULT NULL COMMENT 'tuic拥塞控制',
-                                    `cipher` varchar(64) DEFAULT NULL COMMENT 'shadowsocks加密方式',
-                                    `up_mbps` int(11) NOT NULL COMMENT 'hysteria上行带宽',
-                                    `down_mbps` int(11) NOT NULL COMMENT 'hysteria下行带宽',
-                                    `obfs` varchar(64) DEFAULT NULL COMMENT 'hysteria1混淆密码/hysteria2混淆类型',
-                                    `obfs_password` varchar(255) DEFAULT NULL COMMENT 'hysteria2混淆密码',
-                                    `padding_scheme` text COMMENT 'anytls填充配置',
+                                    `protocol` varchar(24) NOT NULL COMMENT 'protocol type',
+                                    `tls` tinyint(1) NOT NULL COMMENT 'TLS type',
+                                    `tls_settings` text COMMENT 'TLS settings',
+                                    `flow` varchar(64) DEFAULT NULL COMMENT 'VLESS flow control',
+                                    `network` varchar(11) NOT NULL COMMENT 'transport type',
+                                    `network_settings` text COMMENT 'transport settings',
+                                    `trusted_x_forwarded_for` varchar(255) DEFAULT NULL COMMENT 'trusted X-Forwarded-For header',
+                                    `encryption` varchar(64) DEFAULT NULL COMMENT 'VLESS encryption',
+                                    `encryption_settings` text COMMENT 'VLESS encryption settings',
+                                    `disable_sni` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'TUIC disable SNI',
+                                    `udp_relay_mode` varchar(64) DEFAULT NULL COMMENT 'TUIC UDP relay mode',
+                                    `zero_rtt_handshake` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'TUIC 0-RTT handshake',
+                                    `congestion_control` varchar(64) DEFAULT NULL COMMENT 'TUIC congestion control',
+                                    `cipher` varchar(64) DEFAULT NULL COMMENT 'Shadowsocks cipher',
+                                    `up_mbps` int(11) NOT NULL COMMENT 'Hysteria uplink bandwidth',
+                                    `down_mbps` int(11) NOT NULL COMMENT 'Hysteria downlink bandwidth',
+                                    `obfs` varchar(64) DEFAULT NULL COMMENT 'Hysteria1 obfuscation password / Hysteria2 obfuscation type',
+                                    `obfs_password` varchar(255) DEFAULT NULL COMMENT 'Hysteria2 obfuscation password',
+                                    `padding_scheme` text COMMENT 'AnyTLS padding settings',
                                     `created_at` int(11) NOT NULL,
                                     `updated_at` int(11) NOT NULL,
                                     PRIMARY KEY (`id`)
@@ -465,10 +465,10 @@ CREATE TABLE `v2_stat` (
                            `id` int(11) NOT NULL AUTO_INCREMENT,
                            `record_at` int(11) NOT NULL,
                            `record_type` char(1) NOT NULL,
-                           `order_count` int(11) NOT NULL COMMENT '订单数量',
-                           `order_total` int(11) NOT NULL COMMENT '订单合计',
+                           `order_count` int(11) NOT NULL COMMENT 'order count',
+                           `order_total` int(11) NOT NULL COMMENT 'order total',
                            `commission_count` int(11) NOT NULL,
-                           `commission_total` int(11) NOT NULL COMMENT '佣金合计',
+                           `commission_total` int(11) NOT NULL COMMENT 'commission total',
                            `paid_count` int(11) NOT NULL,
                            `paid_total` int(11) NOT NULL,
                            `register_count` int(11) NOT NULL,
@@ -478,25 +478,25 @@ CREATE TABLE `v2_stat` (
                            `updated_at` int(11) NOT NULL,
                            PRIMARY KEY (`id`),
                            UNIQUE KEY `record_at` (`record_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单统计';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='order statistics';
 
 
 DROP TABLE IF EXISTS `v2_stat_server`;
 CREATE TABLE `v2_stat_server` (
                                   `id` int(11) NOT NULL AUTO_INCREMENT,
-                                  `server_id` int(11) NOT NULL COMMENT '节点id',
-                                  `server_type` char(11) NOT NULL COMMENT '节点类型',
+                                  `server_id` int(11) NOT NULL COMMENT 'node ID',
+                                  `server_type` char(11) NOT NULL COMMENT 'node type',
                                   `u` bigint(20) NOT NULL,
                                   `d` bigint(20) NOT NULL,
                                   `record_type` char(1) NOT NULL COMMENT 'd day m month',
-                                  `record_at` int(11) NOT NULL COMMENT '记录时间',
+                                  `record_at` int(11) NOT NULL COMMENT 'recorded at',
                                   `created_at` int(11) NOT NULL,
                                   `updated_at` int(11) NOT NULL,
                                   PRIMARY KEY (`id`),
                                   UNIQUE KEY `server_id_server_type_record_at` (`server_id`,`server_type`,`record_at`),
                                   KEY `record_at` (`record_at`),
                                   KEY `server_id` (`server_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='节点数据统计';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='node traffic statistics';
 
 
 DROP TABLE IF EXISTS `v2_stat_user`;
@@ -524,8 +524,8 @@ CREATE TABLE `v2_ticket` (
                              `user_id` int(11) NOT NULL,
                              `subject` varchar(255) NOT NULL,
                              `level` tinyint(1) NOT NULL,
-                             `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0:已开启 1:已关闭',
-                             `reply_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0:待回复 1:已回复',
+                             `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0=open, 1=closed',
+                             `reply_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0=pending reply, 1=replied',
                              `created_at` int(11) NOT NULL,
                              `updated_at` int(11) NOT NULL,
                              PRIMARY KEY (`id`)

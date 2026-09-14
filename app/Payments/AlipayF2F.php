@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 自己写别抄，抄NMB抄
+ * Original work, do not copy
  */
 
 namespace App\Payments;
@@ -45,11 +45,11 @@ class AlipayF2F
             $gateway = new \Library\AlipayF2F();
             $gateway->setMethod('alipay.trade.precreate');
             $gateway->setAppId($this->config['app_id']);
-            $gateway->setPrivateKey($this->config['private_key']); // 可以是路径，也可以是密钥内容
-            $gateway->setAlipayPublicKey($this->config['public_key']); // 可以是路径，也可以是密钥内容
+            $gateway->setPrivateKey($this->config['private_key']); // Can be a path or the key content
+            $gateway->setAlipayPublicKey($this->config['public_key']); // Can be a path or the key content
             $gateway->setNotifyUrl($order['notify_url']);
             $gateway->setBizContent([
-                'subject' => $this->config['product_name'] ?? (config('v2board.app_name', 'V2Board') . ' - 订阅'),
+                'subject' => $this->config['product_name'] ?? (config('v2board.app_name', 'V2Board') . ' - Subscription'),
                 'out_trade_no' => $order['trade_no'],
                 'total_amount' => $order['total_amount'] / 100,
             ]);
@@ -71,8 +71,8 @@ class AlipayF2F
         }
         $gateway = new \Library\AlipayF2F();
         $gateway->setAppId($this->config['app_id']);
-        $gateway->setPrivateKey($this->config['private_key']); // 可以是路径，也可以是密钥内容
-        $gateway->setAlipayPublicKey($this->config['public_key']); // 可以是路径，也可以是密钥内容
+        $gateway->setPrivateKey($this->config['private_key']); // Can be a path or the key content
+        $gateway->setAlipayPublicKey($this->config['public_key']); // Can be a path or the key content
         try {
             if ($gateway->verify($params)) {
                 /**

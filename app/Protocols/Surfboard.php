@@ -89,8 +89,8 @@ class Surfboard implements ProtocolFormatter
         $download = round($user['d'] / (1024 * 1024 * 1024), 2);
         $useTraffic = $upload + $download;
         $totalTraffic = round($user['transfer_enable'] / (1024 * 1024 * 1024), 2);
-        $expireDate = $user['expired_at'] === null ? '长期有效' : date('Y-m-d H:i:s', $user['expired_at']);
-        $subscribeInfo = "title={$appName}订阅信息, content=上传流量：{$upload}GB\\n下载流量：{$download}GB\\n剩余流量：{$useTraffic}GB\\n套餐流量：{$totalTraffic}GB\\n到期时间：{$expireDate}";
+        $expireDate = $user['expired_at'] === null ? 'Never Expires' : date('Y-m-d H:i:s', $user['expired_at']);
+        $subscribeInfo = "title={$appName} Subscription Info, content=Upload: {$upload}GB\\nDownload: {$download}GB\\nRemaining: {$useTraffic}GB\\nTotal: {$totalTraffic}GB\\nExpires: {$expireDate}";
         $config = str_replace('$subscribe_info', $subscribeInfo, $config);
 
         return $config;

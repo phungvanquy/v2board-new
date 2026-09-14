@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 自己写别抄，抄NMB抄
+ * Original work, do not copy
  */
 
 namespace App\Payments;

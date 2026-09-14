@@ -74,7 +74,7 @@ class EPay
             return false;
         }
 
-        // 强制要求交易状态为成功，避免未支付/处理中状态被误入账
+        // Require the trade status to be successful so unpaid/processing states are not credited by mistake
         $tradeStatus = $params['trade_status'] ?? '';
         if ($tradeStatus !== 'TRADE_SUCCESS') {
             return('fail');

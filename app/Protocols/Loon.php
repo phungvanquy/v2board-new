@@ -37,7 +37,7 @@ class Loon implements ProtocolFormatter
                 $uri .= self::buildVless($user['uuid'], $item);
             } elseif ($item['type'] === 'trojan' && (($item['network'] ?? null) !== 'grpc')) {
                 $uri .= self::buildTrojan($user['uuid'], $item);
-            } elseif ($item['type'] === 'hysteria' && $item['version'] === 2) { //loon只支持hysteria2
+            } elseif ($item['type'] === 'hysteria' && $item['version'] === 2) { // Loon only supports hysteria2
                 $uri .= self::buildHysteria($user['uuid'], $item);
             } elseif ($item['type'] === 'anytls') {
                 $uri .= self::buildAnytls($user['uuid'], $item);

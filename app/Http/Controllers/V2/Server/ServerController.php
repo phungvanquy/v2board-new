@@ -17,7 +17,7 @@ class ServerController extends Controller
     {
         $token = $request->input('token');
 
-        // token 为空（业务失败，不抛异常）
+        // Empty token (business failure, no exception thrown)
         if (empty($token)) {
             response()->json([
                 'status' => 'fail',
@@ -26,7 +26,7 @@ class ServerController extends Controller
             exit;
         }
 
-        // token 错误
+        // Invalid token
         if ($token !== config('v2board.server_token')) {
             response()->json([
                 'status' => 'fail',
@@ -39,7 +39,7 @@ class ServerController extends Controller
         $this->serverService = new ServerService();
         $this->nodeInfo = $this->serverService->getServer($this->nodeId, 'v2node');
 
-        // 节点不存在
+        // Node does not exist
         if (!$this->nodeInfo) {
             response()->json([
                 'status' => 'fail',
@@ -49,7 +49,7 @@ class ServerController extends Controller
         }
     }
 
-    // 后端获取配置
+    // Backend fetches config
     public function config(Request $request)
     {
         $response = [
@@ -102,7 +102,7 @@ class ServerController extends Controller
         $rsp = json_encode($response);
         $eTag = sha1($rsp);
 
-        // 不使用 abort(304)，避免异常路径
+        // Do not use abort(304), to avoid the exception path
         if ($request->header('If-None-Match') === $eTag) {
             return response('', 304)->header('ETag', "\"{$eTag}\"");
         }

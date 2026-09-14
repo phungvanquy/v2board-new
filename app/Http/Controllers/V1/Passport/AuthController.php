@@ -222,12 +222,12 @@ class AuthController extends Controller
     {
         $authorization = $request->input('auth_data') ?? $request->header('authorization');
         if (!$authorization) {
-            throw ApiException::forbidden('未登录或登陆已过期');
+            throw ApiException::forbidden('Not logged in or session expired');
         }
 
         $user = AuthService::decryptAuthData($authorization);
         if (!$user) {
-            throw ApiException::forbidden('未登录或登陆已过期');
+            throw ApiException::forbidden('Not logged in or session expired');
         }
 
         $code = Helper::guid();

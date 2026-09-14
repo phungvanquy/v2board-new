@@ -57,30 +57,30 @@ class TicketController extends Controller
                 throw new \Exception(__('There are other unresolved tickets'));
             }
 
-            // 获取工单状态
+            // Get ticket status
             $ticketStatus = config('v2board.ticket_status', 0);
 
             switch ($ticketStatus) {
                 case 0:
-                    // 完全开放，不禁止任何工单
+                    // Fully open, no tickets are blocked
                     break;
                 case 1:
-                    // 仅限有付费订单用户
+                    // Only users with paid orders
                     $hasOrder = Order::where('user_id', $request->user['id'])
                         ->whereIn('status', [3, 4])
                         ->exists();
 
                     if (!$hasOrder) {
-                        throw new \Exception(__('请先购买套餐'));
+                        throw new \Exception(__('Please purchase a plan first'));
                     }
                     break;
                 case 2:
-                    // 完全禁止所有工单
-                    throw new \Exception(__('当前套餐不允许发起工单'));
+                    // All tickets are blocked
+                    throw new \Exception(__('Your current plan does not allow opening tickets'));
                     break;
                 default:
-                    // 处理未知状态
-                    throw new \Exception(__('未知的工单状态'));
+                    // Handle unknown status
+                    throw new \Exception(__('Unknown ticket status'));
             }
 
             $ticketData = $request->only(['subject', 'level']) + ['user_id' => $request->user['id']];
@@ -203,8 +203,8 @@ class TicketController extends Controller
         }
         $message = sprintf(
             "%s\r\n%s",
-            __('Withdrawal method') . '：' . $request->input('withdraw_method'),
-            __('Withdrawal account') . '：' . $request->input('withdraw_account')
+            __('Withdrawal method') . ': ' . $request->input('withdraw_method'),
+            __('Withdrawal account') . ': ' . $request->input('withdraw_account')
         );
         $ticketMessage = TicketMessage::create([
             'user_id' => $request->user['id'],
@@ -230,11 +230,11 @@ class TicketController extends Controller
             $user = User::find($userid);
 
             if ($user) {
-                $transfer_enable = $this->getFlowData($user->transfer_enable); // 总流量
-                $remaining_traffic = $this->getFlowData($user->transfer_enable - $user->u - $user->d); // 剩余流量
-                $u = $this->getFlowData($user->u); // 上传
-                $d = $this->getFlowData($user->d); // 下载
-                $expired_at = date('Y-m-d H:i:s', $user->expired_at); // 到期时间
+                $transfer_enable = $this->getFlowData($user->transfer_enable); // Total traffic
+                $remaining_traffic = $this->getFlowData($user->transfer_enable - $user->u - $user->d); // Remaining traffic
+                $u = $this->getFlowData($user->u); // Upload
+                $d = $this->getFlowData($user->d); // Download
+                $expired_at = date('Y-m-d H:i:s', $user->expired_at); // Expiry
                 if (isset($_SERVER['HTTP_X_REAL_IP'])) {
                     $ip_address = $_SERVER['HTTP_X_REAL_IP'];
                 } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -249,27 +249,27 @@ class TicketController extends Controller
                 if ($user_location && $user_location['status'] === 'success') {
                     $location =  $user_location['city'] . ', ' . $user_location['country'];
                 } else {
-                    $location =  '无法确定用户地址';
+                    $location =  'Unable to determine user location';
                 }
 
                 $plan = Plan::where('id', $user->plan_id)->first();
-                $planName = $plan ? $plan->name : '未找到套餐信息'; // Check if plan data is available
+                $planName = $plan ? $plan->name : 'No plan information found'; // Check if plan data is available
 
                 $money = $user->balance / 100;
                 $affmoney = $user->commission_balance / 100;
-                $telegramService->sendMessageWithAdmin("📮工单提醒 #{$ticket->id}\n———————————————\n邮箱：\n`{$user->email}`\n用户位置：\n`{$location}`\nIP:\n{$ip_address}\n套餐与流量：\n`{$planName} of {$transfer_enable}/{$remaining_traffic}`\n上传/下载：\n`{$u}/{$d}`\n到期时间：\n`{$expired_at}`\n余额/佣金余额：\n`{$money}/{$affmoney}`\n主题：\n`{$ticket->subject}`\n内容：\n {$message} ", true);
+                $telegramService->sendMessageWithAdmin("Ticket reminder #{$ticket->id}\n---------------\nEmail:\n`{$user->email}`\nUser location:\n`{$location}`\nIP:\n{$ip_address}\nPlan and traffic:\n`{$planName} of {$transfer_enable}/{$remaining_traffic}`\nUpload/Download:\n`{$u}/{$d}`\nExpiry:\n`{$expired_at}`\nBalance/Commission balance:\n`{$money}/{$affmoney}`\nSubject:\n`{$ticket->subject}`\nContent:\n {$message} ", true);
             } else {
                 // Handle case where user data is not found
                 $telegramService->sendMessageWithAdmin("User data not found for user ID: {$userid}", true);
             }
         } else {
-            $telegramService->sendMessageWithAdmin("📮工单提醒 #{$ticket->id}\n———————————————\n主题：\n`{$ticket->subject}`\n内容：\n {$message} ", true);
+            $telegramService->sendMessageWithAdmin("Ticket reminder #{$ticket->id}\n---------------\nSubject:\n`{$ticket->subject}`\nContent:\n {$message} ", true);
         }
     }
 
     private function getFlowData($b)
     {
-        $g = $b / (1024 * 1024 * 1024); // 转换流量数据
+        $g = $b / (1024 * 1024 * 1024); // Convert traffic data
         $m = $b / (1024 * 1024);
         if ($g >= 1) {
             $text = round($g, 2) . 'GB';

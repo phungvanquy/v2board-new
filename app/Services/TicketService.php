@@ -39,7 +39,7 @@ class TicketService
         $ticket = Ticket::where('id', $ticketId)
             ->first();
         if (!$ticket) {
-            abort(500, '工单不存在');
+            abort(500, 'Ticket does not exist');
         }
 
         DB::beginTransaction();
@@ -57,13 +57,13 @@ class TicketService
         $ticket->touch();
         if (!$ticketMessage || !$ticket->save()) {
             DB::rollback();
-            abort(500, '工单回复失败');
+            abort(500, 'Failed to reply to ticket');
         }
         DB::commit();
         $this->sendEmailNotify($ticket, $ticketMessage);
     }
 
-    // 半小时内不再重复通知
+    // Do not notify again within half an hour
     private function sendEmailNotify(Ticket $ticket, TicketMessage $ticketMessage)
     {
         $user = User::find($ticket->user_id);
@@ -72,12 +72,12 @@ class TicketService
             Cache::put($cacheKey, 1, 1800);
             SendEmailJob::dispatch([
                 'email' => $user->email,
-                'subject' => '您在' . config('v2board.app_name', 'V2Board') . '的工单得到了回复',
+                'subject' => 'Your ticket on ' . config('v2board.app_name', 'V2Board') . ' has received a reply',
                 'template_name' => 'notify',
                 'template_value' => [
                     'name' => config('v2board.app_name', 'V2Board'),
                     'url' => config('v2board.app_url'),
-                    'content' => "主题：{$ticket->subject}\r\n回复内容：{$ticketMessage->message}",
+                    'content' => "Subject: {$ticket->subject}\r\nReply: {$ticketMessage->message}",
                 ],
             ]);
         }

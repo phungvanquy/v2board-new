@@ -42,7 +42,7 @@ class UniProxyController extends Controller
         }
     }
 
-    // 后端获取用户
+    // Backend fetches users
     public function user(Request $request)
     {
         ini_set('memory_limit', -1);
@@ -74,7 +74,7 @@ class UniProxyController extends Controller
         }
     }
 
-    // 后端提交数据
+    // Backend submits data
     public function push(Request $request)
     {
         $data = $request->json()->all();
@@ -97,7 +97,7 @@ class UniProxyController extends Controller
         ]);
     }
 
-    // 后端获取在线数据
+    // Backend fetches online data
     public function alivelist(Request $request)
     {
         $alive = Cache::remember('ALIVE_LIST', 60, function () {
@@ -130,7 +130,7 @@ class UniProxyController extends Controller
         return response()->json(['alive' => (object) $alive]);
     }
 
-    // 后端提交在线数据
+    // Backend submits online data
     public function alive(Request $request)
     {
         $data = $request->json()->all();
@@ -171,21 +171,21 @@ class UniProxyController extends Controller
 
         foreach ($data as $uid => $ips) {
             if (!is_numeric($uid) || !is_array($ips)) {
-                continue; // 跳过无效数据
+                continue; // Skip invalid data
             }
             $key = $keyMap[$uid];
             $ips_array = $cachedData[$key] ?? [];
 
-            // 更新节点数据
+            // Update node data
             $ips_array[$this->nodeType . $this->nodeId] = ['aliveips' => $ips, 'lastupdateAt' => $updateAt];
-            // 清理过期数据
+            // Clean up expired data
             foreach ($ips_array as $nodetypeid => $oldips) {
                 if ($nodetypeid !== 'alive_ip' && is_array($oldips) && ($updateAt - ($oldips['lastupdateAt'] ?? 0) > 100)) {
                     unset($ips_array[$nodetypeid]);
                 }
             }
 
-            // 计算活跃IP数量
+            // Count active IPs
             $count = 0;
             if (config('v2board.device_limit_mode', 0) == 1) {
                 $ipmap = [];
@@ -210,7 +210,7 @@ class UniProxyController extends Controller
             $updates[$key] = $ips_array;
         }
 
-        // 批量更新缓存
+        // Batch update cache
         foreach ($updates as $key => $value) {
             Cache::put($key, $value, 120);
         }
@@ -220,7 +220,7 @@ class UniProxyController extends Controller
         ]);
     }
 
-    // 后端获取配置
+    // Backend fetches config
     public function config(Request $request)
     {
         switch ($this->nodeType) {

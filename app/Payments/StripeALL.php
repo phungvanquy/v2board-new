@@ -48,13 +48,13 @@ class StripeALL
         $jumpUrl = null;
         $actionType = 0;
         $stripe = new \Stripe\StripeClient($this->config['stripe_sk_live']);
-        // 获取用户邮箱
+        // Get the user's email
         $userEmail = $this->getUserEmail($order['user_id']);
         if ($this->config['payment_method'] != 'cards') {
             $stripePaymentMethod = $stripe->paymentMethods->create([
                 'type' => $this->config['payment_method'],
             ]);
-            // 准备支付意图的基础参数
+            // Prepare the base parameters for the payment intent
             $params = [
                 'amount' => floor($order['total_amount'] * $exchange),
                 'currency' => $currency,
@@ -70,7 +70,7 @@ class StripeALL
                 'return_url' => $order['return_url'],
             ];
 
-            // 如果支付方式为 wechat_pay，添加相应的支付方式选项
+            // For wechat_pay, add the corresponding payment method options
             if ($this->config['payment_method'] === 'wechat_pay') {
                 $params['payment_method_options'] = [
                     'wechat_pay' => [
@@ -78,7 +78,7 @@ class StripeALL
                     ],
                 ];
             }
-            //更新支持最新的paymentIntents方法，Sources API将在今年被彻底替
+            // Updated to the latest paymentIntents approach; the Sources API is being fully replaced this year
             $stripeIntents = $stripe->paymentIntents->create($params);
 
             $nextAction = null;
@@ -187,7 +187,7 @@ class StripeALL
 
         return('success');
     }
-    // 货币转换 API
+    // Currency conversion API
     private function exchange($from, $to)
     {
         try {
@@ -195,19 +195,19 @@ class StripeALL
             $result = file_get_contents($url);
             $result = json_decode($result, true);
 
-            // 如果转换成功，返回结果
+            // Return the result on successful conversion
             if (isset($result['rates'][$to])) {
                 return $result['rates'][$to];
             } else {
                 throw new \Exception('First currency API fails');
             }
         } catch (\Exception $e) {
-            // 如果API失败，调用第二个API
+            // If this API fails, fall back to the second API
             return $this->backupExchange($from, $to);
         }
     }
 
-    // 第二个货币转换 API 方法
+    // Second currency conversion API method
     private function backupExchange($from, $to)
     {
         try {
@@ -215,18 +215,18 @@ class StripeALL
             $result = file_get_contents($url);
             $result = json_decode($result, true);
 
-            // 如果转换成功，返回结果
+            // Return the result on successful conversion
             if (isset($result['rates'][$to])) {
                 return $result['rates'][$to];
             } else {
                 throw new \Exception('Second currency API fails');
             }
         } catch (\Exception $e) {
-            // 如果所有API都失败，抛出异常
+            // Throw if all APIs fail
             throw new \Exception('All currency conversion APIs fail');
         }
     }
-    // 从user中获取email
+    // Get the email from the user
     private function getUserEmail($userId)
     {
         $user = User::find($userId);

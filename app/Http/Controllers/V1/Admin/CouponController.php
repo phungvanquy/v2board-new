@@ -103,15 +103,15 @@ class CouponController extends Controller
             abort(500, __('Failed to generate'));
         }
         DB::commit();
-        $data = "名称,类型,金额或比例,开始时间,结束时间,可用次数,可用于订阅,券码,生成时间\r\n";
+        $data = "Name,Type,Amount or Ratio,Start Time,End Time,Usage Limit,Available Plans,Coupon Code,Created At\r\n";
         foreach ($coupons as $coupon) {
-            $type = ['', '金额', '比例'][$coupon['type']];
+            $type = ['', 'Amount', 'Ratio'][$coupon['type']];
             $value = ['', ($coupon['value'] / 100), $coupon['value']][$coupon['type']];
             $startTime = date('Y-m-d H:i:s', $coupon['started_at']);
             $endTime = date('Y-m-d H:i:s', $coupon['ended_at']);
-            $limitUse = $coupon['limit_use'] ?? '不限制';
+            $limitUse = $coupon['limit_use'] ?? 'Unlimited';
             $createTime = date('Y-m-d H:i:s', $coupon['created_at']);
-            $limitPlanIds = isset($coupon['limit_plan_ids']) ? implode('/', $coupon['limit_plan_ids']) : '不限制';
+            $limitPlanIds = isset($coupon['limit_plan_ids']) ? implode('/', $coupon['limit_plan_ids']) : 'Unlimited';
             $data .= "{$coupon['name']},{$type},{$value},{$startTime},{$endTime},{$limitUse},{$limitPlanIds},{$coupon['code']},{$createTime}\r\n";
         }
         echo $data;

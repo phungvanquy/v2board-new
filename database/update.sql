@@ -14,7 +14,7 @@ ALTER TABLE `v2_user`
 CHANGE `enable` `enable` tinyint(1) NOT NULL DEFAULT '1' AFTER `transfer_enable`;
 
 ALTER TABLE `v2_order`
-ADD `type` int(11) NOT NULL COMMENT '1新购2续费3升级' AFTER `plan_id`;
+ADD `type` int(11) NOT NULL COMMENT '1=new purchase, 2=renewal, 3=upgrade' AFTER `plan_id`;
 
 ALTER TABLE `v2_user`
 ADD `commission_rate` int(11) NULL AFTER `password`;
@@ -139,10 +139,10 @@ ALTER TABLE `v2_user`
 ADD `discount` int(11) NULL AFTER `balance`;
 
 ALTER TABLE `v2_order`
-ADD `surplus_amount` int(11) NULL COMMENT '剩余价值' AFTER `discount_amount`;
+ADD `surplus_amount` int(11) NULL COMMENT 'remaining value' AFTER `discount_amount`;
 
 ALTER TABLE `v2_order`
-ADD `refund_amount` int(11) NULL COMMENT '退款金额' AFTER `surplus_amount`;
+ADD `refund_amount` int(11) NULL COMMENT 'refund amount' AFTER `surplus_amount`;
 
 ALTER TABLE `v2_tutorial`
 ADD `category_id` int(11) NOT NULL AFTER `id`;
@@ -180,17 +180,17 @@ CHANGE `tls` `tls` tinyint(4) NOT NULL DEFAULT '0' AFTER `networkSettings`,
 ADD `tlsSettings` text COLLATE 'utf8_general_ci' NULL AFTER `tls`;
 
 ALTER TABLE `v2_order`
-ADD `balance_amount` int(11) NULL COMMENT '使用余额' AFTER `refund_amount`;
+ADD `balance_amount` int(11) NULL COMMENT 'balance used' AFTER `refund_amount`;
 
 ALTER TABLE `v2_server`
 CHANGE `network` `network` text COLLATE 'utf8_general_ci' NOT NULL AFTER `rate`,
 ADD `dnsSettings` text COLLATE 'utf8_general_ci' NULL AFTER `ruleSettings`;
 
 ALTER TABLE `v2_order`
-ADD `surplus_order_ids` text NULL COMMENT '折抵订单' AFTER `balance_amount`;
+ADD `surplus_order_ids` text NULL COMMENT 'offset orders' AFTER `balance_amount`;
 
 ALTER TABLE `v2_order`
-CHANGE `status` `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0待支付1开通中2已取消3已完成4已折抵' AFTER `surplus_order_ids`;
+CHANGE `status` `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0=pending payment, 1=activating, 2=cancelled, 3=completed, 4=offset' AFTER `surplus_order_ids`;
 
 CREATE TABLE `v2_server_stat` (
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -255,7 +255,7 @@ CREATE TABLE `v2_server_trojan` (
   `sort` int(11) NULL,
   `created_at` int(11) NOT NULL,
   `updated_at` int(11) NOT NULL
-) COMMENT='trojan伺服器表' COLLATE 'utf8mb4_general_ci';
+) COMMENT='trojan servers table' COLLATE 'utf8mb4_general_ci';
 
 ALTER TABLE `v2_server_stat`
 CHANGE `d` `d` varchar(255) COLLATE 'utf8_general_ci' NOT NULL AFTER `u`,
@@ -280,8 +280,8 @@ ALTER TABLE `v2_server_trojan`
 ADD `parent_id` int(11) NULL AFTER `group_id`;
 
 ALTER TABLE `v2_server_trojan`
-ADD `allow_insecure` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否允许不安全' AFTER `server_port`,
-CHANGE `show` `show` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否显示' AFTER `allow_insecure`;
+ADD `allow_insecure` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'allow insecure' AFTER `server_port`,
+CHANGE `show` `show` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'visible' AFTER `allow_insecure`;
 
 ALTER TABLE `v2_server_trojan`
 ADD `server_name` varchar(255) NULL AFTER `allow_insecure`;
@@ -319,15 +319,15 @@ CHANGE `code` `code` varchar(255) COLLATE 'utf8_general_ci' NOT NULL AFTER `id`;
 
 CREATE TABLE `v2_knowledge` (
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `language` char(5) NOT NULL COMMENT '語言',
-  `category` varchar(255) NOT NULL COMMENT '分類名',
-  `title` varchar(255) NOT NULL COMMENT '標題',
-  `body` text NOT NULL COMMENT '內容',
-  `sort` int(11) NULL COMMENT '排序',
-  `show` tinyint(1) NOT NULL DEFAULT '0' COMMENT '顯示',
-  `created_at` int(11) NOT NULL COMMENT '創建時間',
-  `updated_at` int(11) NOT NULL COMMENT '更新時間'
-) COMMENT='知識庫' COLLATE 'utf8mb4_general_ci';
+  `language` char(5) NOT NULL COMMENT 'language',
+  `category` varchar(255) NOT NULL COMMENT 'category name',
+  `title` varchar(255) NOT NULL COMMENT 'title',
+  `body` text NOT NULL COMMENT 'content',
+  `sort` int(11) NULL COMMENT 'sort order',
+  `show` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'visible',
+  `created_at` int(11) NOT NULL COMMENT 'created at',
+  `updated_at` int(11) NOT NULL COMMENT 'updated at'
+) COMMENT='knowledge base' COLLATE 'utf8mb4_general_ci';
 
 ALTER TABLE `v2_order`
 ADD `coupon_id` int(11) NULL AFTER `plan_id`;
@@ -346,16 +346,16 @@ DROP TABLE `v2_server_stat`;
 
 CREATE TABLE `v2_stat_server` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `server_id` int(11) NOT NULL COMMENT '节点id',
-  `server_type` char(11) NOT NULL COMMENT '节点类型',
+  `server_id` int(11) NOT NULL COMMENT 'node ID',
+  `server_type` char(11) NOT NULL COMMENT 'node type',
   `u` varchar(255) NOT NULL,
   `d` varchar(255) NOT NULL,
   `record_type` char(1) NOT NULL COMMENT 'd day m month',
-  `record_at` int(11) NOT NULL COMMENT '记录时间',
+  `record_at` int(11) NOT NULL COMMENT 'recorded at',
   `created_at` int(11) NOT NULL,
   `updated_at` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='节点数据统计';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='node traffic statistics';
 
 ALTER TABLE `v2_stat_server`
 ADD UNIQUE `server_id_server_type_record_at` (`server_id`, `server_type`, `record_at`);
@@ -456,7 +456,7 @@ ALTER TABLE `v2_notice`
     ADD `show` tinyint(1) NOT NULL DEFAULT '0' AFTER `content`;
 
 ALTER TABLE `v2_order`
-    ADD `actual_commission_balance` int(11) NULL COMMENT '实际支付佣金' AFTER `commission_balance`;
+    ADD `actual_commission_balance` int(11) NULL COMMENT 'actual commission paid' AFTER `commission_balance`;
 
 ALTER TABLE `v2_server_v2ray`
     CHANGE `port` `port` char(11) NOT NULL AFTER `host`;
@@ -537,7 +537,7 @@ ALTER TABLE `v2_notice`
     ADD `tags` varchar(255) COLLATE 'utf8_general_ci' NULL AFTER `img_url`;
 
 ALTER TABLE `v2_ticket`
-ADD `reply_status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0:待回复 1:已回复' AFTER `status`;
+ADD `reply_status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0=pending reply, 1=replied' AFTER `status`;
 
 ALTER TABLE `v2_server_v2ray`
 DROP `settings`;
@@ -572,7 +572,7 @@ ALTER TABLE `v2_server_v2ray`
 ALTER TABLE `v2_server_shadowsocks`
     CHANGE `port` `port` varchar(11) NOT NULL AFTER `host`;
 ALTER TABLE `v2_server_trojan`
-    CHANGE `port` `port` varchar(11) NOT NULL COMMENT '连接端口' AFTER `host`;
+    CHANGE `port` `port` varchar(11) NOT NULL COMMENT 'connection port' AFTER `host`;
 
 ALTER TABLE `v2_server_shadowsocks`
     ADD `route_id` varchar(255) COLLATE 'utf8mb4_general_ci' NULL AFTER `group_id`;
@@ -658,10 +658,10 @@ ALTER TABLE `v2_plan`
 ALTER TABLE `v2_stat_order`
     CHANGE `record_at` `record_at` int(11) NOT NULL AFTER `id`,
     CHANGE `record_type` `record_type` char(1) COLLATE 'utf8_general_ci' NOT NULL AFTER `record_at`,
-    CHANGE `order_count` `paid_count` int(11) NOT NULL COMMENT '订单数量' AFTER `record_type`,
-    CHANGE `order_amount` `paid_total` int(11) NOT NULL COMMENT '订单合计' AFTER `paid_count`,
+    CHANGE `order_count` `paid_count` int(11) NOT NULL COMMENT 'order count' AFTER `record_type`,
+    CHANGE `order_amount` `paid_total` int(11) NOT NULL COMMENT 'order total' AFTER `paid_count`,
     CHANGE `commission_count` `commission_count` int(11) NOT NULL AFTER `paid_total`,
-    CHANGE `commission_amount` `commission_total` int(11) NOT NULL COMMENT '佣金合计' AFTER `commission_count`,
+    CHANGE `commission_amount` `commission_total` int(11) NOT NULL COMMENT 'commission total' AFTER `commission_count`,
     ADD `order_count` int(11) NOT NULL AFTER `record_type`,
     ADD `order_total` int(11) NOT NULL AFTER `order_count`,
     ADD `register_count` int(11) NOT NULL AFTER `order_total`,
@@ -759,7 +759,7 @@ ALTER TABLE `v2_user`
 ADD `auto_renewal` tinyint(4) NOT NULL DEFAULT '0' AFTER `speed_limit`;
 
 ALTER TABLE `v2_ticket`
-CHANGE `reply_status` `reply_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0:待回复 1:已回复' AFTER `status`;
+CHANGE `reply_status` `reply_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0=pending reply, 1=replied' AFTER `status`;
 
 CREATE TABLE `v2_server_tuic` (
                                       `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -831,24 +831,24 @@ CREATE TABLE `v2_server_v2node` (
                                     `rate` varchar(11) NOT NULL,
                                     `show` tinyint(1) NOT NULL DEFAULT '0',
                                     `sort` int(11) DEFAULT NULL,
-                                    `protocol` varchar(24) NOT NULL COMMENT '协议类型',
-                                    `tls` tinyint(1) NOT NULL COMMENT 'tls类型',
-                                    `tls_settings` text COMMENT 'tls配置',
-                                    `flow` varchar(64) DEFAULT NULL COMMENT 'vless流控',
-                                    `network` varchar(11) NOT NULL COMMENT '传输类型',
-                                    `network_settings` text COMMENT '传输配置',
-                                    `encryption` varchar(64) DEFAULT NULL COMMENT 'vless加密',
-                                    `encryption_settings` text COMMENT 'vless加密配置',
-                                    `disable_sni` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'tuic禁用sni',
-                                    `udp_relay_mode` varchar(64) DEFAULT NULL COMMENT 'tuic udp中继模式',
-                                    `zero_rtt_handshake` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'tuic 0rtt握手',
-                                    `congestion_control` varchar(64) DEFAULT NULL COMMENT 'tuic拥塞控制',
-                                    `cipher` varchar(64) DEFAULT NULL COMMENT 'shadowsocks加密方式',
-                                    `up_mbps` int(11) NOT NULL COMMENT 'hysteria上行带宽',
-                                    `down_mbps` int(11) NOT NULL COMMENT 'hysteria下行带宽',
-                                    `obfs` varchar(64) DEFAULT NULL COMMENT 'hysteria1混淆密码/hysteria2混淆类型',
-                                    `obfs_password` varchar(255) DEFAULT NULL COMMENT 'hysteria2混淆密码',
-                                    `padding_scheme` text COMMENT 'anytls填充配置',
+                                    `protocol` varchar(24) NOT NULL COMMENT 'protocol type',
+                                    `tls` tinyint(1) NOT NULL COMMENT 'TLS type',
+                                    `tls_settings` text COMMENT 'TLS settings',
+                                    `flow` varchar(64) DEFAULT NULL COMMENT 'VLESS flow control',
+                                    `network` varchar(11) NOT NULL COMMENT 'transport type',
+                                    `network_settings` text COMMENT 'transport settings',
+                                    `encryption` varchar(64) DEFAULT NULL COMMENT 'VLESS encryption',
+                                    `encryption_settings` text COMMENT 'VLESS encryption settings',
+                                    `disable_sni` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'TUIC disable SNI',
+                                    `udp_relay_mode` varchar(64) DEFAULT NULL COMMENT 'TUIC UDP relay mode',
+                                    `zero_rtt_handshake` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'TUIC 0-RTT handshake',
+                                    `congestion_control` varchar(64) DEFAULT NULL COMMENT 'TUIC congestion control',
+                                    `cipher` varchar(64) DEFAULT NULL COMMENT 'Shadowsocks cipher',
+                                    `up_mbps` int(11) NOT NULL COMMENT 'Hysteria uplink bandwidth',
+                                    `down_mbps` int(11) NOT NULL COMMENT 'Hysteria downlink bandwidth',
+                                    `obfs` varchar(64) DEFAULT NULL COMMENT 'Hysteria1 obfuscation password / Hysteria2 obfuscation type',
+                                    `obfs_password` varchar(255) DEFAULT NULL COMMENT 'Hysteria2 obfuscation password',
+                                    `padding_scheme` text COMMENT 'AnyTLS padding settings',
                                     `created_at` int(11) NOT NULL,
                                     `updated_at` int(11) NOT NULL,
                                     PRIMARY KEY (`id`)
@@ -858,7 +858,7 @@ ALTER TABLE `v2_server_route`
 CHANGE `action_value` `action_value` text NULL AFTER `action`;
 
 ALTER TABLE `v2_server_v2node`
-ADD `trusted_x_forwarded_for` varchar(255) COLLATE 'utf8mb4_general_ci' NULL COMMENT '信任的x-forwarded-for头部' AFTER `network_settings`;
+ADD `trusted_x_forwarded_for` varchar(255) COLLATE 'utf8mb4_general_ci' NULL COMMENT 'trusted X-Forwarded-For header' AFTER `network_settings`;
 
 CREATE TABLE `v2_database_transfer_log` (
                             `id` int(11) NOT NULL AUTO_INCREMENT,

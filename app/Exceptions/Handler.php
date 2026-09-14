@@ -54,7 +54,7 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof ViewException) {
-            abort(500, '主题渲染失败。如更新主题，参数可能发生变化请重新配置主题后再试。');
+            abort(500, 'Theme rendering failed. Theme parameters may have changed after an update, please reconfigure the theme and try again.');
         }
 
         return parent::render($request, $exception);

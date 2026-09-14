@@ -35,7 +35,7 @@ class QuantumultX implements ProtocolFormatter
                 $item['type'] = $item['protocol'];
             }
 
-            // 提前过滤不支持的传输协议 (QX 不支持 gRPC, HTTPUpgrade, XHTTP)
+            // Filter out unsupported transport protocols early (QX does not support gRPC, HTTPUpgrade, XHTTP)
             $network = $item['network'] ?? 'tcp';
             if (in_array($network, ['grpc', 'httpupgrade', 'xhttp'])) {
                 continue;
@@ -80,7 +80,7 @@ class QuantumultX implements ProtocolFormatter
             }
         }
 
-        // ss2022 处理
+        // ss2022 handling
         if (in_array($server['cipher'], ['2022-blake3-aes-128-gcm', '2022-blake3-aes-256-gcm'])) {
             $length = ($server['cipher'] === '2022-blake3-aes-128-gcm') ? 16 : 32;
             $serverKey = Helper::getServerKey($server['created_at'], $length);
@@ -88,14 +88,14 @@ class QuantumultX implements ProtocolFormatter
             $password = "{$serverKey}:{$userKey}";
         }
 
-        // 配置生成
+        // Build config
         $config = [
             "shadowsocks={$server['host']}:{$server['port']}",
             "method={$server['cipher']}",
             "password={$password}",
         ];
 
-        // 传输层
+        // Transport layer
         $network = $server['network'] ?? 'tcp';
 
         if ($network === 'http') {
@@ -134,7 +134,7 @@ class QuantumultX implements ProtocolFormatter
             unset($server['networkSettings']);
         }
 
-        // tls 配置只提取 serverName 与 allowInsecure 值
+        // TLS config: only extract serverName and allowInsecure values
         if (isset($server['tlsSettings'])) {
             $legacy = is_array($server['tlsSettings']) ? $server['tlsSettings'] : [];
             $current = $server['tls_settings'] ?? [];
@@ -148,7 +148,7 @@ class QuantumultX implements ProtocolFormatter
             unset($server['tlsSettings']);
         }
 
-        // 配置生成
+        // Build config
         $config = [
             "vmess={$server['host']}:{$server['port']}",
             'method=chacha20-poly1305',
@@ -184,16 +184,16 @@ class QuantumultX implements ProtocolFormatter
             }
         }
 
-        // 传输层类型
+        // Transport layer type
         if ($network === 'ws') {
-            // WS: 有 TLS 则 wss，无 TLS 则 ws
+            // WS: wss with TLS, ws without TLS
             $config[] = $isTls ? 'obfs=wss' : 'obfs=ws';
         } elseif ($network === 'tcp') {
             if ($isTls) {
                 // TCP + TLS
                 $config[] = 'obfs=over-tls';
             } else {
-                // TCP + No TLS (检查是否为 HTTP)
+                // TCP + No TLS (check whether it is HTTP)
                 $header = $netSettings['header'] ?? [];
                 if (($header['type'] ?? '') === 'http') {
                     $config[] = 'obfs=http';
@@ -201,13 +201,13 @@ class QuantumultX implements ProtocolFormatter
             }
         }
 
-        // 传输层参数 (Host/Path)
+        // Transport layer params (Host/Path)
         $host = null;
         $path = null;
 
         if ($network === 'tcp') {
             $header = $netSettings['header'] ?? [];
-            // 上面已经添加了 obfs=http
+            // obfs=http already added above
             if (($header['type'] ?? '') === 'http') {
                 $host = $header['request']['headers']['Host'][0] ?? null;
                 $path = $header['request']['path'][0] ?? null;
@@ -237,7 +237,7 @@ class QuantumultX implements ProtocolFormatter
 
     public static function buildVless($uuid, $server)
     {
-        // 配置生成
+        // Build config
         $config = [
             "vless={$server['host']}:{$server['port']}",
             'method=none',
@@ -280,16 +280,16 @@ class QuantumultX implements ProtocolFormatter
             }
         }
 
-        // 传输层类型
+        // Transport layer type
         if ($network === 'ws') {
-            // WS: 有 TLS 则 wss，无 TLS 则 ws
+            // WS: wss with TLS, ws without TLS
             $config[] = $isTls ? 'obfs=wss' : 'obfs=ws';
         } elseif ($network === 'tcp') {
             if ($isTls) {
                 // TCP + TLS
                 $config[] = 'obfs=over-tls';
             } else {
-                // TCP + No TLS (检查是否为 HTTP)
+                // TCP + No TLS (check whether it is HTTP)
                 $header = $netSettings['header'] ?? [];
                 if (($header['type'] ?? '') === 'http') {
                     $config[] = 'obfs=http';
@@ -302,14 +302,14 @@ class QuantumultX implements ProtocolFormatter
         //     array_splice($config, 1, 1, "method={$netSettings['security']}");
         // }
 
-        // 传输层参数 (Host/Path)
+        // Transport layer params (Host/Path)
         $host = null;
         $path = null;
 
         if ($network === 'tcp') {
             $header = $netSettings['header'] ?? [];
             if (($header['type'] ?? '') === 'http') {
-                // 上面已经添加了 obfs=http
+                // obfs=http already added above
                 $host = $header['request']['headers']['Host'][0] ?? null;
                 $path = $header['request']['path'][0] ?? null;
             }
@@ -341,7 +341,7 @@ class QuantumultX implements ProtocolFormatter
         // Standardization v2_server_trojan -> v2node format
         $server['tls_settings'] = $server['tls_settings'] ?? [];
 
-        // v2_server_trojan 表：将外层列字段映射到 tls_settings
+        // v2_server_trojan table: map outer column fields into tls_settings
         if (isset($server['allow_insecure'])) {
             $server['tls_settings']['allow_insecure'] = (bool) $server['allow_insecure'];
         }
@@ -351,7 +351,7 @@ class QuantumultX implements ProtocolFormatter
         unset($server['allow_insecure']);
         unset($server['server_name']);
 
-        // 配置生成
+        // Build config
         $config = [
             "trojan={$server['host']}:{$server['port']}",
             "password={$password}",
@@ -367,7 +367,7 @@ class QuantumultX implements ProtocolFormatter
         $sni = $tlsSettings['server_name'] ?? null;
         $allowInsecure = $tlsSettings['allow_insecure'] ?? false;
 
-        // tcp 配置
+        // tcp config
         if ($network === 'tcp') {
             $config[] = 'over-tls=true';
             if ($sni) {
@@ -377,7 +377,7 @@ class QuantumultX implements ProtocolFormatter
             $config[] = 'tls-verification=' . ($allowInsecure ? 'false' : 'true');
         }
 
-        // ws 配置
+        // ws config
         if ($network === 'ws') {
             // When using websocket over tls you should not set over-tls and tls-host options anymore, instead set obfs=wss and obfs-host options.
             $config[] = 'obfs=wss';
@@ -423,7 +423,7 @@ class QuantumultX implements ProtocolFormatter
         $sni = $tlsSettings['server_name'] ?? null;
         $allowInsecure = $tlsSettings['allow_insecure'] ?? false;
 
-        // tcp 配置
+        // tcp config
         if ($network === 'tcp') {
             $config[] = 'over-tls=true';
             if ($sni) {

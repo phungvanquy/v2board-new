@@ -44,7 +44,7 @@ class PaymentController extends Controller
         }
         $telegramService = new TelegramService();
         $message = sprintf(
-            "💰成功收款%s元\n———————————————\n订单号：%s",
+            "Payment of %s received\n---------------\nOrder No.: %s",
             $order->total_amount / 100,
             $order->trade_no
         );

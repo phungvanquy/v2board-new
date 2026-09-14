@@ -18,12 +18,12 @@ class User
     {
         $authorization = $request->input('auth_data') ?? $request->header('authorization');
         if (!$authorization) {
-            abort(403, '未登录或登陆已过期');
+            abort(403, 'Not logged in or session expired');
         }
 
         $user = AuthService::decryptAuthData($authorization);
         if (!$user) {
-            abort(403, '未登录或登陆已过期');
+            abort(403, 'Not logged in or session expired');
         }
         $request->merge([
             'user' => $user,

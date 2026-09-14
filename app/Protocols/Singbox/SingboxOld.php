@@ -90,7 +90,7 @@ class SingboxOld implements ProtocolFormatter
     protected function addProxies($proxies)
     {
         foreach ($this->config['outbounds'] as &$outbound) {
-            if (($outbound['type'] === 'selector' && $outbound['tag'] === '节点选择') || ($outbound['type'] === 'urltest' && $outbound['tag'] === '自动选择') || ($outbound['type'] === 'selector' && strpos($outbound['tag'], '#') === 0)) {
+            if (($outbound['type'] === 'selector' && $outbound['tag'] === 'Select Node') || ($outbound['type'] === 'urltest' && $outbound['tag'] === 'Auto Select') || ($outbound['type'] === 'selector' && strpos($outbound['tag'], '#') === 0)) {
                 array_push($outbound['outbounds'], ...array_column($proxies, 'tag'));
             }
         }
@@ -287,11 +287,11 @@ class SingboxOld implements ProtocolFormatter
 
         if (isset($server['network']) && in_array($server['network'], ['grpc', 'ws'])) {
             $array['transport']['type'] = $server['network'];
-            // grpc配置
+            // grpc config
             if ($server['network'] === 'grpc' && isset($server['network_settings']['serviceName'])) {
                 $array['transport']['service_name'] = $server['network_settings']['serviceName'];
             }
-            // ws配置
+            // ws config
             if ($server['network'] === 'ws') {
                 $array['transport']['path'] = $server['network_settings']['path'] ?? '/';
                 if (isset($server['network_settings']['headers']['Host'])) {

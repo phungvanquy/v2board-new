@@ -9,7 +9,7 @@ use App\Utils\Helper;
 class Traffic extends Telegram
 {
     public $command = '/traffic';
-    public $description = '查询流量信息';
+    public $description = 'Check traffic info';
 
     public function handle($message, $match = [])
     {
@@ -19,7 +19,7 @@ class Traffic extends Telegram
         }
         $user = User::where('telegram_id', $message->chat_id)->first();
         if (!$user) {
-            $telegramService->sendMessage($message->chat_id, '没有查询到您的用户信息，请先绑定账号', 'markdown');
+            $telegramService->sendMessage($message->chat_id, 'No user info found, please bind your account first', 'markdown');
 
             return;
         }
@@ -27,7 +27,7 @@ class Traffic extends Telegram
         $up = Helper::trafficConvert($user->u);
         $down = Helper::trafficConvert($user->d);
         $remaining = Helper::trafficConvert($user->transfer_enable - ($user->u + $user->d));
-        $text = "🚥流量查询\n———————————————\n计划流量：`{$transferEnable}`\n已用上行：`{$up}`\n已用下行：`{$down}`\n剩余流量：`{$remaining}`";
+        $text = "Traffic query\n———————————————\nPlan traffic: `{$transferEnable}`\nUsed upload: `{$up}`\nUsed download: `{$down}`\nRemaining traffic: `{$remaining}`";
         $telegramService->sendMessage($message->chat_id, $text, 'markdown');
     }
 }

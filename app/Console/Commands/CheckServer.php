@@ -22,7 +22,7 @@ class CheckServer extends Command
      *
      * @var string
      */
-    protected $description = '节点检查任务';
+    protected $description = 'Server check task';
 
     /**
      * Create a new command instance.
@@ -55,7 +55,7 @@ class CheckServer extends Command
             if ($server['last_check_at'] && (time() - $server['last_check_at']) > 1800) {
                 $telegramService = new TelegramService();
                 $message = sprintf(
-                    "节点掉线通知\r\n----\r\n节点名称：%s\r\n节点地址：%s\r\n",
+                    "Server offline notification\r\n----\r\nServer name: %s\r\nServer address: %s\r\n",
                     $server['name'],
                     $server['host']
                 );

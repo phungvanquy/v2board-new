@@ -36,12 +36,12 @@ class OrderService
 
             if (!$this->user->save()) {
                 DB::rollBack();
-                abort(500, '充值失败');
+                abort(500, 'Top-up failed');
             }
             $order->status = 3;
             if (!$order->save()) {
                 DB::rollBack();
-                abort(500, '充值失败');
+                abort(500, 'Top-up failed');
             }
             DB::commit();
 
@@ -61,7 +61,7 @@ class OrderService
                 ]);
             } catch (\Exception $e) {
                 DB::rollback();
-                abort(500, '开通失败');
+                abort(500, 'Activation failed');
             }
         }
         switch ((string) $order->period) {
@@ -91,12 +91,12 @@ class OrderService
 
         if (!$this->user->save()) {
             DB::rollBack();
-            abort(500, '开通失败');
+            abort(500, 'Activation failed');
         }
         $order->status = 3;
         if (!$order->save()) {
             DB::rollBack();
-            abort(500, '开通失败');
+            abort(500, 'Activation failed');
         }
 
         DB::commit();
@@ -111,7 +111,7 @@ class OrderService
             $order->type = 4;
         } elseif ($user->plan_id !== null && $order->plan_id !== $user->plan_id && ($user->expired_at > time() || $user->expired_at === null)) {
             if (!(int) config('v2board.plan_change_enable', 1)) {
-                abort(500, '目前不允许更改订阅，请联系客服或提交工单操作');
+                abort(500, 'Plan changes are currently not allowed, please contact support or submit a ticket');
             }
             $order->type = 3;
             if ((int) config('v2board.surplus_enable', 1)) {
@@ -123,9 +123,9 @@ class OrderService
             } else {
                 $order->total_amount = $order->total_amount - $order->surplus_amount;
             }
-        } elseif ($user->expired_at > time() && $order->plan_id == $user->plan_id) { // 用户订阅未过期且购买订阅与当前订阅相同 === 续费
+        } elseif ($user->expired_at > time() && $order->plan_id == $user->plan_id) { // User subscription not expired and purchased plan matches current plan === renewal
             $order->type = 2;
-        } else { // 新购
+        } else { // New purchase
             $order->type = 1;
         }
     }
@@ -347,16 +347,16 @@ class OrderService
         }
         $this->user->transfer_enable = $plan->transfer_enable * 1073741824;
         $this->user->device_limit = $plan->device_limit;
-        // 从一次性转换到循环
+        // Switching from one-time to recurring
         if ($this->user->expired_at === null) {
             $this->buyByResetTraffic();
         }
-        // 新购
+        // New purchase
         if ($order->type === 1) {
             $this->buyByResetTraffic();
         }
 
-        // 到期当天续费刷新流量
+        // Reset traffic when renewing on the expiry day
         $expireDay = date('d', $this->user->expired_at);
         $expireMonth = date('m', $this->user->expired_at);
         $today = date('d');

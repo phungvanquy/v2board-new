@@ -16,7 +16,7 @@ class Dict
         'foxmail.com',
     ];
     public const WITHDRAW_METHOD_WHITELIST_DEFAULT = [
-        '支付宝',
+        'Alipay',
         'USDT',
         'Paypal',
     ];

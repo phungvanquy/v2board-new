@@ -33,7 +33,7 @@ class Coinbase
     public function pay($order)
     {
         $params = [
-            'name' => '订阅套餐',
+            'name' => 'Subscription plan',
             'description' => __('Order No. ') . $order['trade_no'],
             'pricing_type' => 'fixed_price',
             'local_price' => [
