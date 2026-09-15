@@ -20,11 +20,21 @@ curl -fsS -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8080/
 curl -fsS http://127.0.0.1:8080/healthz   # => ok (nginx-only probe)
 ```
 
-Admin URL is `http://<host>:${APP_PORT:-8080}/<secure_path>` where `<secure_path>` is `hash('crc32b', config('app.key'))` unless `config('v2board.secure_path')` is set via **Settings → System**. Find yours with:
+### Find your admin login URL (first boot)
+
+There is no fixed `/admin` URL — the panel lives at a secret path (`secure_path`) so bots cannot guess it. On a fresh install it is the CRC32 of your `APP_KEY` (e.g. `http://<host>:8080/a1b2c3d4`).
+
+**Step 1 — print it:**
 
 ```bash
 docker compose exec app php artisan tinker --execute 'echo "/".(config("v2board.secure_path") ?: config("v2board.frontend_admin_path") ?: hash("crc32b", config("app.key")))."\n";'
 ```
+
+The command prints only the path (e.g. `/a1b2c3d4`) — prepend your own scheme/host/port, e.g. `http://your-domain:8080` + that path.
+
+**Step 2 — open that URL** and sign in with the admin email/password (created via `ADMIN_EMAIL` / `ADMIN_PASSWORD` on first boot — see below).
+
+**Step 3 (optional) — set a memorable path:** once logged in, go to **System config → safe → Admin path** (min 8 chars, letters/digits/`-`/`_` only) → **Save**. The panel and its API move to `/<your-path>` immediately — if set, that saved value replaces the CRC32 default above.
 
 Guest API smoke test:
 
@@ -281,6 +291,7 @@ docker compose --profile webman config | grep -q webman && echo "included with -
 | Existing application jobs stay queued | `APP_ENV=production` while the application supervisor is defined under `environments.local` | Set `APP_ENV=local` (the default in `.env.docker.example`). The Telegram backup supervisor runs in all environments. |
 | `mysql: ERROR 2026 ... certificate is NOT trusted` | TLS cert mismatch inside the compose network | Fixed — entrypoint uses `mysql --skip-ssl`. Update the image: `docker compose build app`. |
 | `Horizon started successfully` but jobs never run | Job dispatched to `default` while Horizon watches `order_handle, traffic_fetch, stat, ...` | Dispatch to a watched queue: `dispatch((new MyJob)->onQueue('stat'))`. |
+| `GET /admin` → `404`, or "where is the admin login?" | There is no fixed `/admin` URL — the panel lives at a secret `secure_path` (CRC32 of `APP_KEY` on fresh installs) | See "Find your admin login URL (first boot)" above: print it with the `tinker` one-liner, or set a memorable path via **System config → safe → Admin path** once logged in. |
 | Port `8080` already in use | Host collision | `APP_PORT=8081 docker compose up -d` or set `APP_PORT` in `.env`. |
 
 ## Development: live code reload

@@ -24,15 +24,25 @@ docker compose ps                    # all 5 services should show (healthy)
 | What | URL |
 |------|-----|
 | **Site** | http://localhost:8080/ |
-| **Admin** | http://localhost:8080/`hash('crc32b', config('app.key'))` |
+| **Admin login** | see below — it is a secret path, not `/admin` |
 | **Health probe** | http://localhost:8080/healthz → `ok` |
 
-Find your admin path (it is the CRC32 of `APP_KEY` unless you override it in **System config → secure_path**):
+### Find your admin login URL (first boot)
+
+There is no fixed `/admin` URL — the panel lives at a secret path (`secure_path`) so bots cannot guess it. On a fresh install it is the CRC32 of your `APP_KEY` (e.g. `http://localhost:8080/a1b2c3d4`).
+
+**Step 1 — print it:**
 
 ```bash
 docker compose exec app php artisan tinker \
-  --execute 'echo "/".(config("v2board.secure_path") ?: config("v2board.frontend_admin_path") ?: hash("crc32b", config("app.key")))."\n";'
+  --execute 'echo "http://localhost:8080/".(config("v2board.secure_path") ?: config("v2board.frontend_admin_path") ?: hash("crc32b", config("app.key")))."\n";'
 ```
+
+(Replace `localhost:8080` with your domain/`APP_PORT` on a server.)
+
+**Step 2 — open that URL** and sign in with the admin email/password (see "Create the first admin" below).
+
+**Step 3 (optional) — set a memorable path:** once logged in, go to **System config → safe → Admin path** (min 8 chars, letters/digits/`-`/`_` only) → **Save**. The panel and its API move to `/<your-path>` immediately.
 
 ### Create the first admin
 
@@ -83,8 +93,9 @@ Full operator reference — service layout, environment variables, updates, back
 The `init.sh` / `update.sh` / `cli-php.ini` / `pm2.yaml` path is still supported and unchanged:
 
 - Requirements: **PHP 7.3+**, **Composer**, **MySQL 5.5+**, **Redis**, **Laravel**
-- `bash init.sh` on a fresh host (interactive — sets `.env`, imports `database/install.sql`)
+- `bash init.sh` on a fresh host (interactive — sets `.env`, imports `database/install.sql`; `php artisan v2board:install` prints the admin URL at the end)
 - `./update.sh` to pull and run `v2board:update`
+- Bare metal uses the same secret admin path — print it with `php artisan tinker --execute 'echo "/".(config("v2board.secure_path") ?: config("v2board.frontend_admin_path") ?: hash("crc32b", config("app.key")))."\n";'`
 - See `./init.sh` and the upstream guide at [v2board.com](https://v2board.com)
 
 ### Migrating an existing panel to this fork
