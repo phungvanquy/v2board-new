@@ -2521,8 +2521,8 @@ parameters:
 			count: 1
 			path: app/Http/Controllers/V1/Admin/HappCryptoController.php
 
-	-
-		message: "#^Negated boolean expression is always true\\.$#"
+		-
+			message: "#^Negated boolean expression is always true\\.$#"
 			count: 2
-		path: app/Services/ServerIdService.php
+			path: app/Services/ServerIdService.php
 
