@@ -2520,3 +2520,9 @@ parameters:
 			message: "#^Call to an undefined static method App\\\\Models\\\\User\\:\\:where\\(\\)\\.$#"
 			count: 1
 			path: app/Http/Controllers/V1/Admin/HappCryptoController.php
+
+	-
+		message: "#^Negated boolean expression is always true\\.$#"
+			count: 2
+		path: app/Services/ServerIdService.php
+
