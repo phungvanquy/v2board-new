@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ServerShadowsocksSave;
 use App\Http\Requests\Admin\ServerShadowsocksUpdate;
 use App\Models\ServerShadowsocks;
+use App\Services\ServerIdService;
 use Illuminate\Http\Request;
 
 class ShadowsocksController extends Controller
@@ -29,7 +30,7 @@ class ShadowsocksController extends Controller
             ]);
         }
 
-        if (!ServerShadowsocks::create($params)) {
+        if (!ServerIdService::createWithGlobalId(ServerShadowsocks::class, $params)) {
             abort(500, __('Failed to create'));
         }
 
@@ -77,11 +78,13 @@ class ShadowsocksController extends Controller
     public function copy(Request $request)
     {
         $server = ServerShadowsocks::find($request->input('id'));
-        $server->show = 0;
         if (!$server) {
             abort(500, __('Server does not exist'));
         }
-        if (!ServerShadowsocks::create($server->toArray())) {
+        $data = $server->toArray();
+        unset($data['id'], $data['created_at'], $data['updated_at']);
+        $data['show'] = 0;
+        if (!ServerIdService::createWithGlobalId(ServerShadowsocks::class, $data)) {
             abort(500, __('Failed to copy'));
         }
 

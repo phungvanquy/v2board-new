@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ServerTrojanSave;
 use App\Http\Requests\Admin\ServerTrojanUpdate;
 use App\Models\ServerTrojan;
+use App\Services\ServerIdService;
 use Illuminate\Http\Request;
 
 class TrojanController extends Controller
@@ -29,7 +30,7 @@ class TrojanController extends Controller
             ]);
         }
 
-        if (!ServerTrojan::create($params)) {
+        if (!ServerIdService::createWithGlobalId(ServerTrojan::class, $params)) {
             abort(500, __('Failed to create'));
         }
 
@@ -77,11 +78,13 @@ class TrojanController extends Controller
     public function copy(Request $request)
     {
         $server = ServerTrojan::find($request->input('id'));
-        $server->show = 0;
         if (!$server) {
             abort(500, __('Server does not exist'));
         }
-        if (!ServerTrojan::create($server->toArray())) {
+        $data = $server->toArray();
+        unset($data['id'], $data['created_at'], $data['updated_at']);
+        $data['show'] = 0;
+        if (!ServerIdService::createWithGlobalId(ServerTrojan::class, $data)) {
             abort(500, __('Failed to copy'));
         }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1\Admin\Server;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServerTuic;
+use App\Services\ServerIdService;
 use Illuminate\Http\Request;
 
 class TuicController extends Controller
@@ -45,7 +46,7 @@ class TuicController extends Controller
             ]);
         }
 
-        if (!ServerTuic::create($params)) {
+        if (!ServerIdService::createWithGlobalId(ServerTuic::class, $params)) {
             abort(500, __('Failed to create'));
         }
 
@@ -98,11 +99,13 @@ class TuicController extends Controller
     public function copy(Request $request)
     {
         $server = ServerTuic::find($request->input('id'));
-        $server->show = 0;
         if (!$server) {
             abort(500, __('Server does not exist'));
         }
-        if (!ServerTuic::create($server->toArray())) {
+        $data = $server->toArray();
+        unset($data['id'], $data['created_at'], $data['updated_at']);
+        $data['show'] = 0;
+        if (!ServerIdService::createWithGlobalId(ServerTuic::class, $data)) {
             abort(500, __('Failed to copy'));
         }
 

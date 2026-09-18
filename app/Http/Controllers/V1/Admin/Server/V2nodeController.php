@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1\Admin\Server;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServerV2node;
+use App\Services\ServerIdService;
 use App\Utils\Helper;
 use Illuminate\Http\Request;
 use ParagonIE_Sodium_Compat as SodiumCompat;
@@ -250,7 +251,7 @@ class V2nodeController extends Controller
             ]);
         }
 
-        if (!ServerV2node::create($params)) {
+        if (!ServerIdService::createWithGlobalId(ServerV2node::class, $params)) {
             abort(500, __('Failed to create'));
         }
 
@@ -298,11 +299,13 @@ class V2nodeController extends Controller
     public function copy(Request $request)
     {
         $server = ServerV2node::find($request->input('id'));
-        $server->show = 0;
         if (!$server) {
             abort(500, __('Server does not exist'));
         }
-        if (!ServerV2node::create($server->toArray())) {
+        $data = $server->toArray();
+        unset($data['id'], $data['created_at'], $data['updated_at']);
+        $data['show'] = 0;
+        if (!ServerIdService::createWithGlobalId(ServerV2node::class, $data)) {
             abort(500, __('Failed to copy'));
         }
 

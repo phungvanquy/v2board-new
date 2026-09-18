@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ServerVmessSave;
 use App\Http\Requests\Admin\ServerVmessUpdate;
 use App\Models\ServerVmess;
+use App\Services\ServerIdService;
 use Illuminate\Http\Request;
 
 class VmessController extends Controller
@@ -30,7 +31,7 @@ class VmessController extends Controller
             ]);
         }
 
-        if (!ServerVmess::create($params)) {
+        if (!ServerIdService::createWithGlobalId(ServerVmess::class, $params)) {
             abort(500, __('Failed to create'));
         }
 
@@ -78,11 +79,13 @@ class VmessController extends Controller
     public function copy(Request $request)
     {
         $server = ServerVmess::find($request->input('id'));
-        $server->show = 0;
         if (!$server) {
             abort(500, __('Server does not exist'));
         }
-        if (!ServerVmess::create($server->toArray())) {
+        $data = $server->toArray();
+        unset($data['id'], $data['created_at'], $data['updated_at']);
+        $data['show'] = 0;
+        if (!ServerIdService::createWithGlobalId(ServerVmess::class, $data)) {
             abort(500, __('Failed to copy'));
         }
 

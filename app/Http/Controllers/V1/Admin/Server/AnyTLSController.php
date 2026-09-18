@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1\Admin\Server;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServerAnytls;
+use App\Services\ServerIdService;
 use Illuminate\Http\Request;
 
 class AnyTLSController extends Controller
@@ -46,7 +47,7 @@ class AnyTLSController extends Controller
             ]);
         }
 
-        if (!ServerAnytls::create($params)) {
+        if (!ServerIdService::createWithGlobalId(ServerAnytls::class, $params)) {
             abort(500, __('Failed to create'));
         }
 
@@ -99,11 +100,13 @@ class AnyTLSController extends Controller
     public function copy(Request $request)
     {
         $server = ServerAnytls::find($request->input('id'));
-        $server->show = 0;
         if (!$server) {
             abort(500, __('Server does not exist'));
         }
-        if (!ServerAnytls::create($server->toArray())) {
+        $data = $server->toArray();
+        unset($data['id'], $data['created_at'], $data['updated_at']);
+        $data['show'] = 0;
+        if (!ServerIdService::createWithGlobalId(ServerAnytls::class, $data)) {
             abort(500, __('Failed to copy'));
         }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1\Admin\Server;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServerHysteria;
+use App\Services\ServerIdService;
 use App\Utils\Helper;
 use Illuminate\Http\Request;
 
@@ -62,7 +63,7 @@ class HysteriaController extends Controller
             ]);
         }
 
-        if (!ServerHysteria::create($params)) {
+        if (!ServerIdService::createWithGlobalId(ServerHysteria::class, $params)) {
             abort(500, __('Failed to create'));
         }
 
@@ -115,11 +116,13 @@ class HysteriaController extends Controller
     public function copy(Request $request)
     {
         $server = ServerHysteria::find($request->input('id'));
-        $server->show = 0;
         if (!$server) {
             abort(500, __('Server does not exist'));
         }
-        if (!ServerHysteria::create($server->toArray())) {
+        $data = $server->toArray();
+        unset($data['id'], $data['created_at'], $data['updated_at']);
+        $data['show'] = 0;
+        if (!ServerIdService::createWithGlobalId(ServerHysteria::class, $data)) {
             abort(500, __('Failed to copy'));
         }
 
