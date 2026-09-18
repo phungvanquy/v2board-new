@@ -38,36 +38,15 @@ class ServerIdService
     }
 
     /**
-     * Ensure the sequence table exists and is seeded. Idempotent and safe
-     * to call outside a transaction. Uses CREATE TABLE IF NOT EXISTS so it
-     * never races. Called before the allocation transaction.
+     * Ensure the sequence table exists. Does NOT perform DDL that drops or
+     * recreates — the legacy v1.0.1 schema conversion is handled in
+     * V2boardUpdate::ensureServerSequence() under GET_LOCK. Here we only
+     * create if the table is entirely missing (fresh test DB, dump restore
+     * that omitted it) and seed the singleton row.
      */
     private static function ensureSequenceReady(): void
     {
         if (Schema::hasTable(self::SEQ_TABLE)) {
-            // Migrate legacy broken schema (next_id as PK) if still present.
-            if (!Schema::hasColumn(self::SEQ_TABLE, 'id')) {
-                // Let the fix migration handle it; if it hasn't run, do an
-                // inline repair that is safe to run concurrently: read max,
-                // drop, recreate with stable key. Another worker racing here
-                // will see hasColumn true after the drop/create.
-                try {
-                    $maxNext = DB::table(self::SEQ_TABLE)->max('next_id');
-                    Schema::drop(self::SEQ_TABLE);
-                    Schema::create(self::SEQ_TABLE, function ($table) {
-                        $table->tinyInteger('id')->unsigned()->primary();
-                        $table->bigInteger('next_id');
-                    });
-                    $seed = $maxNext !== null ? (int) $maxNext : self::maxGlobalId() + 1;
-                    $seed = max($seed, self::maxGlobalId() + 1);
-                    DB::table(self::SEQ_TABLE)->insert(['id' => 1, 'next_id' => $seed]);
-                } catch (\Throwable $e) {
-                    if (!Schema::hasColumn(self::SEQ_TABLE, 'id')) {
-                        throw $e;
-                    }
-                }
-            }
-
             return;
         }
 

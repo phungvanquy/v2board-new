@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class V2boardUpdate extends Command
 {
@@ -55,6 +56,7 @@ class V2boardUpdate extends Command
         }
         try {
             $this->runUpdateSql();
+            $this->ensureServerSequence();
         } finally {
             try {
                 DB::selectOne("SELECT RELEASE_LOCK('v2board-update')");
@@ -96,5 +98,108 @@ class V2boardUpdate extends Command
             }
         }
         $this->info("Schema statements applied: {$applied}, already present: {$skipped}.");
+    }
+
+    /**
+     * Provision or repair v2_server_sequence under the v2board-update
+     * advisory lock. CREATE TABLE IF NOT EXISTS in update.sql cannot fix
+     * v1.0.1 databases where the table already exists with the broken
+     * schema (next_id as PK). Doing this here serializes the DDL and
+     * preserves the high-water mark.
+     */
+    private function ensureServerSequence(): void
+    {
+        $table = 'v2_server_sequence';
+
+        try {
+            if (!Schema::hasTable($table)) {
+                Schema::create($table, function ($t) {
+                    $t->tinyInteger('id')->unsigned()->primary();
+                    $t->bigInteger('next_id');
+                });
+                $seed = $this->maxLiveServerId() + 1;
+                DB::table($table)->insert(['id' => 1, 'next_id' => $seed]);
+                $this->info("Created {$table} seeded at {$seed}.");
+
+                return;
+            }
+
+            // Legacy broken schema: `next_id` was the PK, no `id` column.
+            // update.sql's CREATE TABLE IF NOT EXISTS leaves it untouched
+            // and INSERT IGNORE (id, next_id) fails silently.
+            if (!Schema::hasColumn($table, 'id')) {
+                $maxNext = null;
+                try {
+                    $maxNext = DB::table($table)->max('next_id');
+                } catch (\Exception $e) {
+                }
+                // Drop may implicitly commit on MySQL — safe here because we
+                // are not inside a user transaction, only under GET_LOCK.
+                Schema::drop($table);
+                Schema::create($table, function ($t) {
+                    $t->tinyInteger('id')->unsigned()->primary();
+                    $t->bigInteger('next_id');
+                });
+                $seed = $maxNext !== null ? (int) $maxNext : $this->maxLiveServerId() + 1;
+                $seed = max($seed, $this->maxLiveServerId() + 1);
+                DB::table($table)->insert(['id' => 1, 'next_id' => $seed]);
+                $this->info("Repaired {$table} (legacy PK) seeded at {$seed}.");
+
+                return;
+            }
+
+            // Correct schema but may have been left empty or seeded at 1 by a
+            // previous buggy update.sql run that created a duplicate row.
+            // Collapse to single row if needed.
+            $count = 0;
+            try {
+                $count = (int) DB::table($table)->count();
+            } catch (\Exception $e) {
+            }
+            if ($count === 0) {
+                $seed = $this->maxLiveServerId() + 1;
+                DB::table($table)->insert(['id' => 1, 'next_id' => $seed]);
+                $this->info("Seeded empty {$table} at {$seed}.");
+            } elseif ($count > 1) {
+                // Legacy of the buggy PK: two rows with different next_id.
+                // Keep the high-water mark.
+                $maxNext = DB::table($table)->max('next_id');
+                DB::table($table)->delete();
+                $seed = $maxNext !== null ? (int) $maxNext : $this->maxLiveServerId() + 1;
+                $seed = max($seed, $this->maxLiveServerId() + 1);
+                DB::table($table)->insert(['id' => 1, 'next_id' => $seed]);
+                $this->info("Repaired {$table} duplicate rows, kept seed {$seed}.");
+            }
+        } catch (\Exception $e) {
+            $this->warn("Could not ensure {$table}: " . $e->getMessage());
+        }
+    }
+
+    private function maxLiveServerId(): int
+    {
+        $max = 0;
+        foreach ([
+            'v2_server_vless',
+            'v2_server_vmess',
+            'v2_server_trojan',
+            'v2_server_shadowsocks',
+            'v2_server_hysteria',
+            'v2_server_tuic',
+            'v2_server_anytls',
+            'v2_server_v2node',
+        ] as $tbl) {
+            try {
+                if (!Schema::hasTable($tbl)) {
+                    continue;
+                }
+                $v = DB::table($tbl)->max('id');
+                if ($v !== null && $v > $max) {
+                    $max = (int) $v;
+                }
+            } catch (\Exception $e) {
+            }
+        }
+
+        return $max;
     }
 }
