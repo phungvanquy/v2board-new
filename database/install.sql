@@ -617,7 +617,8 @@ CREATE TABLE `v2_database_transfer_log` (
 -- Global monotonic sequence for cross-table server IDs. Prevents ID reuse
 -- after deletion and races between protocol tables.
 CREATE TABLE IF NOT EXISTS `v2_server_sequence` (
-    `next_id` bigint NOT NULL PRIMARY KEY
+    `id` tinyint unsigned NOT NULL PRIMARY KEY,
+    `next_id` bigint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-INSERT IGNORE INTO `v2_server_sequence` (`next_id`) VALUES (1);
+INSERT IGNORE INTO `v2_server_sequence` (`id`, `next_id`) VALUES (1, 1);
 

@@ -10,8 +10,9 @@ class CreateServerIdSequenceTable extends Migration
     public function up(): void
     {
         Schema::create('v2_server_sequence', function (Blueprint $table) {
-            // Single row, monotonically increasing. Never decremented.
-            $table->bigInteger('next_id')->primary();
+            // Stable singleton key — the mutable counter lives in next_id.
+            $table->tinyInteger('id')->unsigned()->primary();
+            $table->bigInteger('next_id');
         });
 
         // Seed to max existing server id + 1 across all protocol tables.
@@ -34,7 +35,7 @@ class CreateServerIdSequenceTable extends Migration
                 $max = (int) $v;
             }
         }
-        DB::table('v2_server_sequence')->insert(['next_id' => $max + 1]);
+        DB::table('v2_server_sequence')->insert(['id' => 1, 'next_id' => $max + 1]);
     }
 
     public function down(): void
