@@ -21,8 +21,17 @@ RUN mkdir -p database/seeds database/factories
 # can demand a PHP newer than the app stage ships.
 RUN composer config platform.php "${PHP_VERSION}.0" --no-interaction
 
+# `require` must resolve and write the lock in the same step: with --no-update
+# it edits composer.json only, and the `composer install` below then aborts
+# because the lock no longer matches ("not present in the lock file").
+# pcntl is absent from this build image but present in the app stage.
 RUN if [ "$WITH_WEBMAN" = "true" ]; then \
-      composer require joanhey/adapterman --no-update --no-interaction --no-scripts; \
+      composer require joanhey/adapterman \
+        --no-install \
+        --no-interaction \
+        --no-scripts \
+        --no-progress \
+        --ignore-platform-req=ext-pcntl; \
     fi
 
 RUN composer install \
