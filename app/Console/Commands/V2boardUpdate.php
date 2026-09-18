@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\ServerIdService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -45,7 +46,11 @@ class V2boardUpdate extends Command
         // operator runs the command manually during a deploy), only one
         // migrator proceeds; the others skip instead of racing DDL.
         try {
-            $lock = DB::selectOne("SELECT GET_LOCK('v2board-update', 30) AS acquired");
+            $lock = DB::connection()->selectOne(
+                'SELECT GET_LOCK(?, 30) AS acquired',
+                [ServerIdService::MIGRATION_LOCK_NAME],
+                false
+            );
         } catch (\Exception $e) {
             $lock = null;
         }
@@ -59,7 +64,11 @@ class V2boardUpdate extends Command
             $this->ensureServerSequence();
         } finally {
             try {
-                DB::selectOne("SELECT RELEASE_LOCK('v2board-update')");
+                DB::connection()->selectOne(
+                    'SELECT RELEASE_LOCK(?) AS released',
+                    [ServerIdService::MIGRATION_LOCK_NAME],
+                    false
+                );
             } catch (\Exception $e) {
             }
         }
@@ -170,8 +179,9 @@ class V2boardUpdate extends Command
                 DB::table($table)->insert(['id' => 1, 'next_id' => $seed]);
                 $this->info("Repaired {$table} duplicate rows, kept seed {$seed}.");
             }
-        } catch (\Exception $e) {
-            $this->warn("Could not ensure {$table}: " . $e->getMessage());
+        } catch (\Throwable $e) {
+            $this->error("Could not ensure {$table}: " . $e->getMessage());
+            throw $e;
         }
     }
 

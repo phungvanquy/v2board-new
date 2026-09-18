@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Schema;
 
 class ServerIdService
 {
+    public const MIGRATION_LOCK_NAME = 'v2board-update';
+
+    private const MIGRATION_LOCK_TIMEOUT = 30;
+
     private const MODELS = [
         \App\Models\ServerVless::class,
         \App\Models\ServerVmess::class,
@@ -96,31 +100,82 @@ class ServerIdService
      */
     private static function allocateId(): int
     {
-        self::ensureSequenceReady();
+        $migrationLockAcquired = self::acquireMigrationLock();
 
-        return DB::transaction(function () {
-            $row = DB::table(self::SEQ_TABLE)->where('id', 1)->lockForUpdate()->first();
+        try {
+            self::ensureSequenceReady();
 
-            if (!$row) {
-                // Row was deleted — re-seed from live data.
-                $seed = self::maxGlobalId() + 1;
-                DB::table(self::SEQ_TABLE)->insert(['id' => 1, 'next_id' => $seed + 1]);
+            return DB::transaction(function () {
+                $row = DB::table(self::SEQ_TABLE)->where('id', 1)->lockForUpdate()->first();
 
-                return $seed;
+                if (!$row) {
+                    // Row was deleted — re-seed from live data.
+                    $seed = self::maxGlobalId() + 1;
+                    DB::table(self::SEQ_TABLE)->insert(['id' => 1, 'next_id' => $seed + 1]);
+
+                    return $seed;
+                }
+
+                $next = (int) $row->next_id;
+                $highWater = self::maxGlobalId() + 1;
+
+                // Self-heal if sequence fell behind (dump restore, manual insert).
+                if ($next < $highWater) {
+                    $next = $highWater;
+                }
+
+                DB::table(self::SEQ_TABLE)->where('id', 1)->update(['next_id' => $next + 1]);
+
+                return $next;
+            }, 3);
+        } finally {
+            if ($migrationLockAcquired) {
+                self::releaseMigrationLock();
             }
+        }
+    }
 
-            $next = (int) $row->next_id;
-            $highWater = self::maxGlobalId() + 1;
+    /**
+     * Serialize allocations with v2board:update while it may replace the
+     * legacy sequence table. Row locking alone cannot protect a table across
+     * DROP/CREATE, so MySQL callers also participate in the updater lock.
+     */
+    private static function acquireMigrationLock(): bool
+    {
+        $driver = config('database.connections.' . config('database.default') . '.driver');
+        if ($driver !== 'mysql') {
+            return false;
+        }
 
-            // Self-heal if sequence fell behind (dump restore, manual insert).
-            if ($next < $highWater) {
-                $next = $highWater;
-            }
+        try {
+            $result = DB::connection()->selectOne(
+                'SELECT GET_LOCK(?, ?) AS acquired',
+                [self::MIGRATION_LOCK_NAME, self::MIGRATION_LOCK_TIMEOUT],
+                false
+            );
+        } catch (\Throwable $e) {
+            throw new \RuntimeException('Failed to acquire the server ID migration lock', 0, $e);
+        }
 
-            DB::table(self::SEQ_TABLE)->where('id', 1)->update(['next_id' => $next + 1]);
+        if (!$result || (int) ($result->acquired ?? 0) !== 1) {
+            throw new \RuntimeException('Timed out waiting for the server ID migration lock');
+        }
 
-            return $next;
-        }, 3);
+        return true;
+    }
+
+    private static function releaseMigrationLock(): void
+    {
+        try {
+            DB::connection()->selectOne(
+                'SELECT RELEASE_LOCK(?) AS released',
+                [self::MIGRATION_LOCK_NAME],
+                false
+            );
+        } catch (\Throwable $e) {
+            // The connection may already have been lost, which also releases
+            // its advisory locks. Do not hide a successfully reserved ID.
+        }
     }
 
     /**
