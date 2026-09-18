@@ -47,9 +47,7 @@ class AnyTLSController extends Controller
             ]);
         }
 
-        if (!ServerIdService::createWithGlobalId(ServerAnytls::class, $params)) {
-            abort(500, __('Failed to create'));
-        }
+        ServerIdService::createWithGlobalId(ServerAnytls::class, $params);
 
         return response([
             'data' => true,
@@ -106,9 +104,7 @@ class AnyTLSController extends Controller
         $data = $server->toArray();
         unset($data['id'], $data['created_at'], $data['updated_at']);
         $data['show'] = 0;
-        if (!ServerIdService::createWithGlobalId(ServerAnytls::class, $data)) {
-            abort(500, __('Failed to copy'));
-        }
+        ServerIdService::createWithGlobalId(ServerAnytls::class, $data);
 
         return response([
             'data' => true,

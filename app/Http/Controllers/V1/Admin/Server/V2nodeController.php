@@ -251,9 +251,7 @@ class V2nodeController extends Controller
             ]);
         }
 
-        if (!ServerIdService::createWithGlobalId(ServerV2node::class, $params)) {
-            abort(500, __('Failed to create'));
-        }
+        ServerIdService::createWithGlobalId(ServerV2node::class, $params);
 
         return response([
             'data' => true,
@@ -305,9 +303,7 @@ class V2nodeController extends Controller
         $data = $server->toArray();
         unset($data['id'], $data['created_at'], $data['updated_at']);
         $data['show'] = 0;
-        if (!ServerIdService::createWithGlobalId(ServerV2node::class, $data)) {
-            abort(500, __('Failed to copy'));
-        }
+        ServerIdService::createWithGlobalId(ServerV2node::class, $data);
 
         return response([
             'data' => true,

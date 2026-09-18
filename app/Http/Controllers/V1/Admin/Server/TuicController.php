@@ -46,9 +46,7 @@ class TuicController extends Controller
             ]);
         }
 
-        if (!ServerIdService::createWithGlobalId(ServerTuic::class, $params)) {
-            abort(500, __('Failed to create'));
-        }
+        ServerIdService::createWithGlobalId(ServerTuic::class, $params);
 
         return response([
             'data' => true,
@@ -105,9 +103,7 @@ class TuicController extends Controller
         $data = $server->toArray();
         unset($data['id'], $data['created_at'], $data['updated_at']);
         $data['show'] = 0;
-        if (!ServerIdService::createWithGlobalId(ServerTuic::class, $data)) {
-            abort(500, __('Failed to copy'));
-        }
+        ServerIdService::createWithGlobalId(ServerTuic::class, $data);
 
         return response([
             'data' => true,

@@ -30,9 +30,7 @@ class ShadowsocksController extends Controller
             ]);
         }
 
-        if (!ServerIdService::createWithGlobalId(ServerShadowsocks::class, $params)) {
-            abort(500, __('Failed to create'));
-        }
+        ServerIdService::createWithGlobalId(ServerShadowsocks::class, $params);
 
         return response([
             'data' => true,
@@ -84,9 +82,7 @@ class ShadowsocksController extends Controller
         $data = $server->toArray();
         unset($data['id'], $data['created_at'], $data['updated_at']);
         $data['show'] = 0;
-        if (!ServerIdService::createWithGlobalId(ServerShadowsocks::class, $data)) {
-            abort(500, __('Failed to copy'));
-        }
+        ServerIdService::createWithGlobalId(ServerShadowsocks::class, $data);
 
         return response([
             'data' => true,

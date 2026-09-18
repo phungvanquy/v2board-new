@@ -63,9 +63,7 @@ class HysteriaController extends Controller
             ]);
         }
 
-        if (!ServerIdService::createWithGlobalId(ServerHysteria::class, $params)) {
-            abort(500, __('Failed to create'));
-        }
+        ServerIdService::createWithGlobalId(ServerHysteria::class, $params);
 
         return response([
             'data' => true,
@@ -122,9 +120,7 @@ class HysteriaController extends Controller
         $data = $server->toArray();
         unset($data['id'], $data['created_at'], $data['updated_at']);
         $data['show'] = 0;
-        if (!ServerIdService::createWithGlobalId(ServerHysteria::class, $data)) {
-            abort(500, __('Failed to copy'));
-        }
+        ServerIdService::createWithGlobalId(ServerHysteria::class, $data);
 
         return response([
             'data' => true,

@@ -43,7 +43,7 @@ class ServerIdService
      */
     public static function createWithGlobalId(string $modelClass, array $params): Model
     {
-        $driver = DB::connection()->getDriverName();
+        $driver = config('database.connections.' . config('database.default') . '.driver');
         $useLock = $driver === 'mysql';
 
         // Retry loop handles the narrow race where two requests compute same max+1.
@@ -98,7 +98,7 @@ class ServerIdService
      */
     public static function nextId(): int
     {
-        $driver = DB::connection()->getDriverName();
+        $driver = config('database.connections.' . config('database.default') . '.driver');
         if ($driver === 'mysql') {
             $locked = false;
             try {

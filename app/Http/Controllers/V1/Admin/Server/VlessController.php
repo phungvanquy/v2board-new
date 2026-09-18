@@ -115,9 +115,7 @@ class VlessController extends Controller
             ]);
         }
 
-        if (!ServerIdService::createWithGlobalId(ServerVless::class, $params)) {
-            abort(500, __('Failed to create'));
-        }
+        ServerIdService::createWithGlobalId(ServerVless::class, $params);
 
         return response([
             'data' => true,
@@ -169,9 +167,7 @@ class VlessController extends Controller
         $data = $server->toArray();
         unset($data['id'], $data['created_at'], $data['updated_at']);
         $data['show'] = 0;
-        if (!ServerIdService::createWithGlobalId(ServerVless::class, $data)) {
-            abort(500, __('Failed to copy'));
-        }
+        ServerIdService::createWithGlobalId(ServerVless::class, $data);
 
         return response([
             'data' => true,

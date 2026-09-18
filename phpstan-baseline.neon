@@ -582,11 +582,6 @@ parameters:
 			path: app/Http/Controllers/V1/Admin/PlanController.php
 
 		-
-			message: "#^Call to an undefined static method App\\\\Models\\\\ServerAnytls\\:\\:create\\(\\)\\.$#"
-			count: 2
-			path: app/Http/Controllers/V1/Admin/Server/AnyTLSController.php
-
-		-
 			message: "#^Call to an undefined static method App\\\\Models\\\\ServerAnytls\\:\\:find\\(\\)\\.$#"
 			count: 4
 			path: app/Http/Controllers/V1/Admin/Server/AnyTLSController.php
@@ -632,11 +627,6 @@ parameters:
 			path: app/Http/Controllers/V1/Admin/Server/GroupController.php
 
 		-
-			message: "#^Call to an undefined static method App\\\\Models\\\\ServerHysteria\\:\\:create\\(\\)\\.$#"
-			count: 2
-			path: app/Http/Controllers/V1/Admin/Server/HysteriaController.php
-
-		-
 			message: "#^Call to an undefined static method App\\\\Models\\\\ServerHysteria\\:\\:find\\(\\)\\.$#"
 			count: 4
 			path: app/Http/Controllers/V1/Admin/Server/HysteriaController.php
@@ -667,11 +657,6 @@ parameters:
 			path: app/Http/Controllers/V1/Admin/Server/RouteController.php
 
 		-
-			message: "#^Call to an undefined static method App\\\\Models\\\\ServerShadowsocks\\:\\:create\\(\\)\\.$#"
-			count: 2
-			path: app/Http/Controllers/V1/Admin/Server/ShadowsocksController.php
-
-		-
 			message: "#^Call to an undefined static method App\\\\Models\\\\ServerShadowsocks\\:\\:find\\(\\)\\.$#"
 			count: 4
 			path: app/Http/Controllers/V1/Admin/Server/ShadowsocksController.php
@@ -680,11 +665,6 @@ parameters:
 			message: "#^Variable \\$server might not be defined\\.$#"
 			count: 1
 			path: app/Http/Controllers/V1/Admin/Server/ShadowsocksController.php
-
-		-
-			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTrojan\\:\\:create\\(\\)\\.$#"
-			count: 2
-			path: app/Http/Controllers/V1/Admin/Server/TrojanController.php
 
 		-
 			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTrojan\\:\\:find\\(\\)\\.$#"
@@ -697,11 +677,6 @@ parameters:
 			path: app/Http/Controllers/V1/Admin/Server/TrojanController.php
 
 		-
-			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTuic\\:\\:create\\(\\)\\.$#"
-			count: 2
-			path: app/Http/Controllers/V1/Admin/Server/TuicController.php
-
-		-
 			message: "#^Call to an undefined static method App\\\\Models\\\\ServerTuic\\:\\:find\\(\\)\\.$#"
 			count: 4
 			path: app/Http/Controllers/V1/Admin/Server/TuicController.php
@@ -710,11 +685,6 @@ parameters:
 			message: "#^Variable \\$server might not be defined\\.$#"
 			count: 1
 			path: app/Http/Controllers/V1/Admin/Server/TuicController.php
-
-		-
-			message: "#^Call to an undefined static method App\\\\Models\\\\ServerV2node\\:\\:create\\(\\)\\.$#"
-			count: 2
-			path: app/Http/Controllers/V1/Admin/Server/V2nodeController.php
 
 		-
 			message: "#^Call to an undefined static method App\\\\Models\\\\ServerV2node\\:\\:find\\(\\)\\.$#"
@@ -727,11 +697,6 @@ parameters:
 			path: app/Http/Controllers/V1/Admin/Server/V2nodeController.php
 
 		-
-			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVless\\:\\:create\\(\\)\\.$#"
-			count: 2
-			path: app/Http/Controllers/V1/Admin/Server/VlessController.php
-
-		-
 			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVless\\:\\:find\\(\\)\\.$#"
 			count: 4
 			path: app/Http/Controllers/V1/Admin/Server/VlessController.php
@@ -740,11 +705,6 @@ parameters:
 			message: "#^Variable \\$server might not be defined\\.$#"
 			count: 1
 			path: app/Http/Controllers/V1/Admin/Server/VlessController.php
-
-		-
-			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVmess\\:\\:create\\(\\)\\.$#"
-			count: 2
-			path: app/Http/Controllers/V1/Admin/Server/VmessController.php
 
 		-
 			message: "#^Call to an undefined static method App\\\\Models\\\\ServerVmess\\:\\:find\\(\\)\\.$#"
