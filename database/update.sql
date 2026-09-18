@@ -884,3 +884,8 @@ CREATE TABLE IF NOT EXISTS `v2_telegram_backup_setting` (
     `revision` varchar(64) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 INSERT IGNORE INTO `v2_telegram_backup_setting` (`id`) VALUES (1);
+
+CREATE TABLE IF NOT EXISTS `v2_server_sequence` (
+    `next_id` bigint NOT NULL PRIMARY KEY
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT IGNORE INTO `v2_server_sequence` (`next_id`) VALUES (1);

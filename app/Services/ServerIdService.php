@@ -38,32 +38,68 @@ class ServerIdService
     }
 
     /**
+     * Ensure the sequence table exists and is seeded. Idempotent and safe
+     * to call outside a transaction. Uses CREATE TABLE IF NOT EXISTS so it
+     * never races. Called before the allocation transaction.
+     */
+    private static function ensureSequenceReady(): void
+    {
+        if (Schema::hasTable(self::SEQ_TABLE)) {
+            return;
+        }
+
+        // DDL outside any transaction — on MySQL CREATE TABLE would
+        // implicitly commit and break the caller's transaction.
+        try {
+            Schema::create(self::SEQ_TABLE, function ($table) {
+                $table->bigInteger('next_id')->primary();
+            });
+        } catch (\Throwable $e) {
+            // Another worker created it concurrently, or DDL not permitted.
+            if (!Schema::hasTable(self::SEQ_TABLE)) {
+                throw $e;
+            }
+        }
+
+        // Seed if empty. Use INSERT IGNORE to handle concurrent seeding.
+        $count = 0;
+        try {
+            $count = (int) DB::table(self::SEQ_TABLE)->count();
+        } catch (\Throwable $e) {
+            // Table exists but not yet queryable — treat as empty.
+        }
+
+        if ($count === 0) {
+            $seed = self::maxGlobalId() + 1;
+            try {
+                DB::table(self::SEQ_TABLE)->insert(['next_id' => $seed]);
+            } catch (\Throwable $e) {
+                // Concurrent insert won the race — ignore duplicate key.
+                if (!str_contains($e->getMessage(), 'Duplicate entry')) {
+                    throw $e;
+                }
+            }
+        }
+    }
+
+    /**
      * Atomically allocate the next globally-unique id from the persistent
      * sequence. The sequence is monotonic and never reuses deleted IDs.
      * Uses SELECT ... FOR UPDATE on the sequence row, so concurrent callers
-     * are serialized. If the sequence table is empty or behind live data
-     * (e.g. after a dump restore), it self-heals to maxGlobalId()+1.
+     * are serialized. If the sequence fell behind live data (e.g. after a
+     * dump restore), it self-heals to maxGlobalId()+1.
      *
      * @throws \RuntimeException on lock/transaction failure
      */
     private static function allocateId(): int
     {
+        self::ensureSequenceReady();
+
         return DB::transaction(function () {
-            // Ensure the sequence table/row exists (fresh sqlite in tests, or
-            // pre-migration DB). Create lazily if needed.
-            if (!Schema::hasTable(self::SEQ_TABLE)) {
-                Schema::create(self::SEQ_TABLE, function ($table) {
-                    $table->bigInteger('next_id')->primary();
-                });
-                $seed = self::maxGlobalId() + 1;
-                DB::table(self::SEQ_TABLE)->insert(['next_id' => $seed + 1]);
-
-                return $seed;
-            }
-
             $row = DB::table(self::SEQ_TABLE)->lockForUpdate()->first();
 
             if (!$row) {
+                // Row was deleted — re-seed from live data.
                 $seed = self::maxGlobalId() + 1;
                 DB::table(self::SEQ_TABLE)->insert(['next_id' => $seed + 1]);
 
