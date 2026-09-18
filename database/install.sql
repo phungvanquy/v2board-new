@@ -613,3 +613,11 @@ CREATE TABLE `v2_database_transfer_log` (
                             `updated_at` int(11) DEFAULT NULL,
                             PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Global monotonic sequence for cross-table server IDs. Prevents ID reuse
+-- after deletion and races between protocol tables.
+CREATE TABLE IF NOT EXISTS `v2_server_sequence` (
+    `next_id` bigint NOT NULL PRIMARY KEY
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT IGNORE INTO `v2_server_sequence` (`next_id`) VALUES (1);
+

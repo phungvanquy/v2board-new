@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class ServerIdService
 {
@@ -17,6 +18,8 @@ class ServerIdService
         \App\Models\ServerAnytls::class,
         \App\Models\ServerV2node::class,
     ];
+
+    private const SEQ_TABLE = 'v2_server_sequence';
 
     /**
      * Return the maximum node id across all protocol tables.
@@ -35,88 +38,91 @@ class ServerIdService
     }
 
     /**
-     * Create a server model with a globally-unique id.
-     * Uses MySQL advisory lock to serialize concurrent allocations;
-     * falls back to plain max+1 with duplicate-key retry on other drivers.
+     * Atomically allocate the next globally-unique id from the persistent
+     * sequence. The sequence is monotonic and never reuses deleted IDs.
+     * Uses SELECT ... FOR UPDATE on the sequence row, so concurrent callers
+     * are serialized. If the sequence table is empty or behind live data
+     * (e.g. after a dump restore), it self-heals to maxGlobalId()+1.
      *
-     * Works with models that have `guarded = ['id']` by assigning id directly.
+     * @throws \RuntimeException on lock/transaction failure
+     */
+    private static function allocateId(): int
+    {
+        return DB::transaction(function () {
+            // Ensure the sequence table/row exists (fresh sqlite in tests, or
+            // pre-migration DB). Create lazily if needed.
+            if (!Schema::hasTable(self::SEQ_TABLE)) {
+                Schema::create(self::SEQ_TABLE, function ($table) {
+                    $table->bigInteger('next_id')->primary();
+                });
+                $seed = self::maxGlobalId() + 1;
+                DB::table(self::SEQ_TABLE)->insert(['next_id' => $seed + 1]);
+
+                return $seed;
+            }
+
+            $row = DB::table(self::SEQ_TABLE)->lockForUpdate()->first();
+
+            if (!$row) {
+                $seed = self::maxGlobalId() + 1;
+                DB::table(self::SEQ_TABLE)->insert(['next_id' => $seed + 1]);
+
+                return $seed;
+            }
+
+            $next = (int) $row->next_id;
+            $highWater = self::maxGlobalId() + 1;
+
+            // Self-heal if sequence fell behind (dump restore, manual insert).
+            if ($next < $highWater) {
+                $next = $highWater;
+            }
+
+            DB::table(self::SEQ_TABLE)->update(['next_id' => $next + 1]);
+
+            return $next;
+        }, 3);
+    }
+
+    /**
+     * Create a server model with a globally-unique id drawn from the
+     * persistent sequence. Retries once on duplicate-key (e.g. manual
+     * INSERT raced the sequence after a restore).
      */
     public static function createWithGlobalId(string $modelClass, array $params): Model
     {
-        $driver = config('database.connections.' . config('database.default') . '.driver');
-        $useLock = $driver === 'mysql';
+        $lastException = null;
 
-        // Retry loop handles the narrow race where two requests compute same max+1.
         for ($attempt = 0; $attempt < 3; $attempt++) {
-            $locked = false;
-            if ($useLock) {
-                try {
-                    $res = DB::selectOne("SELECT GET_LOCK('v2board_server_id', 5) AS l");
-                    $locked = isset($res->l) && (int) $res->l === 1;
-                } catch (\Throwable $e) {
-                    $useLock = false;
-                }
-            }
-
-            $id = self::maxGlobalId() + 1;
+            $id = self::allocateId();
 
             try {
-                // Bypass `guarded = ['id']` by direct assignment
+                // Bypass `guarded = ['id']` by direct assignment.
                 $model = new $modelClass();
                 $model->fill($params);
                 $model->id = $id;
                 $model->save();
-                if ($locked) {
-                    try {
-                        DB::selectOne("SELECT RELEASE_LOCK('v2board_server_id')");
-                    } catch (\Throwable $e) {
-                    }
-                }
 
                 return $model;
             } catch (\Throwable $e) {
-                if ($locked) {
-                    try {
-                        DB::selectOne("SELECT RELEASE_LOCK('v2board_server_id')");
-                    } catch (\Throwable $ex) {
-                    }
-                }
-                // Duplicate primary key -> retry with new max
                 $msg = $e->getMessage();
                 if (str_contains($msg, 'Duplicate entry') || str_contains($msg, 'UNIQUE constraint failed')) {
+                    $lastException = $e;
                     continue;
                 }
                 throw $e;
             }
         }
-        throw new \RuntimeException('Failed to allocate globally-unique server id after retries');
+
+        throw $lastException ?? new \RuntimeException('Failed to allocate globally-unique server id after retries');
     }
 
     /**
-     * Allocate next id only (for callers that need the id value).
-     * Prefer createWithGlobalId() for creation to keep lock held across read+write.
+     * Allocate and reserve the next id without creating a server row.
+     * The id is consumed even if the caller does not use it.
      */
     public static function nextId(): int
     {
-        $driver = config('database.connections.' . config('database.default') . '.driver');
-        if ($driver === 'mysql') {
-            $locked = false;
-            try {
-                $res = DB::selectOne("SELECT GET_LOCK('v2board_server_id', 5) AS l");
-                $locked = isset($res->l) && (int) $res->l === 1;
-            } catch (\Throwable $e) {
-            }
-            $id = self::maxGlobalId() + 1;
-            if ($locked) {
-                try {
-                    DB::selectOne("SELECT RELEASE_LOCK('v2board_server_id')");
-                } catch (\Throwable $e) {
-                }
-            }
-
-            return $id;
-        }
-
-        return self::maxGlobalId() + 1;
+        return self::allocateId();
     }
 }
