@@ -30,6 +30,7 @@ class ServerIdService
                 $max = (int) $v;
             }
         }
+
         return $max;
     }
 
@@ -66,12 +67,19 @@ class ServerIdService
                 $model->id = $id;
                 $model->save();
                 if ($locked) {
-                    try { DB::selectOne("SELECT RELEASE_LOCK('v2board_server_id')"); } catch (\Throwable $e) {}
+                    try {
+                        DB::selectOne("SELECT RELEASE_LOCK('v2board_server_id')");
+                    } catch (\Throwable $e) {
+                    }
                 }
+
                 return $model;
             } catch (\Throwable $e) {
                 if ($locked) {
-                    try { DB::selectOne("SELECT RELEASE_LOCK('v2board_server_id')"); } catch (\Throwable $ex) {}
+                    try {
+                        DB::selectOne("SELECT RELEASE_LOCK('v2board_server_id')");
+                    } catch (\Throwable $ex) {
+                    }
                 }
                 // Duplicate primary key -> retry with new max
                 $msg = $e->getMessage();
@@ -96,13 +104,19 @@ class ServerIdService
             try {
                 $res = DB::selectOne("SELECT GET_LOCK('v2board_server_id', 5) AS l");
                 $locked = isset($res->l) && (int) $res->l === 1;
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
             $id = self::maxGlobalId() + 1;
             if ($locked) {
-                try { DB::selectOne("SELECT RELEASE_LOCK('v2board_server_id')"); } catch (\Throwable $e) {}
+                try {
+                    DB::selectOne("SELECT RELEASE_LOCK('v2board_server_id')");
+                } catch (\Throwable $e) {
+                }
             }
+
             return $id;
         }
+
         return self::maxGlobalId() + 1;
     }
 }
