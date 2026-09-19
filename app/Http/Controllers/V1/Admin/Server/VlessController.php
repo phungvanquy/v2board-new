@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1\Admin\Server;
 use App\Http\Controllers\Controller;
 use App\Models\ServerVless;
 use App\Services\ServerIdService;
+use App\Support\RealitySettings;
 use App\Utils\Helper;
 use Illuminate\Http\Request;
 use ParagonIE_Sodium_Compat as SodiumCompat;
@@ -35,20 +36,7 @@ class VlessController extends Controller
         ]);
 
         if (isset($params['tls']) && (int) $params['tls'] === 2) {
-            $keyPair = SodiumCompat::crypto_box_keypair();
-            $params['tls_settings'] = $params['tls_settings'] ?? [];
-            if (!isset($params['tls_settings']['public_key'])) {
-                $params['tls_settings']['public_key'] = Helper::base64EncodeUrlSafe(SodiumCompat::crypto_box_publickey($keyPair));
-            }
-            if (!isset($params['tls_settings']['private_key'])) {
-                $params['tls_settings']['private_key'] = Helper::base64EncodeUrlSafe(SodiumCompat::crypto_box_secretkey($keyPair));
-            }
-            if (!isset($params['tls_settings']['short_id'])) {
-                $params['tls_settings']['short_id'] = substr(sha1($params['tls_settings']['private_key']), 0, 8);
-            }
-            if (!isset($params['tls_settings']['server_port'])) {
-                $params['tls_settings']['server_port'] = '443';
-            }
+            $params['tls_settings'] = RealitySettings::withDefaults($params['tls_settings'] ?? []);
         }
         if ($params['network'] != 'tcp') {
             $params['flow'] = null;

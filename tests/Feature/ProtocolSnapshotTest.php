@@ -139,6 +139,36 @@ class ProtocolSnapshotTest extends TestCase
         return [[Singbox::class], [SingboxOld::class]];
     }
 
+    /** @dataProvider clashFormatters */
+    public function testClashRealityWithoutShortIdDoesNotFail(string $formatter): void
+    {
+        $server = $this->baseServer([
+            'type' => 'vless',
+            'network' => 'tcp',
+            'network_settings' => ['header' => ['type' => 'none']],
+            'tls' => 2,
+            'tls_settings' => [
+                'allow_insecure' => 0,
+                'server_name' => 'example.com',
+                'public_key' => 'test-public-key',
+            ],
+        ]);
+
+        $result = $formatter::buildVless($this->uuid, $server);
+
+        $this->assertSame('', $result['reality-opts']['short-id']);
+    }
+
+    public static function clashFormatters(): array
+    {
+        return [
+            [ClashMeta::class],
+            [ClashNyanpasu::class],
+            [ClashVerge::class],
+            [Stash::class],
+        ];
+    }
+
     public function testQuantumultXVmessProducesExpectedOutput(): void
     {
         $server = $this->baseServer(['network' => 'ws']);

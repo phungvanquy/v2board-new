@@ -890,3 +890,25 @@ CREATE TABLE IF NOT EXISTS `v2_server_sequence` (
     `next_id` bigint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 INSERT IGNORE INTO `v2_server_sequence` (`id`, `next_id`) VALUES (1, 1);
+
+UPDATE `v2_server_vless`
+SET `tls_settings` = JSON_SET(
+    `tls_settings`,
+    '$.short_id',
+    LEFT(SHA1(JSON_UNQUOTE(JSON_EXTRACT(`tls_settings`, '$.private_key'))), 8)
+)
+WHERE `tls` = 2
+  AND JSON_VALID(`tls_settings`)
+  AND JSON_UNQUOTE(JSON_EXTRACT(`tls_settings`, '$.private_key')) <> ''
+  AND COALESCE(JSON_UNQUOTE(JSON_EXTRACT(`tls_settings`, '$.short_id')), '') = '';
+
+UPDATE `v2_server_v2node`
+SET `tls_settings` = JSON_SET(
+    `tls_settings`,
+    '$.short_id',
+    LEFT(SHA1(JSON_UNQUOTE(JSON_EXTRACT(`tls_settings`, '$.private_key'))), 8)
+)
+WHERE `tls` = 2
+  AND JSON_VALID(`tls_settings`)
+  AND JSON_UNQUOTE(JSON_EXTRACT(`tls_settings`, '$.private_key')) <> ''
+  AND COALESCE(JSON_UNQUOTE(JSON_EXTRACT(`tls_settings`, '$.short_id')), '') = '';

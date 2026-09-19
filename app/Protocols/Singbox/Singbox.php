@@ -409,7 +409,7 @@ class Singbox implements ProtocolFormatter
                 $tlsConfig['reality'] = [
                     'enabled' => true,
                     'public_key' => $tlsSettings['public_key'],
-                    'short_id' => $tlsSettings['short_id'],
+                    'short_id' => $tlsSettings['short_id'] ?? '',
                 ];
             }
             $tlsConfig['utls'] = [

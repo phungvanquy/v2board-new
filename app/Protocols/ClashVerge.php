@@ -278,7 +278,7 @@ class ClashVerge implements ProtocolFormatter
                 if ($server['tls'] == 2) {
                     $array['reality-opts'] = [];
                     $array['reality-opts']['public-key'] = $tlsSettings['public_key'];
-                    $array['reality-opts']['short-id'] = $tlsSettings['short_id'];
+                    $array['reality-opts']['short-id'] = $tlsSettings['short_id'] ?? '';
                 }
                 if (!empty($tlsSettings['ech'])) {
                     if ($tlsSettings['ech'] === 'cloudflare') {

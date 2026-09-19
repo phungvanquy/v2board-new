@@ -242,7 +242,7 @@ class Stash implements ProtocolFormatter
                 if ($server['tls'] == 2) {
                     $array['reality-opts'] = [];
                     $array['reality-opts']['public-key'] = $tlsSettings['public_key'];
-                    $array['reality-opts']['short-id'] = $tlsSettings['short_id'];
+                    $array['reality-opts']['short-id'] = $tlsSettings['short_id'] ?? '';
                 }
                 $array['skip-cert-verify'] = ($tlsSettings['allow_insecure'] ?? 0) == 1 ? true : false;
                 $array['client-fingerprint'] = $tlsSettings['fingerprint'] ?? null;
