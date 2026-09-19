@@ -42,13 +42,12 @@ class SubscriptionAndTicketFlowTest extends TestCase
     public function testClientSubscribeWithoutTokenReturnsError(): void
     {
         $response = $this->getJson('/api/v1/client/subscribe');
-        // Should be 400/403/500 (missing token) not 200 with valid subscription
-        $this->assertNotEquals(200, $response->getStatusCode());
+        $this->assertSame(403, $response->getStatusCode());
     }
 
     public function testClientSubscribeWithInvalidTokenReturnsError(): void
     {
         $response = $this->getJson('/api/v1/client/subscribe?token=invalid-token-xyz');
-        $this->assertTrue(in_array($response->getStatusCode(), [400, 403, 404, 500]));
+        $this->assertSame(403, $response->getStatusCode());
     }
 }

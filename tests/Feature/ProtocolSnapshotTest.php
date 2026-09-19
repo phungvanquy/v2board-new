@@ -7,6 +7,7 @@ use App\Protocols\ClashNyanpasu;
 use App\Protocols\ClashVerge;
 use App\Protocols\QuantumultX;
 use App\Protocols\Singbox\Singbox;
+use App\Protocols\Singbox\SingboxOld;
 use App\Protocols\Stash;
 use Tests\TestCase;
 
@@ -108,6 +109,34 @@ class ProtocolSnapshotTest extends TestCase
         $result = $ref->invoke($singbox, $this->uuid, $server);
         $this->assertEquals('vmess', $result['type']);
         $this->assertEquals('ws', $result['transport']['type'] ?? null);
+    }
+
+    /** @dataProvider singboxFormatters */
+    public function testSingboxRealityWithoutShortIdDoesNotFail(string $formatter): void
+    {
+        $server = $this->baseServer([
+            'type' => 'vless',
+            'network' => 'tcp',
+            'network_settings' => ['header' => ['type' => 'none']],
+            'tls' => 2,
+            'tls_settings' => [
+                'allow_insecure' => 0,
+                'server_name' => 'example.com',
+                'public_key' => 'test-public-key',
+            ],
+        ]);
+        $user = ['uuid' => $this->uuid, 'u' => 0, 'd' => 0, 'transfer_enable' => 10737418240, 'expired_at' => null];
+        $singbox = new $formatter($user, [$server]);
+        $method = new \ReflectionMethod($singbox, 'buildVless');
+        $method->setAccessible(true);
+        $result = $method->invoke($singbox, $this->uuid, $server);
+
+        $this->assertSame('', $result['tls']['reality']['short_id']);
+    }
+
+    public static function singboxFormatters(): array
+    {
+        return [[Singbox::class], [SingboxOld::class]];
     }
 
     public function testQuantumultXVmessProducesExpectedOutput(): void

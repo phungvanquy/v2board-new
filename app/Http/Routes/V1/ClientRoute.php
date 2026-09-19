@@ -12,10 +12,10 @@ class ClientRoute
             'prefix' => 'client',
             'middleware' => 'client',
         ], function ($router) {
-            // Client
-            if (empty(config('v2board.subscribe_path'))) {
-                $router->get('/subscribe', 'V1\\Client\\ClientController@subscribe');
-            }
+            // Keep the historical API endpoint available as a compatibility
+            // alias when a custom subscription path is configured. Both
+            // routes use the same token middleware and controller.
+            $router->get('/subscribe', 'V1\\Client\\ClientController@subscribe');
             // App
             $router->get('/app/getConfig', 'V1\\Client\\AppController@getConfig');
             $router->get('/app/getVersion', 'V1\\Client\\AppController@getVersion');

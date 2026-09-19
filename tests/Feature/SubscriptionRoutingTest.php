@@ -100,6 +100,7 @@ class SubscriptionRoutingTest extends TestCase
         return [
             ['Hiddify/2.5.7', false],
             ['HiddifyNext/2.5.7 (android) like ClashMeta v2ray sing-box', false],
+            ['HiddifyNext/4.1.1 (android) like ClashMeta v2ray sing-box', false],
             ['HiddifyNext/4.0.0 sing-box/1.12.0', true],
             ['sing-box 1.12.0', true],
             ['sing-box/1.12.1', true],
