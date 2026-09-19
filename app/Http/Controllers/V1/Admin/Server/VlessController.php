@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1\Admin\Server;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServerVless;
+use App\Protocols\Support\NetworkSettings;
 use App\Services\ServerIdService;
 use App\Support\RealitySettings;
 use App\Utils\Helper;
@@ -37,6 +38,9 @@ class VlessController extends Controller
 
         if (isset($params['tls']) && (int) $params['tls'] === 2) {
             $params['tls_settings'] = RealitySettings::withDefaults($params['tls_settings'] ?? []);
+        }
+        if (isset($params['network_settings'])) {
+            $params['network_settings'] = NetworkSettings::normalizeForNode($params['network_settings']);
         }
         if ($params['network'] != 'tcp') {
             $params['flow'] = null;

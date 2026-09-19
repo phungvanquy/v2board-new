@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ServerVmessSave;
 use App\Http\Requests\Admin\ServerVmessUpdate;
 use App\Models\ServerVmess;
+use App\Protocols\Support\NetworkSettings;
 use App\Services\ServerIdService;
 use Illuminate\Http\Request;
 
@@ -14,6 +15,9 @@ class VmessController extends Controller
     public function save(ServerVmessSave $request)
     {
         $params = $request->validated();
+        if (isset($params['networkSettings'])) {
+            $params['networkSettings'] = NetworkSettings::normalizeForNode($params['networkSettings']);
+        }
 
         if ($request->input('id')) {
             $server = ServerVmess::find($request->input('id'));

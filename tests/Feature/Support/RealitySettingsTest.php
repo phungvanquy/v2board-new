@@ -36,4 +36,23 @@ class RealitySettingsTest extends TestCase
 
         $this->assertSame($settings, RealitySettings::withDefaults($settings));
     }
+
+    public function testItUsesStringValuesRequiredByV2bxRealityDecoder(): void
+    {
+        $settings = RealitySettings::forNode([
+            'server_port' => 443,
+            'xver' => 2,
+            'short_id' => 12345678,
+        ]);
+
+        $this->assertSame('443', $settings['server_port']);
+        $this->assertSame('2', $settings['xver']);
+        $this->assertSame('12345678', $settings['short_id']);
+    }
+
+    public function testItClampsRealityProxyProtocolVersion(): void
+    {
+        $this->assertSame('0', RealitySettings::forNode(['xver' => -1])['xver']);
+        $this->assertSame('2', RealitySettings::forNode(['xver' => 99])['xver']);
+    }
 }

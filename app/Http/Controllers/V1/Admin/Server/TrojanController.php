@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ServerTrojanSave;
 use App\Http\Requests\Admin\ServerTrojanUpdate;
 use App\Models\ServerTrojan;
+use App\Protocols\Support\NetworkSettings;
 use App\Services\ServerIdService;
 use Illuminate\Http\Request;
 
@@ -14,6 +15,9 @@ class TrojanController extends Controller
     public function save(ServerTrojanSave $request)
     {
         $params = $request->validated();
+        if (isset($params['network_settings']) && is_array($params['network_settings'])) {
+            $params['network_settings'] = NetworkSettings::normalizeForNode($params['network_settings']);
+        }
         if ($request->input('id')) {
             $server = ServerTrojan::find($request->input('id'));
             if (!$server) {

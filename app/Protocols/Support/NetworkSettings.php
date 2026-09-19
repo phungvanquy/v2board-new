@@ -28,6 +28,80 @@ class NetworkSettings
     }
 
     /**
+     * Normalize values consumed by strict Go JSON decoders in node backends.
+     */
+    public static function normalizeForNode(array $settings): array
+    {
+        $settings = self::normalizeStrictValues($settings);
+
+        if (isset($settings['extra']) && is_array($settings['extra'])) {
+            $settings['extra'] = self::normalizeStrictValues($settings['extra']);
+        }
+
+        if (isset($settings['xmux']) && is_array($settings['xmux'])) {
+            self::normalizeInteger($settings['xmux'], 'hKeepAlivePeriod');
+        }
+        if (isset($settings['extra']['xmux']) && is_array($settings['extra']['xmux'])) {
+            self::normalizeInteger($settings['extra']['xmux'], 'hKeepAlivePeriod');
+        }
+
+        foreach (['downloadSettings', 'extra'] as $container) {
+            $downloadSettings = $container === 'extra'
+                ? ($settings['extra']['downloadSettings'] ?? null)
+                : ($settings['downloadSettings'] ?? null);
+
+            if (!is_array($downloadSettings)) {
+                continue;
+            }
+
+            self::normalizeInteger($downloadSettings, 'port');
+            if ($container === 'extra') {
+                $settings['extra']['downloadSettings'] = $downloadSettings;
+            } else {
+                $settings['downloadSettings'] = $downloadSettings;
+            }
+        }
+
+        return $settings;
+    }
+
+    private static function normalizeStrictValues(array $settings): array
+    {
+        foreach ([
+            'acceptProxyProtocol',
+            'multiMode',
+            'permit_without_stream',
+            'xPaddingObfsMode',
+            'noGRPCHeader',
+            'noSSEHeader',
+        ] as $key) {
+            if (array_key_exists($key, $settings) && !is_bool($settings[$key])) {
+                $settings[$key] = filter_var($settings[$key], FILTER_VALIDATE_BOOLEAN);
+            }
+        }
+
+        foreach ([
+            'heartbeatPeriod',
+            'idle_timeout',
+            'health_check_timeout',
+            'initial_windows_size',
+            'scMaxBufferedPosts',
+            'serverMaxHeaderBytes',
+        ] as $key) {
+            self::normalizeInteger($settings, $key);
+        }
+
+        return $settings;
+    }
+
+    private static function normalizeInteger(array &$settings, string $key): void
+    {
+        if (array_key_exists($key, $settings) && !is_int($settings[$key])) {
+            $settings[$key] = (int) $settings[$key];
+        }
+    }
+
+    /**
      * Apply network-specific settings onto $config by reference.
      */
     public static function apply(array $server, array &$config): void

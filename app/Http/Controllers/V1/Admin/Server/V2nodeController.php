@@ -4,10 +4,14 @@ namespace App\Http\Controllers\V1\Admin\Server;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServerV2node;
+use App\Protocols\Support\NetworkSettings;
 use App\Services\ServerIdService;
+use App\Support\AnyTlsSettings;
 use App\Support\RealitySettings;
 use App\Utils\Helper;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 use ParagonIE_Sodium_Compat as SodiumCompat;
 
 class V2nodeController extends Controller
@@ -135,11 +139,7 @@ class V2nodeController extends Controller
             }
         }
         if (isset($params['network_settings'])) {
-            $ns = $params['network_settings'];
-            if (isset($ns['acceptProxyProtocol'])) {
-                $ns['acceptProxyProtocol'] = filter_var($ns['acceptProxyProtocol'], FILTER_VALIDATE_BOOLEAN);
-            }
-            $params['network_settings'] = $ns;
+            $params['network_settings'] = NetworkSettings::normalizeForNode($params['network_settings']);
         }
         if ($params['network'] != 'tcp' && isset($params['encryption']) && $params['encryption'] != 'mlkem768x25519plus') {
             $params['flow'] = null;
@@ -201,7 +201,13 @@ class V2nodeController extends Controller
         }
 
         if (isset($params['padding_scheme'])) {
-            $params['padding_scheme'] = json_decode($params['padding_scheme']);
+            try {
+                $params['padding_scheme'] = AnyTlsSettings::fromAdmin($params['padding_scheme']);
+            } catch (InvalidArgumentException $e) {
+                throw ValidationException::withMessages([
+                    'padding_scheme' => $e->getMessage(),
+                ]);
+            }
         }
 
         if (!isset($params['up_mbps'])) {

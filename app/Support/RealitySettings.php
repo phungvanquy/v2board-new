@@ -30,6 +30,32 @@ class RealitySettings
             $settings['server_port'] = '443';
         }
 
+        return self::forNode($settings);
+    }
+
+    /**
+     * Normalize values decoded by v2bx's strict Go JSON model.
+     */
+    public static function forNode(array $settings): array
+    {
+        foreach ([
+            'server_name',
+            'dest',
+            'server_port',
+            'short_id',
+            'private_key',
+            'mldsa65Seed',
+        ] as $key) {
+            if (array_key_exists($key, $settings) && is_scalar($settings[$key])) {
+                $settings[$key] = (string) $settings[$key];
+            }
+        }
+
+        if (array_key_exists('xver', $settings)) {
+            $xver = max(0, min(2, (int) $settings['xver']));
+            $settings['xver'] = (string) $xver;
+        }
+
         return $settings;
     }
 }

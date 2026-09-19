@@ -912,3 +912,67 @@ WHERE `tls` = 2
   AND JSON_VALID(`tls_settings`)
   AND JSON_UNQUOTE(JSON_EXTRACT(`tls_settings`, '$.private_key')) <> ''
   AND COALESCE(JSON_UNQUOTE(JSON_EXTRACT(`tls_settings`, '$.short_id')), '') = '';
+
+UPDATE `v2_server_vless`
+SET `network_settings` = JSON_SET(
+    `network_settings`,
+    '$.acceptProxyProtocol',
+    JSON_EXTRACT(
+        IF(
+            LOWER(JSON_UNQUOTE(JSON_EXTRACT(`network_settings`, '$.acceptProxyProtocol'))) IN ('1', 'true', 'on', 'yes'),
+            'true',
+            'false'
+        ),
+        '$'
+    )
+)
+WHERE JSON_VALID(`network_settings`)
+  AND JSON_TYPE(JSON_EXTRACT(`network_settings`, '$.acceptProxyProtocol')) = 'STRING';
+
+UPDATE `v2_server_v2node`
+SET `network_settings` = JSON_SET(
+    `network_settings`,
+    '$.acceptProxyProtocol',
+    JSON_EXTRACT(
+        IF(
+            LOWER(JSON_UNQUOTE(JSON_EXTRACT(`network_settings`, '$.acceptProxyProtocol'))) IN ('1', 'true', 'on', 'yes'),
+            'true',
+            'false'
+        ),
+        '$'
+    )
+)
+WHERE JSON_VALID(`network_settings`)
+  AND JSON_TYPE(JSON_EXTRACT(`network_settings`, '$.acceptProxyProtocol')) = 'STRING';
+
+UPDATE `v2_server_vmess`
+SET `networkSettings` = JSON_SET(
+    `networkSettings`,
+    '$.acceptProxyProtocol',
+    JSON_EXTRACT(
+        IF(
+            LOWER(JSON_UNQUOTE(JSON_EXTRACT(`networkSettings`, '$.acceptProxyProtocol'))) IN ('1', 'true', 'on', 'yes'),
+            'true',
+            'false'
+        ),
+        '$'
+    )
+)
+WHERE JSON_VALID(`networkSettings`)
+  AND JSON_TYPE(JSON_EXTRACT(`networkSettings`, '$.acceptProxyProtocol')) = 'STRING';
+
+UPDATE `v2_server_trojan`
+SET `network_settings` = JSON_SET(
+    `network_settings`,
+    '$.acceptProxyProtocol',
+    JSON_EXTRACT(
+        IF(
+            LOWER(JSON_UNQUOTE(JSON_EXTRACT(`network_settings`, '$.acceptProxyProtocol'))) IN ('1', 'true', 'on', 'yes'),
+            'true',
+            'false'
+        ),
+        '$'
+    )
+)
+WHERE JSON_VALID(`network_settings`)
+  AND JSON_TYPE(JSON_EXTRACT(`network_settings`, '$.acceptProxyProtocol')) = 'STRING';

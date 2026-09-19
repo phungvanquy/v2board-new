@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\V1\Server;
 
 use App\Http\Controllers\Controller;
+use App\Protocols\Support\NetworkSettings;
 use App\Services\ServerService;
 use App\Services\UserService;
+use App\Support\AnyTlsSettings;
+use App\Support\RealitySettings;
 use App\Utils\CacheKey;
 use App\Utils\Helper;
 use Illuminate\Http\Request;
@@ -243,7 +246,7 @@ class UniProxyController extends Controller
                 $response = [
                     'server_port' => $this->nodeInfo->server_port,
                     'network' => $this->nodeInfo->network,
-                    'networkSettings' => $this->nodeInfo->networkSettings,
+                    'networkSettings' => $this->normalizeNetworkSettings($this->nodeInfo->networkSettings),
                     'tls' => $this->nodeInfo->tls,
                 ];
                 break;
@@ -251,10 +254,10 @@ class UniProxyController extends Controller
                 $response = [
                     'server_port' => $this->nodeInfo->server_port,
                     'network' => $this->nodeInfo->network,
-                    'networkSettings' => $this->nodeInfo->network_settings,
+                    'networkSettings' => $this->normalizeNetworkSettings($this->nodeInfo->network_settings),
                     'tls' => $this->nodeInfo->tls,
                     'flow' => $this->nodeInfo->flow,
-                    'tls_settings' => $this->nodeInfo->tls_settings,
+                    'tls_settings' => $this->normalizeRealitySettings($this->nodeInfo->tls_settings),
                     'encryption' => $this->nodeInfo->encryption,
                     'encryption_settings' => $this->nodeInfo->encryption_settings,
                 ];
@@ -263,7 +266,7 @@ class UniProxyController extends Controller
                 $response = [
                     'host' => $this->nodeInfo->host,
                     'network' => $this->nodeInfo->network,
-                    'networkSettings' => $this->nodeInfo->network_settings,
+                    'networkSettings' => $this->normalizeNetworkSettings($this->nodeInfo->network_settings),
                     'server_port' => $this->nodeInfo->server_port,
                     'server_name' => $this->nodeInfo->server_name,
                 ];
@@ -301,7 +304,7 @@ class UniProxyController extends Controller
                 $response = [
                     'server_port' => $this->nodeInfo->server_port,
                     'server_name' => $this->nodeInfo->server_name,
-                    'padding_scheme' => $this->nodeInfo->padding_scheme,
+                    'padding_scheme' => AnyTlsSettings::forNode($this->nodeInfo->padding_scheme),
                 ];
                 break;
         }
@@ -318,5 +321,23 @@ class UniProxyController extends Controller
         }
 
         return response($response)->header('ETag', "\"{$eTag}\"");
+    }
+
+    private function normalizeNetworkSettings($settings)
+    {
+        if (!is_array($settings)) {
+            return $settings;
+        }
+
+        return NetworkSettings::normalizeForNode($settings);
+    }
+
+    private function normalizeRealitySettings($settings)
+    {
+        if (!is_array($settings)) {
+            return $settings;
+        }
+
+        return RealitySettings::forNode($settings);
     }
 }

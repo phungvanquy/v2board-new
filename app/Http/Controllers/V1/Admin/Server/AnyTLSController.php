@@ -5,7 +5,10 @@ namespace App\Http\Controllers\V1\Admin\Server;
 use App\Http\Controllers\Controller;
 use App\Models\ServerAnytls;
 use App\Services\ServerIdService;
+use App\Support\AnyTlsSettings;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 
 class AnyTLSController extends Controller
 {
@@ -28,7 +31,13 @@ class AnyTLSController extends Controller
         ]);
 
         if (isset($params['padding_scheme'])) {
-            $params['padding_scheme'] = json_decode($params['padding_scheme']);
+            try {
+                $params['padding_scheme'] = AnyTlsSettings::fromAdmin($params['padding_scheme']);
+            } catch (InvalidArgumentException $e) {
+                throw ValidationException::withMessages([
+                    'padding_scheme' => $e->getMessage(),
+                ]);
+            }
         }
 
         if ($request->input('id')) {

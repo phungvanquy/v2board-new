@@ -72,6 +72,70 @@ class UriStringAndNetworkSettingsTest extends TestCase
         $this->assertSame([], NetworkSettings::for([]));
     }
 
+    /** @dataProvider proxyProtocolValues */
+    public function testNormalizeForNodeUsesBooleanProxyProtocol($value, bool $expected): void
+    {
+        $settings = NetworkSettings::normalizeForNode([
+            'acceptProxyProtocol' => $value,
+            'header' => ['type' => 'none'],
+        ]);
+
+        $this->assertSame($expected, $settings['acceptProxyProtocol']);
+        $this->assertSame(['type' => 'none'], $settings['header']);
+    }
+
+    public static function proxyProtocolValues(): array
+    {
+        return [
+            [true, true],
+            [false, false],
+            ['true', true],
+            ['false', false],
+            ['1', true],
+            ['0', false],
+            [1, true],
+            [0, false],
+        ];
+    }
+
+    public function testNormalizeForNodeLeavesAbsentProxyProtocolAbsent(): void
+    {
+        $settings = ['header' => ['type' => 'none']];
+
+        $this->assertSame($settings, NetworkSettings::normalizeForNode($settings));
+    }
+
+    public function testNormalizeForNodeUsesStrictV2bxTransportTypes(): void
+    {
+        $settings = NetworkSettings::normalizeForNode([
+            'multiMode' => '1',
+            'permit_without_stream' => 'false',
+            'heartbeatPeriod' => '30',
+            'idle_timeout' => '45',
+            'extra' => [
+                'xPaddingObfsMode' => 'true',
+                'noGRPCHeader' => '0',
+                'noSSEHeader' => '1',
+                'scMaxBufferedPosts' => '8',
+                'serverMaxHeaderBytes' => '4096',
+                'xmux' => ['hKeepAlivePeriod' => '15'],
+                'downloadSettings' => ['port' => '8443'],
+            ],
+        ]);
+
+        $this->assertSame(true, $settings['multiMode']);
+        $this->assertSame(false, $settings['permit_without_stream']);
+        $this->assertSame(30, $settings['heartbeatPeriod']);
+        $this->assertSame(45, $settings['idle_timeout']);
+        $this->assertSame(true, $settings['extra']['xPaddingObfsMode']);
+        $this->assertSame(false, $settings['extra']['noGRPCHeader']);
+        $this->assertSame(true, $settings['extra']['noSSEHeader']);
+        $this->assertSame(8, $settings['extra']['scMaxBufferedPosts']);
+        $this->assertSame(4096, $settings['extra']['serverMaxHeaderBytes']);
+        $this->assertSame(15, $settings['extra']['xmux']['hKeepAlivePeriod']);
+        $this->assertSame(8443, $settings['extra']['downloadSettings']['port']);
+    }
+
     public function testTlsPrefersSnakeCase(): void
     {
         $server = ['tls_settings' => ['server_name' => 'a'], 'tlsSettings' => ['serverName' => 'b']];
