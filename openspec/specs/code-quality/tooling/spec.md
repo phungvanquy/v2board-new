@@ -2,7 +2,7 @@
 
 Provide automated code-quality guardrails (formatting, linting, and static analysis) with one-command local fixing and CI enforcement so that style, duplication, and type-safety regressions are caught before merge without relying on manual review.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Automated PHP formatting
 

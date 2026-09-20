@@ -2,7 +2,7 @@
 
 Increase confidence in changes and catch regressions automatically by establishing automated unit, service, and feature tests with reproducible fixtures and CI enforcement.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Test organization and execution
 
