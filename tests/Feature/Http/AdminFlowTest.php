@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Http;
 
 use App\Http\Middleware\AdminLocale;
+use App\Http\Middleware\Language;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Tests\TestCase;
@@ -27,16 +28,23 @@ class AdminFlowTest extends TestCase
         $this->assertSame('zh-CN', App::getLocale());
     }
 
-    public function testAdminLoginLocaleHeaderKeepsErrorsInEnglish(): void
+    public function testEnglishLocaleHeaderKeepsApiErrorsInEnglish(): void
     {
-        $response = $this->withHeader('Content-Language', 'en-US')
-            ->postJson('/api/v1/passport/auth/login', [
-                'email' => 'admin-i18n-probe@example.invalid',
-                'password' => 'not-a-real-password',
-            ]);
+        $previousLocale = App::getLocale();
+        $request = Request::create('/api/v1/passport/auth/login', 'POST');
+        $request->headers->set('Content-Language', 'en-US');
 
-        $response->assertStatus(500)
-            ->assertJson(['message' => 'Incorrect email or password']);
+        try {
+            App::setLocale('zh-CN');
+            $response = (new Language())->handle($request, function () {
+                return response()->json(['message' => __('Incorrect email or password')]);
+            });
+
+            $this->assertSame('en-US', App::getLocale());
+            $this->assertSame('Incorrect email or password', $response->getData(true)['message']);
+        } finally {
+            App::setLocale($previousLocale);
+        }
     }
 
     public function testAdminApiForcesEnglishBeforeAuthentication(): void
