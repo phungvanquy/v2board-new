@@ -100375,6 +100375,7 @@
                             return r = Object(u["c"])(),
                             n = n || {},
                             n.headers = n.headers || {},
+                            n.headers["Content-Language"] = "en-US",
                             n.credentials = "include",
                             r && (n.headers.authorization = r),
                             -1 !== t.indexOf("http") ? t += t.indexOf("?") > 0 ? "&" : "?" : t = f + t,

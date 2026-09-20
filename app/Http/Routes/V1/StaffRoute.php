@@ -10,7 +10,7 @@ class StaffRoute
     {
         $router->group([
             'prefix' => 'staff',
-            'middleware' => 'staff',
+            'middleware' => ['admin.locale', 'staff'],
         ], function ($router) {
             // Ticket
             $router->get('/ticket/fetch', 'V1\\Staff\\TicketController@fetch');

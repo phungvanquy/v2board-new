@@ -41,6 +41,31 @@ const DRY = argv.includes('--dry-run');
 const STAGE_ONLY = argv.includes('--stage');
 const NO_VERIFY = argv.includes('--no-verify');
 
+// The public site defaults to zh-CN. Admin requests must opt into English or Laravel
+// will translate validation and error responses back to Chinese even though the SPA
+// itself has been translated. Keep this as part of bundle generation so restoring or
+// upgrading the pristine bundle cannot silently drop the header.
+const ADMIN_LOCALE_HEADER = '.headers["Content-Language"] = "en-US"';
+
+function enforceAdminLocaleHeader(file, src) {
+  if (file !== 'umi.js') return src;
+
+  const existing = src.split(ADMIN_LOCALE_HEADER).length - 1;
+  if (existing === 1) return src;
+  if (existing > 1) fail(`admin locale header occurs ${existing} times in ${file}; expected exactly one`);
+
+  // Match the request helper's adjacent headers/credentials assignments while retaining
+  // whichever minified local variable name and indentation an upstream bundle uses.
+  const anchor = /(\b([A-Za-z_$][\w$]*)\.headers = \2\.headers \|\| \{\},\r?\n)([ \t]*)(\2\.credentials = "include",)/g;
+  const matches = [...src.matchAll(anchor)];
+  if (matches.length !== 1) {
+    fail(`could not locate the unique admin request helper in ${file} (found ${matches.length})`);
+  }
+
+  return src.replace(anchor, (whole, headers, variable, indent, credentials) =>
+    `${headers}${indent}${variable}${ADMIN_LOCALE_HEADER},\n${indent}${credentials}`);
+}
+
 if (!fs.existsSync(STRINGS)) {
   console.error('missing strings/admin-ui.en-US.json — run `node admin-i18n/extract.mjs` first');
   process.exit(1);
@@ -102,6 +127,7 @@ for (const file of BUNDLE_FILES) {
     const e = edits[i];
     out = out.slice(0, e.start) + e.text + out.slice(e.end);
   }
+  out = enforceAdminLocaleHeader(file, out);
   plan.push({ file, srcPath, src, out, edits: edits.length, literals: literals.length });
   console.log(`${file}: ${literals.length} CJK literal(s), ${edits.length} rewrite(s)`);
 }
@@ -140,7 +166,7 @@ for (const p of plan) {
       + (lit.zh in table ? ` (expected ${JSON.stringify(String(table[lit.zh]).slice(0, 40))})` : ' (no inventory entry)'));
   }
   if (residue.length) fail(`staged ${p.file} still holds ${residue.length} translatable literal(s)`, residue);
-  console.log(`staged ${p.file}: parses, ${p.literals.length} -> ${after.length} CJK literal(s)`);
+  console.log(`staged ${p.file}: parses, ${p.literals} -> ${after.length} CJK literal(s)`);
 }
 
 if (!NO_VERIFY) {

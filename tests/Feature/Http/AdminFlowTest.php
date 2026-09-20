@@ -4,10 +4,55 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Http;
 
+use App\Http\Middleware\AdminLocale;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Tests\TestCase;
 
 class AdminFlowTest extends TestCase
 {
+    public function testAdminLocaleMiddlewareForcesEnglish(): void
+    {
+        App::setLocale('zh-CN');
+        $requestLocale = null;
+
+        $response = (new AdminLocale())->handle(Request::create('/admin'), function () use (&$requestLocale) {
+            $requestLocale = App::getLocale();
+
+            return response()->json(['message' => __('Save failed')]);
+        });
+
+        $this->assertSame('en-US', $requestLocale);
+        $this->assertSame('Save failed', $response->getData(true)['message']);
+        $this->assertSame('zh-CN', App::getLocale());
+    }
+
+    public function testAdminLoginLocaleHeaderKeepsErrorsInEnglish(): void
+    {
+        $response = $this->withHeader('Content-Language', 'en-US')
+            ->postJson('/api/v1/passport/auth/login', [
+                'email' => 'admin-i18n-probe@example.invalid',
+                'password' => 'not-a-real-password',
+            ]);
+
+        $response->assertStatus(500)
+            ->assertJson(['message' => 'Incorrect email or password']);
+    }
+
+    public function testAdminApiForcesEnglishBeforeAuthentication(): void
+    {
+        $securePath = config(
+            'v2board.secure_path',
+            config('v2board.frontend_admin_path', hash('crc32b', config('app.key')))
+        );
+
+        $response = $this->withHeader('Content-Language', 'zh-CN')
+            ->getJson('/api/v1/' . $securePath . '/config/fetch');
+
+        $response->assertStatus(403)
+            ->assertJson(['message' => 'Not logged in or session expired']);
+    }
+
     public function testAdminConfigFetchWithoutAuthReturns403(): void
     {
         // Admin path is dynamic; probe via the API prefix directly using a guessed path.

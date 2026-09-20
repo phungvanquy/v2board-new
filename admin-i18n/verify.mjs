@@ -24,6 +24,14 @@ if (!fs.existsSync(path.join(STAGE, 'umi.js'))) {
   process.exit(1);
 }
 
+const umi = fs.readFileSync(path.join(STAGE, 'umi.js'), 'utf8');
+const localeHeader = '.headers["Content-Language"] = "en-US"';
+const localeHeaderCount = umi.split(localeHeader).length - 1;
+if (localeHeaderCount !== 1) {
+  console.error(`staged umi.js has ${localeHeaderCount} admin English locale headers; expected exactly one`);
+  process.exit(1);
+}
+
 function run(tool, args) {
   const r = spawnSync(process.execPath, [path.join(HERE, tool), ...args], { encoding: 'utf8' });
   if (r.status !== 0) {
@@ -46,5 +54,5 @@ if (!ok) {
   console.error('\nstaged verification failed — nothing published');
   process.exit(1);
 }
-console.log('\nstaged verification: guard + inventory + shape checks passed');
+console.log('\nstaged verification: locale header + guard + inventory + shape checks passed');
 console.log('TODO: when a headless-DOM harness is added, it replaces this stub inside verify.mjs');

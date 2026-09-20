@@ -6,6 +6,10 @@ upstream source repo to rebuild from (see `openspec/changes/translate-admin-dash
 in this directory and stamped into the bundles by a deterministic pipeline. The bundles
 are generated output, not source — they are never edited by hand.
 
+The same generation step stamps `Content-Language: en-US` into the admin request helper.
+The backend defaults to `zh-CN`, so omitting that header would make login, validation,
+and API error messages appear in Chinese even when every bundle label is English.
+
 ## Before you do anything
 
 ```bash
