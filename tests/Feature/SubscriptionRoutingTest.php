@@ -23,15 +23,70 @@ class SubscriptionRoutingTest extends TestCase
         ]);
     }
 
-    private function render(string $agent, ?string $flag = null)
+    private function render(string $agent, ?string $flag = null, ?array $servers = null)
     {
         $request = Request::create('/api/v1/client/subscribe', 'GET', $flag === null ? [] : ['flag' => $flag], [], [], ['HTTP_USER_AGENT' => $agent]);
         $user = ['uuid' => '8f14e45f-ea51-4ed4-a87c-c79ff1234567', 'u' => 0, 'd' => 0, 'transfer_enable' => 1024, 'expired_at' => null];
-        $servers = [['name' => 'Test node', 'type' => 'shadowsocks', 'host' => '192.0.2.1', 'port' => 443, 'cipher' => 'aes-128-gcm']];
+        $servers = $servers ?? [['name' => 'Test node', 'type' => 'shadowsocks', 'host' => '192.0.2.1', 'port' => 443, 'cipher' => 'aes-128-gcm']];
         $method = new \ReflectionMethod(ClientController::class, 'renderSubscription');
         $method->setAccessible(true);
 
         return $method->invoke(new ClientController(), $request, $user, $servers);
+    }
+
+    /** @dataProvider hysteriaSubscriptions */
+    public function testHysteriaSubscriptionsAcceptIntegerPortsAndPortRanges(string $agent, array $settings, $port): void
+    {
+        $server = array_merge([
+            'name' => 'Hysteria node',
+            'host' => '192.0.2.1',
+            'port' => $port,
+            'insecure' => 0,
+            'server_name' => 'example.com',
+            'tls_settings' => ['allow_insecure' => 0, 'server_name' => 'example.com'],
+            'up_mbps' => 100,
+            'down_mbps' => 100,
+        ], $settings);
+        $hopping = strpos((string) $port, '-') !== false;
+        if ($hopping) {
+            $server['mport'] = $port;
+        }
+
+        $response = $this->render($agent, null, [$server]);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $body = base64_decode($response->getContent(), true);
+        $this->assertIsString($body);
+        $links = explode("\n", trim($body));
+        $uri = parse_url(end($links));
+        $this->assertSame(($settings['version'] ?? 2) === 1 ? 'hysteria' : 'hysteria2', $uri['scheme']);
+        $this->assertSame('192.0.2.1', $uri['host']);
+        $this->assertSame(443, $uri['port']);
+        parse_str($uri['query'], $query);
+        $this->assertSame('8f14e45f-ea51-4ed4-a87c-c79ff1234567', $uri['user'] ?? $query['auth']);
+        if ($hopping) {
+            $this->assertSame($port, $query['mport']);
+        } else {
+            $this->assertArrayNotHasKey('mport', $query);
+        }
+    }
+
+    public static function hysteriaSubscriptions(): array
+    {
+        $cases = [];
+        foreach (['Mozilla/5.0', 'Happ/3.0.0'] as $agent) {
+            foreach ([
+                'hysteria1' => ['type' => 'hysteria', 'version' => 1],
+                'hysteria2' => ['type' => 'hysteria', 'version' => 2],
+                'v2node-hysteria2' => ['type' => 'v2node', 'protocol' => 'hysteria2'],
+            ] as $name => $settings) {
+                foreach ([443, '443', '443-450', '443-450,8443'] as $index => $port) {
+                    $cases["{$agent}/{$name}/{$index}"] = [$agent, $settings, $port];
+                }
+            }
+        }
+
+        return $cases;
     }
 
     public function testHappReceivesNodesAndAnActivatedRoutingProfile(): void
