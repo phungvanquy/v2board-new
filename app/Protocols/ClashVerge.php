@@ -3,6 +3,7 @@
 namespace App\Protocols;
 
 use App\Protocols\Contracts\ProtocolFormatter;
+use App\Protocols\Support\NetworkSettings;
 use App\Support\SubscriptionRuleService;
 use App\Utils\Helper;
 use Symfony\Component\Yaml\Yaml;
@@ -174,6 +175,8 @@ class ClashVerge implements ProtocolFormatter
 
     public static function buildVmess($uuid, $server)
     {
+        $networkSettings = NetworkSettings::for($server);
+        $tlsSettings = NetworkSettings::tls($server);
         $array = [];
         $array['name'] = $server['name'];
         $array['type'] = 'vmess';
@@ -186,13 +189,13 @@ class ClashVerge implements ProtocolFormatter
 
         if (!empty($server['tls'])) {
             $array['tls'] = true;
-            $tlsSettings = $server['tlsSettings'] ?? ($server['tls_settings'] ?? null);
+
             if ($tlsSettings) {
-                if (isset($tlsSettings['allowInsecure']) && !empty($tlsSettings['allowInsecure'])) {
-                    $array['skip-cert-verify'] = ($tlsSettings['allowInsecure'] ? true : false);
+                if (isset($tlsSettings['allow_insecure']) && !empty($tlsSettings['allow_insecure'])) {
+                    $array['skip-cert-verify'] = ($tlsSettings['allow_insecure'] ? true : false);
                 }
-                if (isset($tlsSettings['serverName']) && !empty($tlsSettings['serverName'])) {
-                    $array['servername'] = $tlsSettings['serverName'];
+                if (isset($tlsSettings['server_name']) && !empty($tlsSettings['server_name'])) {
+                    $array['servername'] = $tlsSettings['server_name'];
                 }
                 if (!empty($tlsSettings['ech'])) {
                     if ($tlsSettings['ech'] === 'cloudflare') {
@@ -211,7 +214,7 @@ class ClashVerge implements ProtocolFormatter
         }
         $network = $server['network'] ?? null;
         if ($network === 'tcp') {
-            $tcpSettings = $server['networkSettings'] ?? ($server['network_settings'] ?? []);
+            $tcpSettings = $networkSettings;
             if (isset($tcpSettings['header']['type']) && $tcpSettings['header']['type'] == 'http') {
                 $array['network'] = $tcpSettings['header']['type'];
                 if (isset($tcpSettings['header']['request']['headers']['Host'])) {
@@ -224,7 +227,7 @@ class ClashVerge implements ProtocolFormatter
         }
         if ($network === 'ws') {
             $array['network'] = 'ws';
-            $wsSettings = $server['networkSettings'] ?? ($server['network_settings'] ?? null);
+            $wsSettings = $networkSettings;
             if ($wsSettings) {
                 $array['ws-opts'] = [];
                 if (isset($wsSettings['path']) && !empty($wsSettings['path'])) {
@@ -240,7 +243,7 @@ class ClashVerge implements ProtocolFormatter
         }
         if ($network === 'grpc') {
             $array['network'] = 'grpc';
-            $grpcSettings = $server['networkSettings'] ?? ($server['network_settings'] ?? null);
+            $grpcSettings = $networkSettings;
             if ($grpcSettings) {
                 $array['grpc-opts'] = [];
                 if (isset($grpcSettings['serviceName'])) {

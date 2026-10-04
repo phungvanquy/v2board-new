@@ -135,7 +135,7 @@ class Helper
 
     public static function buildShadowsocksUri($uuid, $server)
     {
-        $cipher = $server['cipher'];
+        $cipher = ($server['cipher'] ?? null) ?: 'aes-128-gcm';
         if (strpos($cipher, '2022-blake3') !== false) {
             $length = $cipher === '2022-blake3-aes-128-gcm' ? 16 : 32;
             $serverKey = self::getServerKey($server['created_at'], $length);
@@ -318,7 +318,7 @@ class Helper
                 "&obfs={$server['obfs']}&obfsParam{$obfs_password}";
         }
         if (count($parts) !== 1 || strpos($parts[0], '-') !== false) {
-            $uri .= "&mport={$server['mport']}";
+            $uri .= '&mport=' . ($server['mport'] ?? $server['port']);
         }
 
         return "{$uri}#{$name}\r\n";
@@ -340,7 +340,7 @@ class Helper
             $uri .= "&obfs={$server['obfs']}&obfs-password={$obfs_password}";
         }
         if (count($parts) !== 1 || strpos($parts[0], '-') !== false) {
-            $uri .= "&mport={$server['mport']}";
+            $uri .= '&mport=' . ($server['mport'] ?? $server['port']);
         }
 
         return "{$uri}#{$name}\r\n";

@@ -13,6 +13,7 @@ use App\Models\ServerV2node;
 use App\Models\ServerVless;
 use App\Models\ServerVmess;
 use App\Models\User;
+use App\Protocols\Support\PortSettings;
 use App\Utils\CacheKey;
 use App\Utils\Helper;
 use Illuminate\Support\Facades\Cache;
@@ -31,9 +32,6 @@ class ServerService
             $server[$key]['type'] = 'vless';
             if (!in_array($user->group_id, $server[$key]['group_id'])) {
                 continue;
-            }
-            if (strpos($server[$key]['port'], '-') !== false) {
-                $server[$key]['port'] = Helper::randomPort($server[$key]['port']);
             }
             if ($server[$key]['parent_id']) {
                 $server[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_VLESS_LAST_CHECK_AT', $server[$key]['parent_id']));
@@ -72,9 +70,6 @@ class ServerService
             if (!in_array($user->group_id, $vmess[$key]['group_id'])) {
                 continue;
             }
-            if (strpos($vmess[$key]['port'], '-') !== false) {
-                $vmess[$key]['port'] = Helper::randomPort($vmess[$key]['port']);
-            }
             if ($vmess[$key]['parent_id']) {
                 $vmess[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_VMESS_LAST_CHECK_AT', $vmess[$key]['parent_id']));
             } else {
@@ -98,9 +93,6 @@ class ServerService
             $trojan[$key]['type'] = 'trojan';
             if (!in_array($user->group_id, $trojan[$key]['group_id'])) {
                 continue;
-            }
-            if (strpos($trojan[$key]['port'], '-') !== false) {
-                $trojan[$key]['port'] = Helper::randomPort($trojan[$key]['port']);
             }
             if ($trojan[$key]['parent_id']) {
                 $trojan[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_TROJAN_LAST_CHECK_AT', $trojan[$key]['parent_id']));
@@ -176,17 +168,14 @@ class ServerService
             if (!in_array($user->group_id, $v['group_id'])) {
                 continue;
             }
-            if (strpos($v['port'], '-') !== false) {
-                $shadowsocks[$key]['port'] = Helper::randomPort($v['port']);
-            }
             if (isset($shadowsocks[$v['parent_id']])) {
                 $shadowsocks[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_SHADOWSOCKS_LAST_CHECK_AT', $v['parent_id']));
                 $shadowsocks[$key]['created_at'] = $shadowsocks[$v['parent_id']]['created_at'];
             }
             if ($v['obfs'] === 'http') {
                 $shadowsocks[$key]['obfs'] = 'http';
-                $shadowsocks[$key]['obfs-host'] = $v['obfs_settings']['host'];
-                $shadowsocks[$key]['obfs-path'] = $v['obfs_settings']['path'];
+                $shadowsocks[$key]['obfs-host'] = $v['obfs_settings']['host'] ?? '';
+                $shadowsocks[$key]['obfs-path'] = $v['obfs_settings']['path'] ?? '/';
             }
             $servers[] = $shadowsocks[$key]->toArray();
         }
@@ -207,9 +196,6 @@ class ServerService
             $anytls[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_ANYTLS_LAST_CHECK_AT', $v['id']));
             if (!in_array($user->group_id, $v['group_id'])) {
                 continue;
-            }
-            if (strpos($v['port'], '-') !== false) {
-                $anytls[$key]['port'] = Helper::randomPort($v['port']);
             }
             if (isset($anytls[$v['parent_id']])) {
                 $anytls[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_ANYTLS_LAST_CHECK_AT', $v['parent_id']));
@@ -274,10 +260,16 @@ class ServerService
         array_multisort($tmp, SORT_ASC, $servers);
 
         return array_map(function ($server) {
-            if (strpos($server['port'], '-')) {
-                $server['mport'] = (string) $server['port'];
+            $protocol = $server['type'] === 'v2node' ? $server['protocol'] : $server['type'];
+            if (in_array($protocol, ['hysteria', 'hysteria2'], true) && PortSettings::isMultiple($server['port'])) {
+                $server['port'] = implode(',', array_map('trim', explode(',', (string) $server['port'])));
+                $server['mport'] = $server['port'];
             } else {
-                $server['port'] = (int) $server['port'];
+                $server['port'] = PortSettings::select($server['port']);
+                unset($server['mport']);
+            }
+            if ($protocol === 'shadowsocks') {
+                $server['cipher'] = ($server['cipher'] ?? null) ?: 'aes-128-gcm';
             }
             $server['is_online'] = (time() - 300 > $server['last_check_at']) ? 0 : 1;
             $server['cache_key'] = "{$server['type']}-{$server['id']}-{$server['updated_at']}-{$server['is_online']}";

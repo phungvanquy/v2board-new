@@ -3,6 +3,7 @@
 namespace App\Protocols\Singbox;
 
 use App\Protocols\Contracts\ProtocolFormatter;
+use App\Protocols\Support\PortSettings;
 use App\Support\SubscriptionRuleService;
 use App\Utils\Helper;
 
@@ -404,8 +405,8 @@ class Singbox implements ProtocolFormatter
             ],
             'server_name' => $server['server_name'] ?? ($tlsSettings['server_name'] ?? ''),
         ];
-        if ($server['tls_settings']) {
-            if ($server['tls'] == 2) {
+        if ($tlsSettings) {
+            if (($server['tls'] ?? 1) == 2) {
                 $tlsConfig['reality'] = [
                     'enabled' => true,
                     'public_key' => $tlsSettings['public_key'],
@@ -419,8 +420,9 @@ class Singbox implements ProtocolFormatter
         }
         $array['tls'] = $tlsConfig;
 
-        if ($server['network'] === 'tcp') {
-            $tcpSettings = $server['network_settings'];
+        $network = $server['network'] ?? 'tcp';
+        if ($network === 'tcp') {
+            $tcpSettings = $server['network_settings'] ?? [];
             if (isset($tcpSettings['header']['type']) && $tcpSettings['header']['type'] == 'http') {
                 $array['transport']['type'] = $tcpSettings['header']['type'];
             }
@@ -431,7 +433,7 @@ class Singbox implements ProtocolFormatter
                 $array['transport']['path'] = $tcpSettings['header']['request']['path'][0];
             }
         }
-        if ($server['network'] === 'ws') {
+        if ($network === 'ws') {
             $array['transport']['type'] = 'ws';
             if ($server['network_settings']) {
                 $wsSettings = $server['network_settings'];
@@ -445,7 +447,7 @@ class Singbox implements ProtocolFormatter
                 $array['transport']['early_data_header_name'] = 'Sec-WebSocket-Protocol';
             }
         }
-        if ($server['network'] === 'grpc') {
+        if ($network === 'grpc') {
             $array['transport']['type'] = 'grpc';
             if ($server['network_settings']) {
                 $grpcSettings = $server['network_settings'];
@@ -460,21 +462,6 @@ class Singbox implements ProtocolFormatter
 
     protected function buildHysteria($password, $server, $user)
     {
-        $parts = array_map('trim', explode(',', $server['port']));
-        $portConfig = [];
-
-        // Check whether it is a single port
-        if (count($parts) === 1 && !str_contains($parts[0], '-')) {
-            $port = (int) $parts[0];
-        } else {
-            // Handle multi-port case: drop standalone ports, keep only port ranges
-            foreach ($parts as $part) {
-                if (str_contains($part, '-')) {
-                    $portConfig[] = str_replace('-', ':', $part);
-                }
-            }
-        }
-
         $array = [
             'tag' => $server['name'],
             'server' => $server['host'],
@@ -486,12 +473,7 @@ class Singbox implements ProtocolFormatter
             ],
         ];
 
-        // Set port config
-        if (isset($port)) {
-            $array['server_port'] = $port;
-        } else {
-            $array['server_ports'] = $portConfig;
-        }
+        $array = array_merge($array, PortSettings::forSingbox($server['port']));
 
         if (is_null($server['version']) || $server['version'] == 1) {
             $array['auth_str'] = $password;
@@ -519,18 +501,9 @@ class Singbox implements ProtocolFormatter
 
     protected function buildHysteria2($password, $server)
     {
-        $parts = explode(',', $server['port']);
-        $firstPart = $parts[0];
-        if (strpos($firstPart, '-') !== false) {
-            $range = explode('-', $firstPart);
-            $firstPort = $range[0];
-        } else {
-            $firstPort = $firstPart;
-        }
         $tlsSettings = $server['tls_settings'] ?? [];
         $array = [
             'server' => $server['host'],
-            'server_port' => (int) $firstPort,
             'tls' => [
                 'enabled' => true,
                 'insecure' => ($tlsSettings['allow_insecure'] ?? 0) == 1 ? true : false,
@@ -546,6 +519,6 @@ class Singbox implements ProtocolFormatter
             $array['obfs']['password'] = $server['obfs_password'];
         }
 
-        return $array;
+        return array_merge($array, PortSettings::forSingbox($server['port']));
     }
 }

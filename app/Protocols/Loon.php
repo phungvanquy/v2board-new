@@ -3,6 +3,7 @@
 namespace App\Protocols;
 
 use App\Protocols\Contracts\ProtocolFormatter;
+use App\Protocols\Support\NetworkSettings;
 use App\Utils\Helper;
 
 class Loon implements ProtocolFormatter
@@ -37,7 +38,7 @@ class Loon implements ProtocolFormatter
                 $uri .= self::buildVless($user['uuid'], $item);
             } elseif ($item['type'] === 'trojan' && (($item['network'] ?? null) !== 'grpc')) {
                 $uri .= self::buildTrojan($user['uuid'], $item);
-            } elseif ($item['type'] === 'hysteria' && $item['version'] === 2) { // Loon only supports hysteria2
+            } elseif (($item['type'] === 'hysteria' && (int) ($item['version'] ?? 1) === 2) || $item['type'] === 'hysteria2') { // Loon only supports hysteria2
                 $uri .= self::buildHysteria($user['uuid'], $item);
             } elseif ($item['type'] === 'anytls') {
                 $uri .= self::buildAnytls($user['uuid'], $item);
@@ -85,7 +86,9 @@ class Loon implements ProtocolFormatter
 
     public static function buildVmess($uuid, $server)
     {
-        $networkSettings = $server['networkSettings'] ?? [];
+        $networkSettings = NetworkSettings::for($server);
+        $tlsSettings = NetworkSettings::tls($server);
+
         $config = [
             "{$server['name']}=vmess",
             "{$server['host']}",
@@ -99,8 +102,8 @@ class Loon implements ProtocolFormatter
 
         if ($server['network'] === 'tcp') {
             array_push($config, 'transport=tcp');
-            if ($server['networkSettings']) {
-                $tcpSettings = $server['networkSettings'];
+            if ($networkSettings) {
+                $tcpSettings = $networkSettings;
                 if (isset($tcpSettings['header']['type']) && !empty($tcpSettings['header']['type']) && $tcpSettings['header']['type'] == 'http') {
                     $config = str_replace('transport=tcp', "transport={$tcpSettings['header']['type']}", $config);
                 }
@@ -114,20 +117,19 @@ class Loon implements ProtocolFormatter
         }
         if ($server['tls']) {
             array_push($config, 'over-tls=true');
-            if ($server['tlsSettings']) {
-                $tlsSettings = $server['tlsSettings'];
-                if (isset($tlsSettings['allowInsecure']) && !empty($tlsSettings['allowInsecure'])) {
-                    array_push($config, 'skip-cert-verify=' . ($tlsSettings['allowInsecure'] ? 'true' : 'false'));
+            if ($tlsSettings) {
+                if (isset($tlsSettings['allow_insecure']) && !empty($tlsSettings['allow_insecure'])) {
+                    array_push($config, 'skip-cert-verify=' . ($tlsSettings['allow_insecure'] ? 'true' : 'false'));
                 }
-                if (isset($tlsSettings['serverName']) && !empty($tlsSettings['serverName'])) {
-                    array_push($config, "tls-name={$tlsSettings['serverName']}");
+                if (isset($tlsSettings['server_name']) && !empty($tlsSettings['server_name'])) {
+                    array_push($config, "tls-name={$tlsSettings['server_name']}");
                 }
             }
         }
         if ($server['network'] === 'ws') {
             array_push($config, 'transport=ws');
-            if ($server['networkSettings']) {
-                $wsSettings = $server['networkSettings'];
+            if ($networkSettings) {
+                $wsSettings = $networkSettings;
                 if (isset($wsSettings['path']) && !empty($wsSettings['path'])) {
                     array_push($config, "path={$wsSettings['path']}");
                 }
@@ -254,6 +256,9 @@ class Loon implements ProtocolFormatter
 
     public static function buildHysteria($password, $server)
     {
+        $tlsSettings = NetworkSettings::tls($server);
+        $sni = $server['server_name'] ?? ($tlsSettings['server_name'] ?? '');
+        $insecure = $server['insecure'] ?? ($tlsSettings['allow_insecure'] ?? 0);
         $parts = explode(',', $server['port']);
         $firstPart = $parts[0];
         if (strpos($firstPart, '-') !== false) {
@@ -269,11 +274,11 @@ class Loon implements ProtocolFormatter
             "{$firstPort}",
             "password={$password}",
             "download-bandwidth={$server['up_mbps']}",
-            $server['server_name'] ? "sni={$server['server_name']}" : '',
+            $sni ? "sni={$sni}" : '',
             'udp=true',
         ];
-        if (!empty($server['insecure'])) {
-            array_push($config, $server['insecure'] ? 'skip-cert-verify=true' : 'skip-cert-verify=false');
+        if ($insecure == 1) {
+            array_push($config, 'skip-cert-verify=true');
         }
         if (isset($server['obfs'])) {
             array_push($config, 'salamander-password=' . $server['obfs_password']);

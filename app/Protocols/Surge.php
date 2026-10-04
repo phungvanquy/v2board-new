@@ -3,6 +3,7 @@
 namespace App\Protocols;
 
 use App\Protocols\Contracts\ProtocolFormatter;
+use App\Protocols\Support\NetworkSettings;
 use App\Support\SubscriptionRuleService;
 use App\Utils\Helper;
 
@@ -48,7 +49,7 @@ class Surge implements ProtocolFormatter
                 $proxies .= self::buildTrojan($user['uuid'], $item);
                 // [Proxy Group]
                 $proxyGroup .= $item['name'] . ', ';
-            } elseif ($item['type'] === 'hysteria' && $item['version'] === 2) { // Surge only supports hysteria2
+            } elseif (($item['type'] === 'hysteria' && (int) ($item['version'] ?? 1) === 2) || $item['type'] === 'hysteria2') { // Surge only supports hysteria2
                 // [Proxy]
                 $proxies .= self::buildHysteria($user['uuid'], $item);
                 // [Proxy Group]
@@ -129,6 +130,8 @@ class Surge implements ProtocolFormatter
 
     public static function buildVmess($uuid, $server)
     {
+        $networkSettings = NetworkSettings::for($server);
+        $tlsSettings = NetworkSettings::tls($server);
         $config = [
             "{$server['name']}=vmess",
             "{$server['host']}",
@@ -141,20 +144,19 @@ class Surge implements ProtocolFormatter
 
         if ($server['tls']) {
             array_push($config, 'tls=true');
-            if ($server['tlsSettings']) {
-                $tlsSettings = $server['tlsSettings'];
-                if (isset($tlsSettings['allowInsecure']) && !empty($tlsSettings['allowInsecure'])) {
-                    array_push($config, 'skip-cert-verify=' . ($tlsSettings['allowInsecure'] ? 'true' : 'false'));
+            if ($tlsSettings) {
+                if (isset($tlsSettings['allow_insecure']) && !empty($tlsSettings['allow_insecure'])) {
+                    array_push($config, 'skip-cert-verify=' . ($tlsSettings['allow_insecure'] ? 'true' : 'false'));
                 }
-                if (isset($tlsSettings['serverName']) && !empty($tlsSettings['serverName'])) {
-                    array_push($config, "sni={$tlsSettings['serverName']}");
+                if (isset($tlsSettings['server_name']) && !empty($tlsSettings['server_name'])) {
+                    array_push($config, "sni={$tlsSettings['server_name']}");
                 }
             }
         }
         if ($server['network'] === 'ws') {
             array_push($config, 'ws=true');
-            if ($server['networkSettings']) {
-                $wsSettings = $server['networkSettings'];
+            if ($networkSettings) {
+                $wsSettings = $networkSettings;
                 if (isset($wsSettings['path']) && !empty($wsSettings['path'])) {
                     array_push($config, "ws-path={$wsSettings['path']}");
                 }
@@ -175,17 +177,20 @@ class Surge implements ProtocolFormatter
 
     public static function buildTrojan($password, $server)
     {
+        $tlsSettings = NetworkSettings::tls($server);
+        $sni = $server['server_name'] ?? ($tlsSettings['server_name'] ?? '');
+        $insecure = $server['allow_insecure'] ?? ($tlsSettings['allow_insecure'] ?? 0);
         $config = [
             "{$server['name']}=trojan",
             "{$server['host']}",
             "{$server['port']}",
             "password={$password}",
-            $server['server_name'] ? "sni={$server['server_name']}" : '',
+            $sni ? "sni={$sni}" : '',
             'tfo=true',
             'udp-relay=true',
         ];
-        if (!empty($server['allow_insecure'])) {
-            array_push($config, $server['allow_insecure'] ? 'skip-cert-verify=true' : 'skip-cert-verify=false');
+        if ($insecure == 1) {
+            array_push($config, 'skip-cert-verify=true');
         }
         if (isset($server['network']) && (string) $server['network'] === 'ws') {
             array_push($config, 'ws=true');
@@ -209,6 +214,9 @@ class Surge implements ProtocolFormatter
     // Reference: https://manual.nssurge.com/policy/proxy.html
     public static function buildHysteria($password, $server)
     {
+        $tlsSettings = NetworkSettings::tls($server);
+        $sni = $server['server_name'] ?? ($tlsSettings['server_name'] ?? '');
+        $insecure = $server['insecure'] ?? ($tlsSettings['allow_insecure'] ?? 0);
         $parts = explode(',', $server['port']);
         $firstPart = $parts[0];
         if (strpos($firstPart, '-') !== false) {
@@ -224,12 +232,12 @@ class Surge implements ProtocolFormatter
             "{$firstPort}",
             "password={$password}",
             "download-bandwidth={$server['up_mbps']}",
-            $server['server_name'] ? "sni={$server['server_name']}" : '',
+            $sni ? "sni={$sni}" : '',
             // 'tfo=true',
             'udp-relay=true',
         ];
-        if (!empty($server['insecure'])) {
-            array_push($config, $server['insecure'] ? 'skip-cert-verify=true' : 'skip-cert-verify=false');
+        if ($insecure == 1) {
+            array_push($config, 'skip-cert-verify=true');
         }
         $config = array_filter($config);
         $uri = implode(',', $config);

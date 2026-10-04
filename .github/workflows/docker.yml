@@ -48,7 +48,7 @@ jobs:
           OWNER_LC="$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
           echo "app_image=ghcr.io/${OWNER_LC}/v2board-app" >> "$GITHUB_OUTPUT"
           echo "nginx_image=ghcr.io/${OWNER_LC}/v2board-nginx" >> "$GITHUB_OUTPUT"
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             echo "version=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
           else
             echo "version=" >> "$GITHUB_OUTPUT"
@@ -78,3 +78,36 @@ jobs:
           tags: |
             ${{ steps.meta.outputs.nginx_image }}:${{ steps.meta.outputs.version || 'pr-check' }}
             ${{ steps.meta.outputs.version && format('{0}:latest', steps.meta.outputs.nginx_image) || '' }}
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+        run: |
+          RELEASE_NOTES_FILE="$RUNNER_TEMP/release-notes.txt"
+          OWNER_LC="${REPOSITORY_OWNER,,}"
+          git for-each-ref --format='%(contents)' "refs/tags/$RELEASE_TAG" > "$RELEASE_NOTES_FILE"
+          cat >> "$RELEASE_NOTES_FILE" <<EOF
+
+          Docker images (linux/amd64 and linux/arm64):
+          - ghcr.io/${OWNER_LC}/v2board-app:${RELEASE_TAG}
+          - ghcr.io/${OWNER_LC}/v2board-nginx:${RELEASE_TAG}
+          EOF
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Release $RELEASE_TAG is already published."
+          else
+            gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" --notes-file "$RELEASE_NOTES_FILE"
+          fi

@@ -3,6 +3,7 @@
 namespace App\Protocols;
 
 use App\Protocols\Contracts\ProtocolFormatter;
+use App\Protocols\Support\NetworkSettings;
 use App\Support\SubscriptionRuleService;
 use App\Utils\Helper;
 use Symfony\Component\Yaml\Yaml;
@@ -154,6 +155,8 @@ class Stash implements ProtocolFormatter
 
     public static function buildVmess($uuid, $server)
     {
+        $networkSettings = NetworkSettings::for($server);
+        $tlsSettings = NetworkSettings::tls($server);
         $array = [];
         $array['name'] = $server['name'];
         $array['type'] = 'vmess';
@@ -166,18 +169,17 @@ class Stash implements ProtocolFormatter
 
         if ($server['tls']) {
             $array['tls'] = true;
-            if ($server['tlsSettings']) {
-                $tlsSettings = $server['tlsSettings'];
-                if (isset($tlsSettings['allowInsecure']) && !empty($tlsSettings['allowInsecure'])) {
-                    $array['skip-cert-verify'] = ($tlsSettings['allowInsecure'] ? true : false);
+            if ($tlsSettings) {
+                if (isset($tlsSettings['allow_insecure']) && !empty($tlsSettings['allow_insecure'])) {
+                    $array['skip-cert-verify'] = ($tlsSettings['allow_insecure'] ? true : false);
                 }
-                if (isset($tlsSettings['serverName']) && !empty($tlsSettings['serverName'])) {
-                    $array['servername'] = $tlsSettings['serverName'];
+                if (isset($tlsSettings['server_name']) && !empty($tlsSettings['server_name'])) {
+                    $array['servername'] = $tlsSettings['server_name'];
                 }
             }
         }
         if ($server['network'] === 'tcp') {
-            $tcpSettings = $server['networkSettings'];
+            $tcpSettings = $networkSettings;
             if (isset($tcpSettings['header']['type']) && $tcpSettings['header']['type'] == 'http') {
                 $array['network'] = $tcpSettings['header']['type'];
                 if (isset($tcpSettings['header']['request']['headers']['Host'])) {
@@ -187,8 +189,8 @@ class Stash implements ProtocolFormatter
         }
         if ($server['network'] === 'ws') {
             $array['network'] = 'ws';
-            if ($server['networkSettings']) {
-                $wsSettings = $server['networkSettings'];
+            if ($networkSettings) {
+                $wsSettings = $networkSettings;
                 $array['ws-opts'] = [];
                 if (isset($wsSettings['path']) && !empty($wsSettings['path'])) {
                     $array['ws-opts']['path'] = $wsSettings['path'];
@@ -209,8 +211,8 @@ class Stash implements ProtocolFormatter
         }
         if ($server['network'] === 'grpc') {
             $array['network'] = 'grpc';
-            if ($server['networkSettings']) {
-                $grpcSettings = $server['networkSettings'];
+            if ($networkSettings) {
+                $grpcSettings = $networkSettings;
                 $array['grpc-opts'] = [];
                 if (isset($grpcSettings['serviceName'])) {
                     $array['grpc-opts']['grpc-service-name'] = $grpcSettings['serviceName'];
@@ -320,18 +322,16 @@ class Stash implements ProtocolFormatter
                 }
             }
         }
-        if (!empty($server['server_name'])) {
-            $array['sni'] = $server['server_name'];
-        }
-        if (!empty($server['allow_insecure'])) {
-            $array['skip-cert-verify'] = ($server['allow_insecure'] ? true : false);
-        }
+        $tlsSettings = NetworkSettings::tls($server);
+        $array['sni'] = $server['server_name'] ?? ($tlsSettings['server_name'] ?? '');
+        $array['skip-cert-verify'] = ($server['allow_insecure'] ?? ($tlsSettings['allow_insecure'] ?? 0)) == 1;
 
         return $array;
     }
 
     public static function buildTuic($password, $server)
     {
+        $tlsSettings = NetworkSettings::tls($server);
         $array = [
             'name' => $server['name'],
             'type' => 'tuic',
@@ -345,11 +345,9 @@ class Stash implements ProtocolFormatter
             //'reduce-rtt' => $server['zero_rtt_handshake'] ? true : false,
             //'udp-relay-mode' => $server['udp_relay_mode'] ?? 'native',
             //congestion-controller' => $server['congestion_control'] ?? 'cubic',
-            'skip-cert-verify' => $server['insecure'] ? true : false,
+            'skip-cert-verify' => ($server['insecure'] ?? ($tlsSettings['allow_insecure'] ?? 0)) == 1,
         ];
-        if (isset($server['server_name'])) {
-            $array['sni'] = $server['server_name'];
-        }
+        $array['sni'] = $server['server_name'] ?? ($tlsSettings['server_name'] ?? '');
 
         return $array;
     }
@@ -444,13 +442,11 @@ class Stash implements ProtocolFormatter
             'port' => $server['port'],
             'password' => $password,
         ];
-        if ($server['tls']) {
-            $array['tls'] = true;
-            $tlsSettings = $server['tls_settings'] ?? [];
-            $array['client-fingerprint'] = !empty($tlsSettings['fingerprint']) ? $tlsSettings['fingerprint'] : 'chrome';
-            $array['sni'] = $server['server_name'] ?? ($tlsSettings['server_name'] ?? '');
-            $array['skip-cert-verify'] = ($server['insecure'] ?? ($tlsSettings['allow_insecure'] ?? 0)) == 1 ? true : false;
-        }
+        $array['tls'] = true;
+        $tlsSettings = NetworkSettings::tls($server);
+        $array['client-fingerprint'] = !empty($tlsSettings['fingerprint']) ? $tlsSettings['fingerprint'] : 'chrome';
+        $array['sni'] = $server['server_name'] ?? ($tlsSettings['server_name'] ?? '');
+        $array['skip-cert-verify'] = ($server['insecure'] ?? ($tlsSettings['allow_insecure'] ?? 0)) == 1;
 
         return $array;
     }

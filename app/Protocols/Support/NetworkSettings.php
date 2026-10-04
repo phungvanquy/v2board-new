@@ -24,7 +24,14 @@ class NetworkSettings
 
     public static function tls(array $server): array
     {
-        return $server['tls_settings'] ?? ($server['tlsSettings'] ?? []);
+        $settings = $server['tls_settings'] ?? ($server['tlsSettings'] ?? []);
+        foreach (['serverName' => 'server_name', 'allowInsecure' => 'allow_insecure'] as $legacy => $current) {
+            if (!isset($settings[$current]) && isset($settings[$legacy])) {
+                $settings[$current] = $settings[$legacy];
+            }
+        }
+
+        return $settings;
     }
 
     /**

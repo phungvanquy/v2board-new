@@ -142,6 +142,16 @@ class UriStringAndNetworkSettingsTest extends TestCase
         $this->assertSame(['server_name' => 'a'], NetworkSettings::tls($server));
     }
 
+    public function testTlsMapsLegacyKeysWithoutOverwritingExplicitFalse(): void
+    {
+        $legacy = NetworkSettings::tls(['tlsSettings' => ['serverName' => 'legacy.example', 'allowInsecure' => 1]]);
+        $this->assertSame('legacy.example', $legacy['server_name']);
+        $this->assertSame(1, $legacy['allow_insecure']);
+        $current = NetworkSettings::tls(['tls_settings' => ['allow_insecure' => 0, 'allowInsecure' => 1]]);
+        $this->assertSame(0, $current['allow_insecure']);
+        $this->assertSame([], NetworkSettings::tls(['tls_settings' => null]));
+    }
+
     public function testApplyWs(): void
     {
         $server = ['network' => 'ws', 'network_settings' => ['path' => '/ws', 'headers' => ['Host' => 'example.com']]];
