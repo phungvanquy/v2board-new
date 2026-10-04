@@ -99,6 +99,9 @@ jobs:
         run: |
           RELEASE_NOTES_FILE="$RUNNER_TEMP/release-notes.txt"
           OWNER_LC="${REPOSITORY_OWNER,,}"
+          # checkout may create a lightweight local tag at the event commit.
+          # Fetch the remote tag object explicitly to retain its annotation.
+          git fetch --force origin "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"
           git for-each-ref --format='%(contents)' "refs/tags/$RELEASE_TAG" > "$RELEASE_NOTES_FILE"
           cat >> "$RELEASE_NOTES_FILE" <<EOF
 
@@ -107,7 +110,7 @@ jobs:
           - ghcr.io/${OWNER_LC}/v2board-nginx:${RELEASE_TAG}
           EOF
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            echo "Release $RELEASE_TAG is already published."
+            gh release edit "$RELEASE_TAG" --notes-file "$RELEASE_NOTES_FILE"
           else
             gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" --notes-file "$RELEASE_NOTES_FILE"
           fi
