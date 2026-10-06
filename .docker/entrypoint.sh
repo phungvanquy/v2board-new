@@ -1,5 +1,5 @@
 #!/bin/sh
-# Entrypoint for app/horizon/webman. Runs as root so it can fix ownership of
+# Entrypoint for app/horizon/scheduler/webman. Runs as root so it can fix ownership of
 # named volumes and write the bind-mounted .env; drops to www-data for artisan
 # and Horizon. php-fpm's master stays root (workers run as www-data via the pool
 # config) because the default `error_log = /proc/self/fd/2` needs root to open.
@@ -28,6 +28,20 @@ as_app() { # run a command as www-data when we are root, otherwise directly
 }
 
 artisan() { as_app php artisan "$@" 2>&1 | sed 's/^/[artisan] /' || true; }
+
+# Validate before touching shared caches or running any Laravel command.
+# Key generation belongs to docker-setup.sh, before Compose captures .env.
+php "$ROOT/.docker/app-key.php" check
+
+# The scheduler only needs validation and privilege dropping. It must not
+# rebuild the shared config cache while app/Horizon are already running.
+if [ "${SKIP_APP_INIT:-0}" = "1" ]; then
+  log "ready: $*"
+  if is_root && command -v su-exec >/dev/null 2>&1; then
+    exec su-exec www-data "$@"
+  fi
+  exec "$@"
+fi
 
 # ── 0. Writable dirs (needs root for fresh named volumes / bind-mounts)
 mkdir -p "$ROOT/storage/framework/cache" "$ROOT/storage/framework/sessions" \
@@ -110,12 +124,6 @@ append_missing_env() {
   done < "$_template"
 }
 append_missing_env
-
-# ── 3. APP_KEY (root, so it can write the bind-mounted .env)
-if [ -f "$ROOT/.env" ] && ! grep -qE '^APP_KEY=.{10,}' "$ROOT/.env" 2>/dev/null; then
-  log "generating APP_KEY"
-  php artisan key:generate --force >/dev/null 2>&1 || log "WARN: key:generate failed"
-fi
 
 # ── 4. Laravel bootstrap hygiene (runtime only, never baked into the image)
 artisan config:clear

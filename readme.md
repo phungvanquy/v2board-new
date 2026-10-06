@@ -4,7 +4,7 @@
 
 # V2Board
 
-V2Board is a proxy-service panel for managing users, subscriptions, payments and proxy nodes (Shadowsocks / V2Ray / Trojan / Hysteria / TUIC / AnyTLS). This fork ships a **one-command Docker deployment** plus an **English admin dashboard** — the upstream panel is Chinese-only.
+V2Board is a proxy-service panel for managing users, subscriptions, payments and proxy nodes (Shadowsocks / V2Ray / Trojan / Hysteria / TUIC / AnyTLS). This fork ships a **Docker deployment** plus an **English admin dashboard** — the upstream panel is Chinese-only.
 
 Supported node backends: [V2bX](https://github.com/wyx2685/V2bX) · [v2node](https://github.com/wyx2685/v2node)
 
@@ -17,9 +17,13 @@ Requirements: **Docker Engine 24+** and **Compose v2** (`docker compose version`
 ```bash
 git clone https://github.com/phungvanquy/v2board-new.git && cd v2board-new
 cp .env.docker.example .env          # then edit the secrets inside
-docker compose up -d --build         # first boot imports the DB and pre-warms the theme
-docker compose ps                    # all 5 services should show (healthy)
+docker compose build app nginx
+sh docker-setup.sh                  # generate APP_KEY before Compose loads .env
+docker compose up -d                # first boot imports the DB and pre-warms the theme
+docker compose ps                  # services should show (healthy) or Up
 ```
+
+Setup uses PHP inside the app image and preserves an existing `APP_KEY`. Keep the key in `.env` across upgrades and restores. `sh deploy.sh` runs this preparation automatically before starting services.
 
 | What | URL |
 |------|-----|

@@ -19,7 +19,7 @@ services:
       DB_HOST: db
       REDIS_HOST: redis
     volumes:
-      # Host .env — create it before `up` (`cp .env.docker.example .env`).
+      # Host .env — run `sh docker-setup.sh` before the first `up`.
       # Required so APP_KEY / DB_PASSWORD survive `recreate`.
       - type: bind
         source: ./.env
@@ -164,13 +164,14 @@ services:
         WITH_WEBMAN: ${WITH_WEBMAN:-true}
     image: ${APP_IMAGE:-v2board-app:local}
     restart: unless-stopped
-    entrypoint: ["/sbin/su-exec", "www-data", "php", "artisan", "schedule:work"]
+    command: ["php", "artisan", "schedule:work"]
     env_file:
       - path: .env
         required: false
     environment:
       DB_HOST: db
       REDIS_HOST: redis
+      SKIP_APP_INIT: "1"
     volumes:
       - type: bind
         source: ./.env

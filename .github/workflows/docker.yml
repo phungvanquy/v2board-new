@@ -11,6 +11,9 @@ on:
       - app/**
       - database/**
       - docker-compose.yml
+      - docker-setup.sh
+      - deploy.sh
+      - .dockerignore
   workflow_dispatch:
 
 env:

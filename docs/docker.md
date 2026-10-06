@@ -6,11 +6,13 @@
 
 ```bash
 cp .env.docker.example .env
-# Edit .env — at least set DB_PASSWORD / DB_ROOT_PASSWORD / APP_URL / APP_KEY
-# APP_KEY can be left empty: the entrypoint generates it on first boot.
+# Edit .env — at least set DB_PASSWORD / DB_ROOT_PASSWORD / APP_URL
+# Leave APP_KEY empty for docker-setup.sh to generate a unique key.
 # Optional: ADMIN_EMAIL / ADMIN_PASSWORD to auto-create the first admin.
 
-docker compose up -d --build
+docker compose build app nginx
+sh docker-setup.sh
+docker compose up -d
 # Wait for healthchecks:
 docker compose ps
 # All services should show (healthy) or Up.
@@ -19,6 +21,10 @@ docker compose ps
 curl -fsS -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8080/
 curl -fsS http://127.0.0.1:8080/healthz   # => ok (nginx-only probe)
 ```
+
+`docker-setup.sh` uses the app image's PHP to prepare `.env` before Compose creates the application containers. It generates a key only when missing or empty, preserves valid existing keys, and fails on invalid keys. It does not start the database or application. If `.env` is absent, it copies the Docker template; edit the database passwords and URL before starting the stack.
+
+Always run setup before the first `up`. Compose captures `env_file` values when creating containers; generating a key inside a running container cannot replace an already-exported empty `APP_KEY`. All PHP services validate the effective key before Laravel starts. The deployment script also runs setup before its first `up`.
 
 ### Find your admin login URL (first boot)
 
@@ -46,7 +52,7 @@ curl -s http://127.0.0.1:8080/api/v1/guest/comm/config | jq .
 
 | Service   | Image / build target | Port | Notes |
 |-----------|----------------------|------|-------|
-| `app`     | `Dockerfile: app` (`php:${PHP_VERSION}-fpm-alpine`, default 8.2) | `9000` (internal) | PHP-FPM + Laravel. Entrypoint handles `.env`, `APP_KEY`, `storage:link`, theme pre-warm, and idempotent DB import. |
+| `app`     | `Dockerfile: app` (`php:${PHP_VERSION}-fpm-alpine`, default 8.2) | `9000` (internal) | PHP-FPM + Laravel. Entrypoint validates `APP_KEY`, handles `.env`, `storage:link`, theme pre-warm, and idempotent DB import. |
 | `nginx`   | `Dockerfile: nginx`  | `${APP_PORT:-8080}:80` | Serves `public/` statically; forwards PHP to `app:9000`. Built from the same context so `public/assets/admin` refreshes on rebuild. |
 | `db`      | `mysql:8.0`          | `3306` (internal) | Volume `db_data`. `utf8mb4`, `mysql_native_password` for `pdo_mysql` compat. Healthcheck `mysqladmin ping`. |
 | `redis`   | `redis:7-alpine`     | `6379` (internal) | Volume `redis_data`. `--requirepass` only when `REDIS_PASSWORD` is set. |
@@ -59,6 +65,7 @@ Volumes: `db_data`, `redis_data`, `app_storage` (`storage/`), `app_bootstrap_cac
 ## Environment
 
 - Copy `.env.docker.example` → `.env` and edit secrets. Never commit `.env` (it is gitignored and excluded from the image via `.dockerignore`).
+- Run `sh docker-setup.sh` before the first `up` to persist a unique `APP_KEY`. Existing keys are preserved; never share a template key between installations.
 - `docker-compose.yml` loads `.env` via `env_file` and forces `DB_HOST=db` / `REDIS_HOST=redis` via `environment:` so host-side `.env` values for other deploys do not break the compose network.
 - `PHP_VERSION` (default `8.2`) pins both the runtime image and Composer's `platform.php` (so a project without `composer.lock` does not resolve to packages that need PHP 8.4).
 - Keep `APP_ENV=local` for the existing application queues, whose supervisor is defined under `environments.local`. The dedicated Telegram backup supervisor is available in every environment.
@@ -68,7 +75,7 @@ Volumes: `db_data`, `redis_data`, `app_storage` (`storage/`), `app_bootstrap_cac
 
 - **First boot (empty `db_data`):** entrypoint imports `database/install.sql` (the full schema + `database` seeds) via `mysql --skip-ssl` and, when `ADMIN_EMAIL`/`ADMIN_PASSWORD` are set, creates the admin via `.docker/seed-admin.php`. A theme pre-warm writes `config/theme/default.php` and runs `config:cache` so the first HTTP request is already 200.
 - **Subsequent boots:** entrypoint probes `SHOW TABLES LIKE "v2_user"` — when the sentinel table exists it skips the import and runs `php artisan v2board:update` automatically (idempotent: the whole `database/update.sql` is attempted, per-statement errors mean "already applied"; guarded by a MySQL advisory lock so concurrent boots don't race). Set `V2BOARD_AUTO_UPDATE=0` to opt out and migrate manually instead.
-- **Existing `.env`:** respected. The entrypoint only generates `APP_KEY` when the key is empty, only creates `.env` when the file is missing, and appends any keys present in `.env.docker.example` but missing locally (existing values are never modified, secrets are never invented).
+- **Existing `.env`:** respected. Setup preserves an existing valid `APP_KEY`; the entrypoint validates it before touching Laravel's cache and never generates or rotates keys. The entrypoint appends keys present in `.env.docker.example` but missing locally (existing values are never modified).
 - **Config volume:** `app_config` shadows the image's `config/`. On every `app` boot the entrypoint syncs framework `config/*.php` from the pristine copy baked into the image (`/opt/v2board-config-pristine`), so new/changed config arrives automatically. User-managed files are never touched: `config/v2board.php` (admin settings) and `config/theme/*.php` (theme settings) survive upgrades untouched.
 
 ## Common operations
@@ -286,6 +293,8 @@ docker compose --profile webman config | grep -q webman && echo "included with -
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
+| `[app-key] APP_KEY is empty` or Laravel reports a missing encryption key | Setup was skipped, or containers captured an empty key before `.env` was populated | Run `sh docker-setup.sh`, then `docker compose up -d --force-recreate`. Recreation reloads `.env` and startup rebuilds Laravel's config cache; `restart` or `config:clear` alone does not reload container environment values. Preserve any existing key. |
+| `[app-key] APP_KEY is invalid` | A placeholder or malformed key is configured | Restore the installation's original key from backup. For a brand-new installation only, clear the placeholder and run `sh docker-setup.sh` before starting services. |
 | `GET /` → `500 请检查V2Board目录权限` on first request only | `config/theme/default.php` not yet written | Fixed by the entrypoint pre-warm; if you built an old image, `docker compose build app && docker compose up -d` and retry. `docker compose exec app ls -la config/theme/` should show `default.php`. |
 | `500` with `Composer detected issues ... require PHP >= 8.4` | Vendor resolved to packages needing a newer PHP | Set `PHP_VERSION=8.2` (default) and rebuild: `docker compose build --no-cache app`. The Dockerfile pins `platform.php` to the target version. |
 | Existing application jobs stay queued | `APP_ENV=production` while the application supervisor is defined under `environments.local` | Set `APP_ENV=local` (the default in `.env.docker.example`). The Telegram backup supervisor runs in all environments. |
@@ -313,6 +322,7 @@ docker run --rm --entrypoint sh v2board-app:local -c 'test ! -f /var/www/.env &&
 
 # 2. Cold boot is 200 on the first request (no 500)
 docker compose down -v
+sh docker-setup.sh
 docker compose up -d --build
 curl -fsS -o /dev/null -w "GET / => %{http_code}\n" http://127.0.0.1:8080/   # => 200
 curl -fsS http://127.0.0.1:8080/healthz                                        # => ok

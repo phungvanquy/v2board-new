@@ -13,21 +13,25 @@
 #
 # What the deploy does:
 #   1. pull  — no-op for local-build users (warns, continues).
-#   2. up db/redis first so the app entrypoint can reach MySQL.
-#   3. up app — the entrypoint appends missing .env keys, syncs framework
+#   2. prepare APP_KEY before Compose captures .env (existing keys are kept).
+#   3. up db/redis first so the app entrypoint can reach MySQL.
+#   4. up app — the entrypoint appends missing .env keys, syncs framework
 #      config/*.php from the image (preserving config/v2board.php and
 #      config/theme/*), and runs `v2board:update` automatically
 #      (opt out with V2BOARD_AUTO_UPDATE=0 in .env).
-#   4. recreate horizon/scheduler/nginx so workers run the new code.
+#   5. recreate horizon/scheduler/nginx so workers run the new code.
 #
 # Back up before upgrading (in-panel Full export, or volume tarball —
 # see docs/docker.md). `docker compose down` keeps volumes; only
 # `docker compose down -v` destroys data.
 set -eu
 
+cd "$(dirname "$0")"
+
 if ! docker compose pull 2>/dev/null; then
   echo "deploy: 'compose pull' found nothing to fetch (local-build setup?) — continuing"
 fi
+sh ./docker-setup.sh
 docker compose up -d db redis
 docker compose up -d app
 docker compose up -d --force-recreate horizon scheduler nginx
