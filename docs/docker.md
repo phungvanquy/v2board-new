@@ -116,6 +116,27 @@ docker compose down                   # keeps volumes
 docker compose down -v                # destroys db_data + redis_data + app_* volumes
 ```
 
+### Log retention
+
+Every service, including the optional `webman` profile, uses Docker's `json-file` logging driver with rotation: **10 MB per file, at most 3 files per container** (about 30 MB per container). The oldest file is removed on rotation. These limits cover stdout/stderr captured by `docker compose logs`. See [Docker's logging options](https://docs.docker.com/engine/logging/drivers/json-file/#options).
+
+Override the defaults in `.env` if needed:
+
+```ini
+DOCKER_LOG_MAX_SIZE=10m
+DOCKER_LOG_MAX_FILES=3
+```
+
+Recreate existing containers to apply logging changes; `docker compose restart` does not update their logging configuration. This briefly interrupts services and replaces their existing container log history; named data volumes are preserved. No image rebuild is needed:
+
+```bash
+docker compose up -d --force-recreate
+# If Webman is enabled, use this instead:
+docker compose --profile webman up -d --force-recreate
+```
+
+Application logs have separate retention: Laravel's `daily` channel keeps 14 daily files, and the default MySQL log channel is cleaned daily by `reset:log`, deleting records older than one month while `scheduler` is running. Docker's size limits do not cap files in `app_storage` or logs stored in the database.
+
 ### Updating without losing data
 
 `sh deploy.sh` (pull/build + ordered `up`) **preserves** `db_data` — verified (see Verification below). Only `down -v` drops volumes. Schema migration (`php artisan v2board:update`) runs automatically on every `app` boot and is idempotent; it does not drop tables. `update.sql` is cumulative and records no applied version — re-runs rely on per-statement error tolerance, and report `applied N, already present M`.

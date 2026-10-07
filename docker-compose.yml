@@ -1,5 +1,12 @@
 name: v2board
 
+# Rotate container stdout/stderr logs for every service.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "${DOCKER_LOG_MAX_SIZE:-10m}"
+    max-file: "${DOCKER_LOG_MAX_FILES:-3}"
+
 services:
   # ── App: PHP-FPM + Laravel ─────────────────────────────────────────
   app:
@@ -12,6 +19,7 @@ services:
         WITH_WEBMAN: ${WITH_WEBMAN:-true}
     image: ${APP_IMAGE:-v2board-app:local}
     restart: unless-stopped
+    logging: *default-logging
     env_file:
       - path: .env
         required: false
@@ -48,6 +56,7 @@ services:
       target: nginx
     image: ${NGINX_IMAGE:-v2board-nginx:local}
     restart: unless-stopped
+    logging: *default-logging
     ports:
       - "${APP_PORT:-8080}:80"
     volumes:
@@ -66,6 +75,7 @@ services:
   db:
     image: mysql:8.0
     restart: unless-stopped
+    logging: *default-logging
     command: >-
       --default-authentication-plugin=mysql_native_password
       --character-set-server=utf8mb4
@@ -93,6 +103,7 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    logging: *default-logging
     command: >-
       sh -c 'if [ -n "$$REDIS_PASSWORD" ]; then
                exec redis-server --requirepass "$$REDIS_PASSWORD" --save 60 1;
@@ -122,6 +133,7 @@ services:
         WITH_WEBMAN: ${WITH_WEBMAN:-true}
     image: ${APP_IMAGE:-v2board-app:local}
     restart: unless-stopped
+    logging: *default-logging
     command: ["php", "artisan", "horizon"]
     env_file:
       - path: .env
@@ -164,6 +176,7 @@ services:
         WITH_WEBMAN: ${WITH_WEBMAN:-true}
     image: ${APP_IMAGE:-v2board-app:local}
     restart: unless-stopped
+    logging: *default-logging
     command: ["php", "artisan", "schedule:work"]
     env_file:
       - path: .env
@@ -199,6 +212,7 @@ services:
     image: ${APP_IMAGE:-v2board-app:local}
     profiles: ["webman"]
     restart: unless-stopped
+    logging: *default-logging
     command: ["php", "-c", "cli-php.ini", "webman.php"]
     env_file:
       - path: .env
